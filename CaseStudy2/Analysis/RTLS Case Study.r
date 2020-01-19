@@ -169,7 +169,7 @@ plotAllHeatMaps = function(){
     
 }
 
-plotAllHeatMaps()
+#plotAllHeatMaps()
 
 
 # removed the angle from subset. This will combine all the angles
@@ -196,7 +196,7 @@ plotAllHeatMaps = function(){
     
 }
 
-plotAllHeatMaps()
+#plotAllHeatMaps()
 
 
 library(fields)
@@ -589,7 +589,7 @@ permuteLocs
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-K = 20
+K = 5
 err = rep(0, K)
 
 for (j in 1:v) {
@@ -907,7 +907,7 @@ permuteLocs
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-K = 20
+K = 5
 err = rep(0, K)
 
 for (j in 1:v) {

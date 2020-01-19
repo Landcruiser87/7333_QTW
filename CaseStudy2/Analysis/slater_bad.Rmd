@@ -309,7 +309,7 @@ text(locCounts, labels = locCounts[,3], cex = .8, srt = 45)
 ``` {r Chunk 31}
 # re do our data read combining all the anlysis we did here there are 7 SEVEN macids
 readData = 
-  function(filename = 'offline.final.trace.txt', 
+  function(filename = './Data/offline.final.trace.txt', 
            subMacs = c("00:0f:a3:39:e1:c0", "00:0f:a3:39:dd:cd", "00:14:bf:b1:97:8a",
                        "00:14:bf:3b:c7:c6", "00:14:bf:b1:97:90", "00:14:bf:b1:97:8d",
                        "00:14:bf:b1:97:81"))
@@ -520,7 +520,7 @@ xyplot(signal ~ dist | factor(mac) + factor(angle),
 # tally signal strength
 
 macs = unique(offlineSummary$mac)
-online = readData("online.final.trace.txt", subMacs = macs)
+online = readData("./Data/online.final.trace.txt", subMacs = macs)
 
 online$posXY = paste(online$posX, online$posY, sep = "-")
 
@@ -773,7 +773,7 @@ estFold = predXY(newSignals = onlineFold[ , 6:11],
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-K = 20
+K = 20 # Change K here for faster
 err = rep(0, K)
 
 for (j in 1:v) {
@@ -833,7 +833,7 @@ estFold = predXY(newSignals = onlineFold[ , 6:11],
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-K = 20
+K = 5
 err = rep(0, K)
 
 for (j in 1:v) {
