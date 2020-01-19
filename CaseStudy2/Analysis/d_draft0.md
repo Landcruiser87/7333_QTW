@@ -98,6 +98,10 @@ From this graph, we can see that the signal is not only stronger at the router l
 ## [6] "signal"      "rawTime"     "angle"       "posXY"
 ```
 
+Here we do not weirdly subset our data, we get the signal at all angles:
+
+
+
 
 Here is the MAC in question
 
@@ -245,12 +249,13 @@ online$posXY = paste(online$posX, online$posY, sep = "-")
 
 names(offline_original)
 names(online)
-offline_good_mac <- offline_original %>% filter(mac == good_mac)
-online_good_mac <- online %>% filter(mac == good_mac)
-online_bad_mac <- online %>% filter(mac == bad_mac)
-offline_bad_mac <- offline_original %>% filter(mac == bad_mac)
-offline_all_mac <- offline_original %>% filter(mac %in% c(good_mac, bad_mac))
-online_all_mac <- online %>% filter(mac %in% c(good_mac, bad_mac))
+offline_good_mac <- offline_original %>% filter(mac != bad_mac) %>% select(posXY, posX, posY, mac, angle, signal)
+online_good_mac <- online %>% filter(mac != bad_mac)%>% select(posXY, posX, posY, mac, angle, signal)
+online_bad_mac <- online %>% filter(mac != good_mac)%>% select(posXY, posX, posY, mac, angle, signal)
+offline_bad_mac <- offline_original %>% filter(mac != good_mac)%>% select(posXY, posX, posY, mac, angle, signal)
+offline_all_mac <- offline_original %>% select(posXY, posX, posY, mac, angle, signal)
+online_all_mac <- online %>% select(posXY, posX, posY, mac, angle, signal)
+
 offline_original %>% mutate(angle = factor(angle)) %>%
   filter(posX == 2 & posY == 12 & mac == bad_mac) %>%
   ggplot() + geom_boxplot(aes(y = signal, x= angle)) + 

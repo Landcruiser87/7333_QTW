@@ -177,18 +177,94 @@ From this graph, we can see that the signal is not only stronger at the router l
 
 ## KNN WHATEVER
 
+To determine practically whether or not the MAC at address `00:0f:a3:39:dd:cd` is better or worse than the MAC at address `00:0f:a3:39:e1:c0`, we ran a K nearest neighbors prediction experiment. The experimental procedure is as follows. First, we create three groups of data, one group which has all MACs except for  `00:0f:a3:39:e1:c0`, one group which has all MACs except for `00:0f:a3:39:dd:cd`, and one group which contains all the data from all the MACs. Then, we tuned to find the optimal value of K using cross validation at a single random seed. Next, we used something something ANOVA to find the best set!!
+
+First, we filtered in the data, selecting only information which was pertinent to our K nearest neighbors analysis. 
+
 ```{r}
 online <- readData("../Data/online.final.trace.txt")
 online$posXY = paste(online$posX, online$posY, sep = "-")
 
-names(offline_original)
-names(online)
-offline_good_mac <- offline_original %>% filter(mac == good_mac)
-online_good_mac <- online %>% filter(mac == good_mac)
-online_bad_mac <- online %>% filter(mac == bad_mac)
-offline_bad_mac <- offline_original %>% filter(mac == bad_mac)
-offline_all_mac <- offline_original %>% filter(mac %in% c(good_mac, bad_mac))
-online_all_mac <- online %>% filter(mac %in% c(good_mac, bad_mac))
+datasets <- list()
+datasets$offline_good_mac <- offline_original %>% filter(mac != bad_mac) %>% select(posXY, posX, posY, mac, orientation,angle, signal)
+datasets$online_good_mac <- online %>% filter(mac != bad_mac)%>% select(posXY, posX, posY, mac,orientation, angle, signal)
+datasets$online_bad_mac <- online %>% filter(mac != good_mac)%>% select(posXY, posX, posY, mac,orientation, angle, signal)
+datasets$offline_bad_mac <- offline_original %>% filter(mac != good_mac)%>% select(posXY, posX, posY, mac,orientation, angle, signal)
+datasets$offline_all_mac <- offline_original %>% select(posXY, posX, posY, mac,orientation, angle, signal)
+datasets$online_all_mac <- online %>% select(posXY, posX, posY, mac, angle, signal)
+
+off_angs <- offline_original %>% arrange(angle) %>% .$angle %>% as.numeric %>% unique
+on_angs <- online %>% arrange(angle) %>% .$angle %>% as.numeric %>% unique
+# should be all zero, to verify we are rounding the angles
+# off_angs - on_angs
+```
+
+Next, we spread out the signal data by mac, averaging where there were repeats:
+TODO REPHRASE
+
+```{r, echo = TRUE}
+prepare_data <- function(df) {
+  df %>% pivot_wider(names_from = mac, values_from = signal, values_fn = mean) %>% na.omit
+}
+
+datasets_wide <- lapply(datasets, prepare_data)
+
+datasets_wide[[1]] %>% data.frame
+datasets_wide[[2]] %>% data.frame
+```
+
+Next, we wrote an R S3 class and extended R's `predict` method to include a fast, vectorized KNN, from [here]( http://enhancedatascience.com/2018/05/23/create-your-machine-learning-library-from-scratch-with-r-3-5-knn/):
+
+```{r, echo=T}
+
+# set the stage for storing neighbors etc
+KNN <- function(x, y, k = 5){
+  if (!is.matrix(x)) {
+    x  <-  as.matrix(x)
+  }
+  if (!is.matrix(y)) {
+    y  <-  as.matrix(y)
+  }
+  results <- list()
+  results$points <- x
+  results$value  <- y
+  results$k  <- k
+  results <- structure(results, class = "KNN")
+  return(results)
+}
+
+# f ∥xi−xj∥2=∥xi∥2+∥xj∥2−2(xi⋅xj)
+# https://www.r-bloggers.com/pairwise-distances-in-r/
+# https://blog.smola.org/post/969195661/in-praise-of-the-second-binomial-formula
+compute_pairwise_distance=function(X,Y){
+  xn = rowSums(X ** 2)
+  yn = rowSums(Y ** 2)
+  outer(xn, yn, '+') - 2 * tcrossprod(X, Y)
+}
+
+# prediction method
+predict.KNN = function(my_knn, newdata, distance = compute_pairwise_distance){
+  if (!is.matrix(newdata))
+  {
+    newdata = as.matrix(newdata)
+  }
+  ##Compute pairwise distance
+  dist_pair = distance(newdata,my_knn$points)
+  # rank distances computing a lovely graph
+  crossprod(
+            apply(dist_pair,1,order) <= my_knn[['k']], 
+            my_knn[["value"]]) / my_knn[['k']]  
+  # turn points more than k neighbors away  to zero, otherwise one 
+  # crossproduct by value
+}
+
+# Next we need to write a function which maps positionXY to numbers and numbers to positionXY
+pos_map_fct <- as.factor(datasets[[1]]$posXY)
+pos_map_int <- as.integer(pos_map_fct)
+# some dumb shit wiht numerics
+ok <- datasets[[3]]$posXY
+ok2 <- as.integer(as.factor(ok))
+ok2
 ```
 
 
