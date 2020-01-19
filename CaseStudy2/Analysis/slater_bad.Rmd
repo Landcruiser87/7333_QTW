@@ -773,7 +773,7 @@ estFold = predXY(newSignals = onlineFold[ , 6:11],
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-K = 20 # Change K here for faster
+K = 5 # Change K here for faster
 err = rep(0, K)
 
 for (j in 1:v) {
