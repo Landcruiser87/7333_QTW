@@ -139,7 +139,7 @@ plt_theme <- ggthemes::theme_hc()  + fixfonts
 offline_original %>% mutate(angle = factor(angle)) %>%
   filter(posX == 2 & posY == 12 & mac %in% c(good_mac, bad_mac)) %>%
   ggplot() + geom_boxplot(aes(y = signal, x= angle)) + 
-  facet_wrap(. ~ mac, ncol = 2) +  
+  facet_wrap(. ~ mac, ncol = 1) +  
   ggtitle("Signal vs Angle for a fixed position at selected MACS") + plt_theme
 ```
 

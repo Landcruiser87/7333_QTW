@@ -202,7 +202,7 @@ plt_theme <- ggthemes::theme_hc()  + fixfonts
 offline_original %>% mutate(angle = factor(angle)) %>%
   filter(posX == 2 & posY == 12 & mac %in% c(good_mac, bad_mac)) %>%
   ggplot() + geom_boxplot(aes(y = signal, x= angle)) + 
-  facet_wrap(. ~ mac, ncol = 2) +  
+  facet_wrap(. ~ mac, ncol = 1) +  
   ggtitle("Signal vs Angle for a fixed position at selected MACS") + plt_theme
 offline_original %>% mutate(angle = factor(angle)) %>%filter(mac %in% c(good_mac, bad_mac)) %>%group_by(mac) %>% summarise(signal_avg = mean(signal), signal_std = sd(signal), signal_iqr = IQR(signal))
 # # A tibble: 2 x 4
