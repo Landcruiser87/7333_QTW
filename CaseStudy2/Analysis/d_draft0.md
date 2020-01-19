@@ -71,6 +71,17 @@ It is apparent from the figure above that the signal is much weaker at the route
 
 From this, we can see that the signal at `00:0f:a3:39:dd:cd` is much weaker than the signal at the other router. It also has a much larger standard deviation, and a larger inter quartile range. This could be indicative of why Nolan and Lang did not choose to use this router.
 
+## Signal Strength Density
+
+We also wanted to analyze the signal strength density at each angle of the two routers. This would allow us to not only see signal strenght, but potentially signal clarity, or the separation of the signals at each angle.
+
+<div class="figure" style="text-align: center">
+<img src="d_draft0_files/figure-html/dens1-1.svg" alt="The signals are much stronger and more separated by angle in the second router"  />
+<p class="caption">The signals are much stronger and more separated by angle in the second router</p>
+</div>
+
+From this graph, we can see that the 
+
 
 Here is the MAC in question
 
@@ -93,10 +104,6 @@ Recreate that stupid plot, and do it for the other MAC, then improve
 
 <img src="d_draft0_files/figure-html/hated00-1.svg" style="display: block; margin: auto;" />
 
-<div class="figure" style="text-align: center">
-<img src="d_draft0_files/figure-html/dens1-1.svg" alt="dumb"  />
-<p class="caption">dumb</p>
-</div>
 
 <div class="figure" style="text-align: center">
 <img src="d_draft0_files/figure-html/hated01-1.svg" alt="dumb"  />
@@ -211,6 +218,11 @@ offline_original %>% mutate(angle = factor(angle)) %>%filter(mac %in% c(good_mac
 # 1 00:0f:a3:39:dd:cd      -70.5       8.13         13
 # 2 00:0f:a3:39:e1:c0      -53.7       5.80          8
 offline_original %>% mutate(angle = factor(angle)) %>%
+  filter(posX == 2 & posY == 12 & mac %in%  c(good_mac,bad_mac)) %>%
+  ggplot(aes(signal, fill = angle )) + geom_density()+
+  facet_wrap(. ~ mac, ncol = 1) +  
+  ggtitle("Per Angle Signal Density at the Two MACS") + plt_theme + scale_fill_viridis_d()
+offline_original %>% mutate(angle = factor(angle)) %>%
   filter(posX == 2 & posY == 12 & mac == bad_mac) %>%
   ggplot() + geom_boxplot(aes(y = signal, x= angle)) + 
   facet_wrap(. ~ mac)  + 
@@ -225,11 +237,6 @@ offline_original %>% mutate(angle = factor(angle)) %>%
   ggplot(aes(signal)) + geom_density()+
   facet_wrap(mac ~ angle) +  
   ggtitle("Signal Density Per angle at the hated MAC") + plt_theme + ggthemes::scale_fill_hc()
-offline_original %>% mutate(angle = factor(angle)) %>%
-  filter(posX == 2 & posY == 12 & mac != bad_mac) %>%
-  ggplot(aes(signal, fill = angle )) + geom_density()+
-  facet_wrap(. ~ mac, ncol = 2) +  
-  ggtitle("Signal Density per MAC, ") + plt_theme + scale_fill_viridis_d()
 offline_original %>% mutate(angle = factor(angle)) %>%
   filter(posX == 2 & posY == 12 & mac == bad_mac) %>%
   ggplot(aes(signal, fill = angle )) + geom_density()+

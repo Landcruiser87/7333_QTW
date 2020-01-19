@@ -157,6 +157,20 @@ offline_original %>% mutate(angle = factor(angle)) %>%filter(mac %in% c(good_mac
 
 From this, we can see that the signal at `00:0f:a3:39:dd:cd` is much weaker than the signal at the other router. It also has a much larger standard deviation, and a larger inter quartile range. This could be indicative of why Nolan and Lang did not choose to use this router.
 
+## Signal Strength Density
+
+We also wanted to analyze the signal strength density at each angle of the two routers. This would allow us to not only see signal strenght, but potentially signal clarity, or the separation of the signals at each angle.
+
+```{r dens1, fig.cap = "The signals are much stronger and more separated by angle in the second router"}
+offline_original %>% mutate(angle = factor(angle)) %>%
+  filter(posX == 2 & posY == 12 & mac %in%  c(good_mac,bad_mac)) %>%
+  ggplot(aes(signal, fill = angle )) + geom_density()+
+  facet_wrap(. ~ mac, ncol = 1) +  
+  ggtitle("Per Angle Signal Density at the Two MACS") + plt_theme + scale_fill_viridis_d()
+```
+
+From this graph, we can see that the 
+
 
 Here is the MAC in question
 
@@ -191,13 +205,6 @@ offline_original %>% mutate(angle = factor(angle)) %>%
   ggtitle("Signal Density Per angle at the hated MAC") + plt_theme + ggthemes::scale_fill_hc()
 ```
 
-```{r dens1, fig.cap = "dumb"}
-offline_original %>% mutate(angle = factor(angle)) %>%
-  filter(posX == 2 & posY == 12 & mac != bad_mac) %>%
-  ggplot(aes(signal, fill = angle )) + geom_density()+
-  facet_wrap(. ~ mac, ncol = 2) +  
-  ggtitle("Signal Density per MAC, ") + plt_theme + scale_fill_viridis_d()
-```
 
 ```{r hated01, fig.cap = "dumb"}
 offline_original %>% mutate(angle = factor(angle)) %>%
