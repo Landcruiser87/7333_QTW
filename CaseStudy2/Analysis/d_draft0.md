@@ -1,7 +1,7 @@
 ---
 title: "Slater is bad at R please change this title"
 author: "David Josephs, Andy Heroy, Carson Drake, Che' Cobb"
-date: "2020-01-18"
+date: "2020-01-19"
 output: 
   html_document:
     toc: true
@@ -37,7 +37,10 @@ Initially researchers mapped the static signal strengths of of 7 access points t
 <!-- end of list -->
 
 # Data Cleansing
-After removing extraneous comments and formatting the data into a tabular form, we rounded the angles into discrete units of 45 degrees. We also removed data which was not pertinent to the study, such as position in the Z axis, as well as the MAC of the scanner. We also removed data from MAC addresses which were similarly not useful to this study. The main MACS we focused on were 5 linksys routers, as well as two additional Alpha routers with the id’s `(00:0f:a3:39:e1:c0 and 00:0f:a3:39:dd:cd)`. 
+After removing extraneous comments and formatting the data into a tabular form, we rounded the angles into discrete units of 45 degrees. We also removed data which was not pertinent to the study, such as position in the Z axis, as well as the MAC of the scanner, keeping only access points.  We also removed data from MAC addresses which were similarly not useful to this study. The main MACS we focused on were 5 linksys routers, as well as two additional Alpha routers with the id’s (00:0f:a3:39:e1:c0 and 00:0f:a3:39:dd:cd).  Nolan et al. dropped Alpha router 00:0f:a3:39:dd:cd in their analysis. We will investigate both Alpha router addresses and assess which would be a better use for an RTLS system.
+
+The next step is to create new features focusing on the offline signal strengths of all routers and calculate basic statistics behind each access point.  (median, length, mean, std deviation, etc) with respect to each angle.   
+ 
 
 
 
@@ -46,16 +49,28 @@ After removing extraneous comments and formatting the data into a tabular form, 
 
 
 
+# Analysis
 
+## Comparison of Signal strength to angle
 
-# Things to do
-
-
+For the first stage of our analysis, we created a boxplot at a fixed position of the signal strength vs discrete angle of the two routers in question:
 
 <div class="figure" style="text-align: center">
-<img src="d_draft0_files/figure-html/firstplot-1.svg" alt="Signal vs Orientation at Nolan and Lang's Selected MAC"  />
-<p class="caption">Signal vs Orientation at Nolan and Lang's Selected MAC</p>
+<img src="d_draft0_files/figure-html/firstplot-1.svg" alt="Note how the signal is much weaker at the MAC address on the left compared to the MAC address on the right"  />
+<p class="caption">Note how the signal is much weaker at the MAC address on the left compared to the MAC address on the right</p>
 </div>
+
+
+It is apparent from the figure above that the signal is much weaker at the router which Nolan and Lang chose not to address. We can look into this further by creating a table of average signal strengths at all positions for the two routers in question:
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["mac"],"name":[1],"type":["chr"],"align":["left"]},{"label":["signal_avg"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["signal_std"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["signal_iqr"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"00:0f:a3:39:dd:cd","2":"-70","3":"8.1","4":"13"},{"1":"00:0f:a3:39:e1:c0","2":"-54","3":"5.8","4":"8"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
+From this, we can see that the signal at `00:0f:a3:39:dd:cd` is much weaker than the signal at the other router. It also has a much larger standard deviation, and a larger inter quartile range. This could be indicative of why Nolan and Lang did not choose to use this router.
+
 
 Here is the MAC in question
 
@@ -182,13 +197,19 @@ offline_original <- readData("../Data/offline.final.trace.txt")
 bad_mac <-  "00:0f:a3:39:dd:cd"
 good_mac <- "00:0f:a3:39:e1:c0"
 fixfonts <- theme(text = element_text(family = "serif", , face = "bold"))
-plt_theme <- ggthemes::theme_wsj()  + fixfonts
+plt_theme <- ggthemes::theme_hc()  + fixfonts
 
 offline_original %>% mutate(angle = factor(angle)) %>%
-  filter(posX == 2 & posY == 12 & mac != bad_mac) %>%
+  filter(posX == 2 & posY == 12 & mac %in% c(good_mac, bad_mac)) %>%
   ggplot() + geom_boxplot(aes(y = signal, x= angle)) + 
   facet_wrap(. ~ mac, ncol = 2) +  
-  ggtitle("Signal vs Orientation at 6 of 7 MACs") + plt_theme
+  ggtitle("Signal vs Angle for a fixed position at selected MACS") + plt_theme
+offline_original %>% mutate(angle = factor(angle)) %>%filter(mac %in% c(good_mac, bad_mac)) %>%group_by(mac) %>% summarise(signal_avg = mean(signal), signal_std = sd(signal), signal_iqr = IQR(signal))
+# # A tibble: 2 x 4
+#   mac               signal_avg signal_std signal_iqr
+#   <chr>                  <dbl>      <dbl>      <dbl>
+# 1 00:0f:a3:39:dd:cd      -70.5       8.13         13
+# 2 00:0f:a3:39:e1:c0      -53.7       5.80          8
 offline_original %>% mutate(angle = factor(angle)) %>%
   filter(posX == 2 & posY == 12 & mac == bad_mac) %>%
   ggplot() + geom_boxplot(aes(y = signal, x= angle)) + 
