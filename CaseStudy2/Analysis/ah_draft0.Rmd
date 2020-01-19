@@ -669,7 +669,9 @@ estXYk1 = predXY(newSignals = onlineSummary[ , 6:11],
 floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL){
   
     plot(0, 0, xlim = c(0, 35), ylim = c(-3, 15), type = "n",
-         xlab = "", ylab = "", axes = FALSE)
+         xlab = "", ylab = "", axes = FALSE,
+         main = "Floor Map of Prediction",
+         sub = "Square = Access Point, Circle = Actual, *=Predicted")
     box()
     if ( !is.null(AP) ) points(AP, pch = 15)
     if ( !is.null(trainPoints) )
@@ -711,7 +713,8 @@ function(estXY, actualXY)
 
 actualXY = onlineSummary[ , c("posX", "posY")]
 sapply(list(estXYk1, estXYk3), calcError, actualXY)
-v = 11
+#change this to 3 for faster runs.  Orig 11
+v = 11 
 permuteLocs = sample(unique(offlineSummary$posXY))
 permuteLocs = matrix(permuteLocs, ncol = v, 
                      nrow = floor(length(permuteLocs)/v))
@@ -748,6 +751,8 @@ reshapeSS = function(data, varSignal = "signal",
 # up to 20 neighbors, 11 folds
 # this one can run for a while (5-10 mins)
 # this cell and the next are the same, but the angles change slightly!!
+
+
 offline = offline[ offline$mac != "00:0f:a3:39:dd:cd", ]
 
 keepVars = c("posXY", "posX","posY", "orientation", "angle")
@@ -768,7 +773,9 @@ estFold = predXY(newSignals = onlineFold[ , 6:11],
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-K = 5 # Change K here for faster
+# Change K here for faster runs
+NNeighbors = 5
+K = NNeighbors 
 err = rep(0, K)
 
 for (j in 1:v) {
@@ -828,7 +835,9 @@ estFold = predXY(newSignals = onlineFold[ , 6:11],
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-K = 5
+#Change to 20 for final run.
+NNeighbors = 5
+K = NNeighbors
 err = rep(0, K)
 
 for (j in 1:v) {
