@@ -1,6 +1,6 @@
-OfflinePath = 'offline_data.txt'
+OfflinePath = './Data/offline.final.trace.txt'
 
-onlinePath = 'online_data.txt'
+onlinePath = './Data/online.final.trace.txt'
 
 readData = 
   function(filename, 
