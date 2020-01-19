@@ -44,7 +44,10 @@ pander::pander(
 ```
 
 # Data Cleansing
-After removing extraneous comments and formatting the data into a tabular form, we rounded the angles into discrete units of 45 degrees. We also removed data which was not pertinent to the study, such as position in the Z axis, as well as the MAC of the scanner. We also removed data from MAC addresses which were similarly not useful to this study. The main MACS we focused on were 5 linksys routers, as well as two additional Alpha routers with the id’s `(00:0f:a3:39:e1:c0 and 00:0f:a3:39:dd:cd)`. 
+After removing extraneous comments and formatting the data into a tabular form, we rounded the angles into discrete units of 45 degrees. We also removed data which was not pertinent to the study, such as position in the Z axis, as well as the MAC of the scanner, keeping only access points.  We also removed data from MAC addresses which were similarly not useful to this study. The main MACS we focused on were 5 linksys routers, as well as two additional Alpha routers with the id’s (00:0f:a3:39:e1:c0 and 00:0f:a3:39:dd:cd).  Nolan et all, dropped Alpha router 00:0f:a3:39:dd:cd in their analysis. We will investigate both Alpha router addresses and assess which would be a better use for an RTLS system.
+
+The next step is to create new features focusing on the offline signal strengths of all routers and calculate basic statistics behind each access point.  (median, length, mean, std deviation, etc) with respect to each angle.   
+ 
 
 
 ```{r processline}
