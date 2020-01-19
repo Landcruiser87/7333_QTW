@@ -1188,7 +1188,7 @@ permuteLocs
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-K = 20
+K = 5
 err = rep(0, K)
 
 for (j in 1:v) {
