@@ -80,7 +80,23 @@ We also wanted to analyze the signal strength density at each angle of the two r
 <p class="caption">The signals are much stronger and more separated by angle in the second router</p>
 </div>
 
-From this graph, we can see that the 
+
+From this graph, we can see that the signal is not only stronger at the router located at (00:0f:a3:39:e1:c0) , but also that it has a different distribution at each angle, which would make it easier to identify position. This also likely led to Nolan and Lang’s choice of dropping the router at 00:0f:a3:39:dd:cd.  
+
+## TODO: SOMETHING SOMETHING DISTANCE BULLSHIT
+
+## KNN WHATEVER
+
+
+```
+## [1] "time"        "posX"        "posY"        "orientation" "mac"        
+## [6] "signal"      "rawTime"     "angle"       "posXY"
+```
+
+```
+## [1] "time"        "posX"        "posY"        "orientation" "mac"        
+## [6] "signal"      "rawTime"     "angle"       "posXY"
+```
 
 
 Here is the MAC in question
@@ -89,6 +105,7 @@ Here is the MAC in question
 <img src="d_draft0_files/figure-html/secondplot-1.svg" alt="Signal vs Orientation of the much hated bad mac"  />
 <p class="caption">Signal vs Orientation of the much hated bad mac</p>
 </div>
+
 
 Comment on differences fix captions, this mac looks DAMN GOOD TO ME
 
@@ -222,6 +239,18 @@ offline_original %>% mutate(angle = factor(angle)) %>%
   ggplot(aes(signal, fill = angle )) + geom_density()+
   facet_wrap(. ~ mac, ncol = 1) +  
   ggtitle("Per Angle Signal Density at the Two MACS") + plt_theme + scale_fill_viridis_d()
+offline_original$posXY = paste(offline_original$posX, offline_original$posY, sep = "-")
+online <- readData("../Data/online.final.trace.txt")
+online$posXY = paste(online$posX, online$posY, sep = "-")
+
+names(offline_original)
+names(online)
+offline_good_mac <- offline_original %>% filter(mac == good_mac)
+online_good_mac <- online %>% filter(mac == good_mac)
+online_bad_mac <- online %>% filter(mac == bad_mac)
+offline_bad_mac <- offline_original %>% filter(mac == bad_mac)
+offline_all_mac <- offline_original %>% filter(mac %in% c(good_mac, bad_mac))
+online_all_mac <- online %>% filter(mac %in% c(good_mac, bad_mac))
 offline_original %>% mutate(angle = factor(angle)) %>%
   filter(posX == 2 & posY == 12 & mac == bad_mac) %>%
   ggplot() + geom_boxplot(aes(y = signal, x= angle)) + 
