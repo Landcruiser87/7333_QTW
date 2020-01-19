@@ -66,7 +66,7 @@ roundOrientation = function(angles) {
 }
      
 offline = readData(OfflinePath)
-# online = readData(OnlinePath1)
+online = readData(onlinePath)
 
 #pdf(file = "Geo_BoxplotSignalByMacAngle.pdf", width = 7)
 oldPar = par(mar = c(3.1, 3, 1, 1))
