@@ -11,8 +11,8 @@ output:
     code_folding: hide
     df_print: paged
     keep_md: TRUE
-    fig_width: 12
-    fig_height: 12
+    fig_width: 10
+    fig_height: 10
     fig_retina: true
 ---
 
