@@ -671,7 +671,7 @@ floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL){
     plot(0, 0, xlim = c(0, 35), ylim = c(-3, 15), type = "n",
          xlab = "", ylab = "", axes = FALSE,
          main = "Floor Map of Prediction",
-         sub = "Square = Access Point, Circle = Actual, *=Predicted")
+         sub = "■ = Access Point, ● = Actual, ✷ = Predicted")
     box()
     if ( !is.null(AP) ) points(AP, pch = 15)
     if ( !is.null(trainPoints) )
