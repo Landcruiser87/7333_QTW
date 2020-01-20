@@ -743,8 +743,6 @@ reshapeSS = function(data, varSignal = "signal",
 }
 
 
-
-
 ```
 
 ``` {r Chunk 53}
@@ -774,7 +772,7 @@ actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
 # Change K here for faster runs
-NNeighbors = 5
+NNeighbors = 20
 K = NNeighbors 
 err = rep(0, K)
 
@@ -836,7 +834,7 @@ actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
 #Change to 20 for final run.
-NNeighbors = 5
+NNeighbors = 20
 K = NNeighbors
 err = rep(0, K)
 
