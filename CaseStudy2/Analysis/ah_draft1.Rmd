@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 options(digits = 2)
 # read in the entire file into a variable txt
 # each line will be its own element
-txt = readLines("../Data/offline.final.trace.txt")
+txt = readLines("./Data/offline.final.trace.txt")
 
 #find all lines that begin with the '#' symbol
 sum(substr(txt, 1, 1) == "#")
@@ -273,7 +273,7 @@ text(locCounts, labels = locCounts[,3], cex = .8, srt = 45)
 ``` {r Chunk 31}
 # re do our data read combining all the anlysis we did here there are 7 SEVEN macids
 readData = 
-  function(filename = '../Data/offline.final.trace.txt', 
+  function(filename = './Data/offline.final.trace.txt', 
            subMacs = c("00:0f:a3:39:e1:c0", "00:0f:a3:39:dd:cd", "00:14:bf:b1:97:8a",
                        "00:14:bf:3b:c7:c6", "00:14:bf:b1:97:90", "00:14:bf:b1:97:8d",
                        "00:14:bf:b1:97:81"))
@@ -460,6 +460,10 @@ mapply(surfaceSS, mac = subMacs[ rep(c(5, 1), each = 2) ],
 
 ```
 
+
+## Dropping MACid 00:0f:a3:39:dd:cd
+
+
 ```{r Chunk 44}
 # here is where we drop a macid's.  
 # First we will drop the original MAC id subMac[2] that Nolan Dropped and run the analysis
@@ -473,6 +477,7 @@ mapply(surfaceSS, mac = subMacs[ rep(c(5, 1), each = 2) ],
 #Saving the original offline summary
 orig_offlineSummary = offlineSummary
 
+#Dropping "00:0f:a3:39:dd:cd"
 offlineSummary = subset(offlineSummary, mac != subMacs[2])
 
 ```
@@ -503,7 +508,7 @@ xyplot(signal ~ dist | factor(mac) + factor(angle),
 # tally signal strength
 
 macs = unique(offlineSummary$mac)
-online = readData("../Data/online.final.trace.txt", subMacs = macs)
+online = readData("./Data/online.final.trace.txt", subMacs = macs)
 
 online$posXY = paste(online$posX, online$posY, sep = "-")
 
@@ -768,8 +773,8 @@ estFold = predXY(newSignals = onlineFold[ , 6:11],
 actualFold = onlineFold[ , c("posX", "posY")]
 #calcError(estFold, actualFold)
 
-# Change K here for faster runs
-NNeighbors = 20
+# Change NNeighbors here for faster runs
+NNeighbors = 5
 K = NNeighbors 
 err = numeric(K)
 
@@ -833,7 +838,24 @@ predXY2 = function(newSignals, newAngles, trainData,
 }
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Dropping Mac 00:0f:a3:39:e1:c0
+
+
+
 
 
 ```{r Chunk 55}
@@ -845,43 +867,45 @@ predXY2 = function(newSignals, newAngles, trainData,
 # SubMac[1] = "00:0f:a3:39:e1:c0"
 # SubMac[2] = "00:0f:a3:39:dd:cd"
 
-offlineSummary = subset(orig_offlineSummary, mac != subMacs[1])
+#Dropping "00:0f:a3:39:e1:c0"
+offlineSummary = subset(orig_offlineSummary, mac != subMacs[1]) #Code change
+
 ```
 
 ```{r Chunk 56}
-## Look at the access points Correlating signal strength and distance.
-## Entire reason we're clustering on signal strength because there is a direct correlation
-#
-#
-#AP = matrix( c( 7.5, 6.3, 2.5, -.8, 12.8, -2.8,  
-#                1, 14, 33.5, 9.3,  33.5, 2.8),
-#            ncol = 2, byrow = TRUE,
-#            dimnames = list(subMacs[ -1 ], c("x", "y") ))
-#
-#AP
-#
-#diffs = offlineSummary[ , c("posX", "posY")] - 
-#          AP[ offlineSummary$mac, ]
-#
-#offlineSummary$dist = sqrt(diffs[ , 1]^2 + diffs[ , 2]^2)
-#
-#xyplot(signal ~ dist | factor(mac) + factor(angle), 
-#       data = offlineSummary, pch = 19, cex = 0.3,
-#       xlab ="distance")
+# Look at the access points Correlating signal strength and distance.
+# Entire reason we're clustering on signal strength because there is a direct correlation
+
+
+AP = matrix( c( 7.5, 6.3, 2.5, -.8, 12.8, -2.8,  
+                1, 14, 33.5, 9.3,  33.5, 2.8),
+            ncol = 2, byrow = TRUE,
+            dimnames = list(subMacs[-1], c("x", "y") ))  #Code Change
+
+AP
+
+diffs = offlineSummary[ , c("posX", "posY")] - 
+          AP[ offlineSummary$mac, ]
+
+offlineSummary$dist = sqrt(diffs[ , 1]^2 + diffs[ , 2]^2)
+
+xyplot(signal ~ dist | factor(mac) + factor(angle), 
+       data = offlineSummary, pch = 19, cex = 0.3,
+       xlab ="distance")
 ```
 
-``` {r Chunk 57}
+```{r Chunk 57}
 # tally signal strength
 
 macs = unique(offlineSummary$mac)
-online = readData("../Data/online.final.trace.txt", subMacs = macs)
+online = readData("./Data/online.final.trace.txt", subMacs = macs)
 
 online$posXY = paste(online$posX, online$posY, sep = "-")
 
 length(unique(online$posXY))
 
 tabonlineXYA = table(online$posXY, online$angle)
-tabonlineXYA[1:6, ]
+tabonlineXYA[1:col, ]   #Code Change
 
 keepVars = c("posXY", "posX","posY", "orientation", "angle")
 byLoc = with(online, 
@@ -889,7 +913,7 @@ byLoc = with(online,
                 function(x) {
                   ans = x[1, keepVars]
                   avgSS = tapply(x$signal, x$mac, mean)
-                  y = matrix(avgSS, nrow = 1, ncol = 6,
+                  y = matrix(avgSS, nrow = 1, ncol = col,  #code Change
                         dimnames = list(ans$posXY, names(avgSS)))
                   cbind(ans, y)
                 }))
@@ -898,11 +922,12 @@ onlineSummary = do.call("rbind", byLoc)
 
 ```
 
-``` {r Chunk 58}
+```{r Chunk 58}
 # create data frame and functions to aggregate/select data with similar angles
-dim(onlineSummary)
+# dim(onlineSummary)
+# 
+# names(onlineSummary)
 
-names(onlineSummary)
 m = 3; angleNewObs = 230
 refs = seq(0, by = 45, length  = 8)
 nearestAngle = roundOrientation(angleNewObs)
@@ -924,22 +949,22 @@ angles[angles > 360] = angles[ angles > 360 ] - 360
 offlineSubset = 
   offlineSummary[ offlineSummary$angle %in% angles, ]
 
-#reshapeSS = function(data, varSignal = "signal", 
-#                     keepVars = c("posXY", "posX","posY")) {
-#  byLocation =
-#    with(data, by(data, list(posXY), 
-#                  function(x) {
-#                    ans = x[1, keepVars]
-#                    avgSS = tapply(x[ , varSignal ], x$mac, mean)
-#                    y = matrix(avgSS, nrow = 1, ncol = 6,
-#                               dimnames = list(ans$posXY,
-#                                               names(avgSS)))
-#                    cbind(ans, y)
-#                  }))
-#
-#  newDataSS = do.call("rbind", byLocation)
-#  return(newDataSS)
-#}
+reshapeSS = function(data, varSignal = "signal", 
+                     keepVars = c("posXY", "posX","posY")) {
+  byLocation =
+    with(data, by(data, list(posXY), 
+                  function(x) {
+                    ans = x[1, keepVars]
+                    avgSS = tapply(x[ , varSignal ], x$mac, mean)
+                    y = matrix(avgSS, nrow = 1, ncol = 6,
+                               dimnames = list(ans$posXY,
+                                               names(avgSS)))
+                    cbind(ans, y)
+                  }))
+
+  newDataSS = do.call("rbind", byLocation)
+  return(newDataSS)
+}
 
 ```
 
@@ -950,35 +975,35 @@ offlineSubset =
 
 trainSS = reshapeSS(offlineSubset, varSignal = "avgSignal")
 
-#selectTrain = function(angleNewObs, signals = NULL, m = 1){
-#  # m is the number of angles to keep between 1 and 5
-#  refs = seq(0, by = 45, length  = 8)
-#  nearestAngle = roundOrientation(angleNewObs)
-#  
-#  if (m %% 2 == 1) 
-#    angles = seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
-#  else {
-#    m = m + 1
-#    angles = seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
-#    if (sign(angleNewObs - nearestAngle) > -1) 
-#      angles = angles[ -1 ]
-#    else 
-#      angles = angles[ -m ]
-#  }
-#  angles = angles + nearestAngle
-#  angles[angles < 0] = angles[ angles < 0 ] + 360
-#  angles[angles > 360] = angles[ angles > 360 ] - 360
-#  angles = sort(angles) 
-#  
-#  offlineSubset = signals[ signals$angle %in% angles, ]
-#  reshapeSS(offlineSubset, varSignal = "avgSignal")
-#}
-#
-#train130 = selectTrain(130, offlineSummary, m = 3)
-#
-#head(train130)
-#
-#length(train130[[1]])
+selectTrain = function(angleNewObs, signals = NULL, m = 1){
+  # m is the number of angles to keep between 1 and 5
+  refs = seq(0, by = 45, length  = 8)
+  nearestAngle = roundOrientation(angleNewObs)
+  
+  if (m %% 2 == 1) 
+    angles = seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
+  else {
+    m = m + 1
+    angles = seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
+    if (sign(angleNewObs - nearestAngle) > -1) 
+      angles = angles[ -1 ]
+    else 
+      angles = angles[ -m ]
+  }
+  angles = angles + nearestAngle
+  angles[angles < 0] = angles[ angles < 0 ] + 360
+  angles[angles > 360] = angles[ angles > 360 ] - 360
+  angles = sort(angles) 
+  
+  offlineSubset = signals[ signals$angle %in% angles, ]
+  reshapeSS(offlineSubset, varSignal = "avgSignal")
+}
+
+train130 = selectTrain(130, offlineSummary, m = 3)
+
+head(train130)
+
+length(train130[[1]])
 
 ```
 
@@ -986,17 +1011,16 @@ trainSS = reshapeSS(offlineSubset, varSignal = "avgSignal")
 # here is our NN function.
 # Change this section to also add the weighted distance to the Nearest neighbor function
 # We can calculate this weight by taking 1/the closest ordered points in the cluster
-#
-#findNN = function(newSignal, trainSubset) {
-#  diffs = apply(trainSubset[ , 4:9], 1, 
-#                function(x) x - newSignal)
-#  dists = apply(diffs, 2, function(x) sqrt(sum(x^2)) )
-#  closest = order(dists)
-#  weightDF = trainSubset[closest, 1:3 ]
-#  weightDF$weight = 1/closest
-#  return(weightDF)
-#}
-#
+
+findNN = function(newSignal, trainSubset) {
+  diffs = apply(trainSubset[ , 4:9], 1, 
+                function(x) x - newSignal)
+  dists = apply(diffs, 2, function(x) sqrt(sum(x^2)) )
+  closest = order(dists)
+  weightDF = trainSubset[closest, 1:3 ]     #CodeChange
+  weightDF$weight = 1/closest               #Codechange
+  return(weightDF)
+}
 ```
 
 ```{r Chunk 61}
@@ -1005,7 +1029,7 @@ trainSS = reshapeSS(offlineSubset, varSignal = "avgSignal")
 # here is what calculates our weights so we'll modify this to accept the weights.
 NNeighbors = 3
 predXY = function(newSignals, newAngles, trainData, 
-                  numAngles = 1, k = NNeighbors){
+                  numAngles = 1, k = NNeighbors){  #CodeChange
   
   closeXY = list(length = nrow(newSignals))
   
@@ -1035,14 +1059,16 @@ estXYk1 = predXY(newSignals = onlineSummary[ , 6:11],
 
 ```
 
+Here we plot the routes of the trackers
+
 ```{r Chunk 62}
 # predict and map errors
 floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL){
   
     plot(0, 0, xlim = c(0, 35), ylim = c(-3, 15), type = "n",
          xlab = "", ylab = "", axes = FALSE,
-         main = "Floor Map of Prediction",
-         sub = "■ = Access Point, ● = Actual, ✷ = Predicted")
+         main = "Floor Map of Predictions",                      #CodeChange
+         sub = "■ = Access Point, ● = Actual, ✷ = Predicted")   #CodeChange
     box()
     if ( !is.null(AP) ) points(AP, pch = 15)
     if ( !is.null(trainPoints) )
@@ -1058,7 +1084,7 @@ floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL){
 }
 
 trainPoints = offlineSummary[ offlineSummary$angle == 0 & 
-                              offlineSummary$mac == "00:0f:a3:39:dd:cd" ,
+                              offlineSummary$mac == "00:0f:a3:39:dd:cd" , #CodeChange
                         c("posX", "posY")]
 
 # 3 NN
@@ -1076,10 +1102,7 @@ floorErrorMap(estXYk1, onlineSummary[ , c("posX","posY")],
 ```
 
 ```{r Chunk 63}
-
-calcError = 
-function(estXY, actualXY) 
-   sum( rowSums( (estXY - actualXY)^2) )
+calcError <- function(estXY, actualXY) sum( rowSums( (estXY - actualXY)^2) )
 
 actualXY = onlineSummary[ , c("posX", "posY")]
 sapply(list(estXYk1, estXYk3), calcError, actualXY)
@@ -1091,27 +1114,27 @@ permuteLocs = matrix(permuteLocs, ncol = v,
 
 onlineFold = subset(offlineSummary, posXY %in% permuteLocs[ , 1])
 
-#reshapeSS = function(data, varSignal = "signal", 
-#                     keepVars = c("posXY", "posX","posY"),
-#                     sampleAngle = FALSE, 
-#                     refs = seq(0, 315, by = 45)) {
-#  byLocation =
-#    with(data, by(data, list(posXY), 
-#                  function(x) {
-#                    if (sampleAngle) {
-#                      x = x[x$angle == sample(refs, size = 1), ]}
-#                    ans = x[1, keepVars]
-#                    avgSS = tapply(x[ , varSignal ], x$mac, mean)
-#                    y = matrix(avgSS, nrow = 1, ncol = 6,
-#                               dimnames = list(ans$posXY,
-#                                               names(avgSS)))
-#                    cbind(ans, y)
-#                  }))
-#
-#  newDataSS = do.call("rbind", byLocation)
-#  return(newDataSS)
-#}
-#
+reshapeSS = function(data, varSignal = "signal", 
+                     keepVars = c("posXY", "posX","posY"),
+                     sampleAngle = FALSE, 
+                     refs = seq(0, 315, by = 45)) {
+  byLocation =
+    with(data, by(data, list(posXY), 
+                  function(x) {
+                    if (sampleAngle) {
+                      x = x[x$angle == sample(refs, size = 1), ]}
+                    ans = x[1, keepVars]
+                    avgSS = tapply(x[ , varSignal ], x$mac, mean)
+                    y = matrix(avgSS, nrow = 1, ncol = 6,
+                               dimnames = list(ans$posXY,
+                                               names(avgSS)))
+                    cbind(ans, y)
+                  }))
+
+  newDataSS = do.call("rbind", byLocation)
+  return(newDataSS)
+}
+
 
 ```
 
@@ -1120,23 +1143,19 @@ onlineFold = subset(offlineSummary, posXY %in% permuteLocs[ , 1])
 # this one can run for a while (5-10 mins)
 # this cell and the next are the same, but the angles change slightly!!
 
-#Now we drop the second MAC 00:0f:a3:39:e1:c0
-offline <- readData()
-offline$posXY <- paste(offline$posX, offline$posY, sep = "-")
-offline = offline[ offline$mac != "00:0f:a3:39:e1:c0", ]
+
+offline = offline[ offline$mac != "00:0f:a3:39:e1:c0", ]   #CodeChange
 
 keepVars = c("posXY", "posX","posY", "orientation", "angle")
 
-onlineCVSummary = reshapeSS(offline, keepVars = keepVars, sampleAngle = TRUE)
-
-str(onlineCVSummary)
+onlineCVSummary = reshapeSS(offline, keepVars = keepVars, 
+                            sampleAngle = TRUE)
 
 onlineFold = subset(onlineCVSummary, 
                     posXY %in% permuteLocs[ , 1])
 
 offlineFold = subset(offlineSummary,
                      posXY %in% permuteLocs[ , -1])
-
 
 estFold = predXY(newSignals = onlineFold[ , 6:11], 
                  newAngles = onlineFold[ , 4], 
@@ -1145,10 +1164,10 @@ estFold = predXY(newSignals = onlineFold[ , 6:11],
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-# Change K here for faster runs
-NNeighbors = 20
+# Change NNeighbors here for faster runs
+NNeighbors = 5
 K = NNeighbors 
-err = rep(0, K)
+err = rep(0, K)    #CodeChange
 
 for (j in 1:v) {
   onlineFold = subset(onlineCVSummary, 
@@ -1185,120 +1204,26 @@ text(x = kMin - 2, y = rmseMin + 40,
 
 estXYk5 = predXY(newSignals = onlineSummary[ , 6:11], 
                  newAngles = onlineSummary[ , 4], 
-                 offlineSummary, numAngles = 1, k = 6)
+                 offlineSummary, numAngles = 1, k = 5)
 
 calcError(estXYk5, actualXY)
 ```
 
 ```{r Chunk 65}
-# up to 20 neighbors, 11 folds
-# this one can run for a while (5-10 mins)
-# this cell and the next are the same, but the angles change slightly!!
-
-#Now we drop the second MAC 00:0f:a3:39:e1:c0
-
-reshapeSS7 = function(data, varSignal = "signal", 
-                     keepVars = c("posXY", "posX","posY"),
-                     sampleAngle = FALSE, 
-                     refs = seq(0, 315, by = 45)) {
-  byLocation =
-    with(data, by(data, list(posXY), 
-                  function(x) {
-                    if (sampleAngle) {
-                      x = x[x$angle == sample(refs, size = 1), ]}
-                    ans = x[1, keepVars]
-                    avgSS = tapply(x[ , varSignal ], x$mac, mean)
-                    y = matrix(avgSS, nrow = 1, ncol = 7,
-                               dimnames = list(ans$posXY,
-                                               names(avgSS)))
-                    cbind(ans, y)
-                  }))
-
-  newDataSS = do.call("rbind", byLocation)
-  return(newDataSS)
-}
-offline <- readData()
-offline$posXY <- paste(offline$posX, offline$posY, sep = "-")
-offline = offline
-
-
-permuteLocs = sample(unique(offline$posXY))
-permuteLocs = matrix(permuteLocs, ncol = v, 
-                     nrow = floor(length(permuteLocs)/v))
-
-keepVars = c("posXY", "posX","posY", "orientation", "angle")
-
-onlineCVSummary = reshapeSS7(offline, keepVars = keepVars, sampleAngle = TRUE)
-
-str(onlineCVSummary) 
 onlineFold = subset(onlineCVSummary, 
                     posXY %in% permuteLocs[ , 1])
 
 offlineFold = subset(offlineSummary,
                      posXY %in% permuteLocs[ , -1])
 
-estFold = predXY(newSignals = onlineFold[ , 6:12], 
+estFold = predXY(newSignals = onlineFold[ , 6:11], 
                  newAngles = onlineFold[ , 4], 
-                 offlineFold, numAngles = 1, k = 3)
+                 offlineFold, numAngles = 3, k = 3)
 
 actualFold = onlineFold[ , c("posX", "posY")]
 calcError(estFold, actualFold)
 
-selectTrain2 = function(angleNewObs, signals = NULL, m = 1){
-  # m is the number of angles to keep between 1 and 5
-  refs = seq(0, by = 45, length  = 8)
-  nearestAngle = roundOrientation(angleNewObs)
-  
-  if (m %% 2 == 1) 
-    angles = seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
-  else {
-    m = m + 1
-    angles = seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
-    if (sign(angleNewObs - nearestAngle) > -1) 
-      angles = angles[ -1 ]
-    else 
-      angles = angles[ -m ]
-  }
-  angles = angles + nearestAngle
-  angles[angles < 0] = angles[ angles < 0 ] + 360
-  angles[angles > 360] = angles[ angles > 360 ] - 360
-  angles = sort(angles) 
-  
-  offlineSubset = signals[ signals$angle %in% angles, ]
-  reshapeSS7(offlineSubset, varSignal = "avgSignal")
-}
-
-findNN2 = function(newSignal, trainSubset) {
-  diffs = apply(trainSubset[ , 4:9], 1, 
-                function(x) x - newSignal)
-  dists = apply(diffs, 2, function(x) sqrt(sum(x^2)) )
-  closest = order(dists)
-  weightDF = trainSubset[closest, 1:3 ]
-  weightDF$weight = 1/closest
-  return(weightDF)
-}
-
-predXY2 = function(newSignals, newAngles, trainData, 
-                  numAngles = 1, k = NNeighbors){
-  
-  closeXY = list(length = nrow(newSignals))
-  
-  for (i in 1:nrow(newSignals)) {
-    trainSS = selectTrain2(newAngles[i], trainData, m = numAngles)
-    closeXY[[i]] = 
-      findNN2(newSignal = as.numeric(newSignals[i, ]), trainSS)
-  }
-#Modify below code for weighting further into analysis (last comparison)
-  estXY = lapply(closeXY, 
-                 function(x) sapply(x[ , 2:3], 
-                                    function(x) mean(x[1:k])))
-  estXY = do.call("rbind", estXY)
-  return(estXY)
-}
-
-# Change K here for faster runs
-NNeighbors = 20
-K = NNeighbors 
+K = neighbors
 err = rep(0, K)
 
 for (j in 1:v) {
@@ -1309,18 +1234,21 @@ for (j in 1:v) {
   actualFold = onlineFold[ , c("posX", "posY")]
   
   for (k in 1:K) {
-    estFold = predXY2(newSignals = onlineFold[ , 6:12],
+    estFold = predXY(newSignals = onlineFold[ , 6:11],
                      newAngles = onlineFold[ , 4], 
                      offlineFold, numAngles = 1, k = k)
     err[k] = err[k] + calcError(estFold, actualFold)
   }
 }
 
-
 plot(y = err, x = (1:K),  type = "l", lwd= 2,
-     ylim = c(800, 2100),
+     ylim = c(1200, 2100),
      xlab = "Number of Neighbors",
      ylab = "Sum of Square Errors")
+axis(side = 1, 
+     at = round(seq(from=1, to=20, by=1), 0), 
+     # labels = v2,
+     tck=-.05)
 
 rmseMin = min(err)
 kMin = which(err == rmseMin)[1]
@@ -1334,30 +1262,17 @@ text(x = kMin - 2, y = rmseMin + 40,
      label = as.character(round(rmseMin)), col = grey(0.4))
 
 
-estXYk5 = predXY(newSignals = onlineSummary[ , 6:12], 
+estXYk5 = predXY(newSignals = onlineSummary[ , 6:11], 
                  newAngles = onlineSummary[ , 4], 
-                 offlineSummary, numAngles = 1, k = 6)
+                 offlineSummary, numAngles = 3, k = 5)
 
 calcError(estXYk5, actualXY)
+print(calcError(estXYk5, actualXY))
+
+
 ```
 
-```{r Chunk 66}
-predXY2 = function(newSignals, newAngles, trainData, 
-                  numAngles = 1, k = 3){
-  
-  closeXY = list(length = nrow(newSignals))
-  
-  for (i in 1:nrow(newSignals)) {
-    trainSS = selectTrain(newAngles[i], trainData, m = numAngles)
-    closeXY[[i]] = findNN(newSignal = as.numeric(newSignals[i, ]),
-                           trainSS)
-  }
 
-  estXY = lapply(closeXY, function(x)
-                            sapply(x[ , 2:3], 
-                                    function(x) mean(x[1:k])))
-  estXY = do.call("rbind", estXY)
-  return(estXY)
-}
-```
+
+
 
