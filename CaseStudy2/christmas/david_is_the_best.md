@@ -36,10 +36,6 @@ knitr::include_graphics("CleverZonkedElk.png")
 <p class="caption">**Floor plan of the test environment:** *Access Points Denoted by black squares. training data selected at grey dots, online test data selected at black dots. Gray dots are approximately one meter apart*</p>
 </div>
 
-```r
-set.seed(123456)
-```
-
 Researchers mapped the static signal strengths of the various access points throughout the space. These routers communicate with a scanning device, which was placed methodically at known intervals throughout the area. This collection makes up the offline (training) data, while later online training data was collected by more or less walking around with the sensor. The raw data is arranged by router, and described below:
 
 ## Data Description
@@ -419,9 +415,10 @@ text(x = kMin - 2, y = rmseMin + 40, label = as.character(round(rmseMin)), col =
 <img src="david_is_the_best_files/figure-html/search-1.svg" style="display: block; margin: auto;" />
 
 ```r
-estXYkmin = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
+estXYkmin1 = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
     4], offlineSummary, numAngles = 1, k = kMin)
-
+actualXY = onlineSummary[, c("posX", "posY")]
+err_cv1 <- calcError(estXYkmin1, actualXY)
 trainPoints = offlineSummary[offlineSummary$angle == 0 & offlineSummary$mac == 
     "00:0f:a3:39:e1:c0", c("posX", "posY")]
 
@@ -446,7 +443,7 @@ floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL) {
 actualXY = onlineSummary[, c("posX", "posY")]
 ```
 
-Looks like the best value for K was about 7, with an error of 1591.59. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of 373.06. We will see how this stacks up compared to the others. Let us now turn our attention to router B:
+Looks like the best value for K was about * 5*, with an error of * 1178.16*. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of * 417.18*. We will see how this stacks up compared to the others. Let us now turn our attention to router B:
 
 
 ### K Nearest Neighbours Excluding Router A
@@ -541,8 +538,12 @@ text(x = kMin - 2, y = rmseMin + 40, label = as.character(round(rmseMin)), col =
 <img src="david_is_the_best_files/figure-html/search2-1.svg" style="display: block; margin: auto;" />
 
 ```r
-estXYkmin = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
+estXYkmin2 = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
     4], offlineSummary, numAngles = 1, k = kMin)
+
+
+actualXY = onlineSummary[, c("posX", "posY")]
+err_cv2 <- calcError(estXYkmin2, actualXY)
 
 trainPoints = offlineSummary[offlineSummary$angle == 0 & offlineSummary$mac == 
     "00:0f:a3:39:e1:c0", c("posX", "posY")]
@@ -567,7 +568,7 @@ floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL) {
 actualXY = onlineSummary[, c("posX", "posY")]
 ```
 
-Looks like the best value for K was about 12, with an error of 1240.99. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of 299.45. Lets compare the results to those of router B:
+Looks like the best value for K was about * 10*, with an error of * 1127.12*. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of * 299.55*. Lets compare the results to those of router B:
 
 
 ```r
@@ -585,13 +586,12 @@ This represents a major blow to Nolan and Lang's case: the dataset using Router 
 
 
 ```r
-data.frame(router = c("router a", "router b"), `minimum rmse` = c(min(errdf$router_a), 
-    min(errdf$router_b)))
+data.frame(router = c("router a", "router b"), `online rmse` = c(err_cv1, err_cv2))
 ```
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["minimum.rmse"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"1592"},{"1":"router b","2":"1241"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["online.rmse"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"417"},{"1":"router b","2":"300"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -750,7 +750,7 @@ for (j in 1:v) {
 
 errdf$both <- err
 plot(y = err, x = (1:K), type = "l", lwd = 2, ylim = c(800, 2100), xlab = "Number of Neighbors", 
-    ylab = "Sum of Square Errors", main = "Error vs K, with Router A Data")
+    ylab = "Sum of Square Errors", main = "Error vs K, with all Data")
 
 rmseMin = min(err)
 kMin = which(err == rmseMin)[1]
@@ -765,8 +765,10 @@ text(x = kMin - 2, y = rmseMin + 40, label = as.character(round(rmseMin)), col =
 <img src="david_is_the_best_files/figure-html/search3-1.svg" style="display: block; margin: auto;" />
 
 ```r
-estXYkmin = predXY2(newSignals = onlineSummary[, 6:12], newAngles = onlineSummary[, 
+estXYkmin3 = predXY2(newSignals = onlineSummary[, 6:12], newAngles = onlineSummary[, 
     5], offlineSummary, numAngles = 1, k = kMin)
+actualXY = onlineSummary[, c("posX", "posY")]
+err_cv3 <- calcError(estXYkmin3, actualXY)
 
 trainPoints = offlineSummary[offlineSummary$angle == 0 & offlineSummary$mac == 
     "00:0f:a3:39:e1:c0", c("posX", "posY")]
@@ -793,7 +795,7 @@ actualXY = onlineSummary[, c("posX", "posY")]
 ```
 
 
-Looks like the best value for K was about 7, with an error of 1371.98. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of 360.06. Lets compare to our previous results:
+Looks like the best value for K was about * 5*, with an error of * 1485.96*. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of * 404.5*. Lets compare to our previous results:
 
 
 ```r
@@ -812,13 +814,13 @@ With this, we can say conclusively that Router B, excluded by Nolan and Lang, is
 
 
 ```r
-data.frame(router = c("router a", "router b", "both"), `minimum rmse` = c(min(errdf$router_a), 
-    min(errdf$router_b), min(errdf$both)))
+data.frame(router = c("router a", "router b", "both"), `online rmse` = c(err_cv1, 
+    err_cv2, err_cv3))
 ```
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["minimum.rmse"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"1592"},{"1":"router b","2":"1241"},{"1":"both","2":"1372"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["online.rmse"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"417"},{"1":"router b","2":"300"},{"1":"both","2":"404"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -901,27 +903,34 @@ selectTrain1 <- function(angleNewObs, signals = NULL, m = 1) {
 }
 
 
-findNN1 <- function(newSignal, trainSubset) {
-    diffs <- apply(trainSubset[, 4:9], 1, function(x) x - newSignal)
-    dists <- apply(diffs, 2, function(x) sqrt(sum(x^2)))
-    closest <- order(dists)
-    weightDF <- trainSubset[closest, 1:3]
-    weightDF$weight <- 1/closest
-    return(weightDF)
+findNN_weighted = function(newSignal, trainSubset) {
+    diffs = apply(trainSubset[, 4:9], 1, function(x) x - newSignal)
+    dists <- sqrt(colSums(diffs^2))  # why is the book using apply when R is vectorized?
+    weighted_dists <- (1/dists)/(sum(1/dists))
+    closest = order(dists)
+    return(list(trainSubset[closest, 1:3], (1/dists)[order(weighted_dists, decreasing = TRUE)]))
 }
 
-predXY1 <- function(newSignals, newAngles, trainData, numAngles = 1, k = 3) {
-    closeXY <- list(length = nrow(newSignals))
-    
-    for (i in 1:nrow(newSignals)) {
+
+library(foreach)
+library(doParallel)
+cl <- makeCluster(parallel::detectCores() - 1)
+registerDoParallel(cl)
+predXY_weighted = function(newSignals, newAngles, trainData, numAngles = 1, 
+    k = 3) {
+    l <- nrow(newSignals)
+    res <- foreach(i = 1:nrow(newSignals)) %do% {
         trainSS <- selectTrain1(newAngles[i], trainData, m = numAngles)
-        closeXY[[i]] <- findNN1(newSignal = as.numeric(newSignals[i, ]), trainSS)
+        nn <- findNN_weighted(newSignal = as.numeric(newSignals[i, ]), trainSS)[[1]]
+        wdist <- findNN_weighted(newSignal = as.numeric(newSignals[i, ]), trainSS)[[2]]
+        weighted_dist <- wdist[1:k]/sum(wdist[1:k])
+        lab <- as.matrix(nn[1:k, 2:3]/weighted_dist)
+        return(lab)
     }
-    estXY <- lapply(closeXY, function(x) sapply(x[, 2:3], function(x) mean(x[1:k])))
-    estXY <- do.call("rbind", estXY)
+    estXY = lapply(res, colSums)
+    estXY = do.call("rbind", estXY)
     return(estXY)
 }
-
 
 v = 11
 permuteLocs = sample(unique(offlineSummary$posXY))
@@ -955,8 +964,9 @@ onlineFold = subset(onlineCVSummary, posXY %in% permuteLocs[, 1])
 
 offlineFold = subset(offlineSummary, posXY %in% permuteLocs[, -1])
 
-estFold = predXY1(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
+estFold = predXY_weighted(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
     4], offlineFold, numAngles = 1, k = 3)
+
 
 actualFold = onlineFold[, c("posX", "posY")]
 
@@ -970,15 +980,15 @@ for (j in 1:v) {
     actualFold = onlineFold[, c("posX", "posY")]
     
     for (k in 1:K) {
-        estFold = predXY1(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
+        estFold = predXY_weighted(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
             4], offlineFold, numAngles = 1, k = k)
         err[k] = err[k] + calcError(estFold, actualFold)
     }
 }
 
-errdf <- data.frame(router_a = err)
-plot(y = err, x = (1:K), type = "l", lwd = 2, ylim = c(800, 2100), xlab = "Number of Neighbors", 
-    ylab = "Sum of Square Errors", main = "Error vs K, with Router A Data")
+errdf$weighted <- err
+plot(y = err, x = (1:K), type = "l", lwd = 2, ylim = c(800, 8000), xlab = "Number of Neighbors", 
+    ylab = "Sum of Square Errors", main = "Error vs K, with weighted Data")
 
 rmseMin = min(err)
 kMin = which(err == rmseMin)[1]
@@ -993,12 +1003,76 @@ text(x = kMin - 2, y = rmseMin + 40, label = as.character(round(rmseMin)), col =
 <img src="david_is_the_best_files/figure-html/search4-1.svg" style="display: block; margin: auto;" />
 
 ```r
-ok <- estXYkmin
-estXYkmin = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
+estXYkmin4 = predXY_weighted(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
     4], offlineSummary, numAngles = 1, k = kMin)
+actualXY = onlineSummary[, c("posX", "posY")]
+err_cv4 <- calcError(estXYkmin4, actualXY)
+
+trainPoints = offlineSummary[offlineSummary$angle == 0 & offlineSummary$mac == 
+    "00:0f:a3:39:e1:c0", c("posX", "posY")]
+
+
+floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL) {
+    
+    plot(0, 0, xlim = c(0, 35), ylim = c(-3, 15), type = "n", xlab = "", ylab = "", 
+        axes = FALSE, main = "Floor Map of Predictions", sub = "■ = Access Point, ● = Actual, ✷ = Predicted")
+    box()
+    if (!is.null(AP)) 
+        points(AP, pch = 15)
+    if (!is.null(trainPoints)) 
+        points(trainPoints, pch = 19, col = "grey", cex = 0.6)
+    
+    points(x = actualXY[, 1], y = actualXY[, 2], pch = 19, cex = 0.8)
+    points(x = estXY[, 1], y = estXY[, 2], pch = 8, cex = 0.8)
+    segments(x0 = estXY[, 1], y0 = estXY[, 2], x1 = actualXY[, 1], y1 = actualXY[, 
+        2], lwd = 2, col = "red")
+}
+actualXY = onlineSummary[, c("posX", "posY")]
 ```
 
-TODO DO A PLOT AND CONCLUSION HERE AND CALL IT QUITS, COPY AND PASTE FROM MY OLD CODE
+
+Looks like the best value for K was about * 1*, with an error of * 6362*. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of * 335.84*. Lets compare to our previous results:
+
+
+```r
+names(errdf)[-((length(errdf) - 2))]
+```
+
+```
+#> [1] "router_a" "router_b" "both"     "weighted"
+```
+
+```r
+errdf %>% gather_("Router", "RMSE", names(errdf)[-(length(errdf) - 2)]) %>% 
+    ggplot() + geom_line(aes(x = k, y = RMSE, color = Router)) + plt_theme + 
+    ggtitle("RMSE Over K by Router Subset")
+```
+
+<div class="figure" style="text-align: center">
+<img src="david_is_the_best_files/figure-html/unnamed-chunk-7-1.svg" alt="*The offline training errors with the weighted KNN were rather large...*"  />
+<p class="caption">*The offline training errors with the weighted KNN were rather large...*</p>
+</div>
+
+Lets check out how we did on our online test set now, using the weighted knn:
+
+
+
+```r
+data.frame(router = c("router a", "router b", "both", "weighted"), `online rmse` = c(err_cv1, 
+    err_cv2, err_cv3, err_cv4))
+```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["online.rmse"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"417"},{"1":"router b","2":"300"},{"1":"both","2":"404"},{"1":"weighted","2":"336"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
+The weighted KNN performed rather poorly overall, and selected a small value of K. We do not believe it offers much of an improvement over the basic KNN, as it ended up with a K value of 1, which is essentially overfitting.
+
+# Conclusion
+
+Our study determined that the MAC address which Nolan and Lang ignored actually improved the predictive power of our model. We also determined that in this scenario, a weighted KNN does not work very well
 
 
 # Appendix
@@ -1012,7 +1086,6 @@ labs = labs[!labs %in% c("setup", "toc", "getlabels", "allcode")]
 
 ```r
 knitr::include_graphics("CleverZonkedElk.png")
-set.seed(123456)
 pander::pander(list(t = "Time stamp (Milliseconds) since 12:00am, January 1, 1970", 
     Id = "router MAC address", Pos = "Router location", Degree = "Direction scanning device was carried by the researcher, measured in Degrees", 
     MAC = "MAC address of either the accessrouter, or scanning device combined with corresponding values for signal strength (dBm), the mode in which it was operating(adhoc scanner = 1, access router = 3), and its corresponding channel frequency.", 
@@ -1240,9 +1313,10 @@ segments(x0 = kMin, x1 = kMin, y0 = 1100, y1 = rmseMin, col = grey(0.4), lty = 2
 text(x = kMin - 2, y = rmseMin + 40, label = as.character(round(rmseMin)), col = grey(0.4))
 
 
-estXYkmin = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
+estXYkmin1 = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
     4], offlineSummary, numAngles = 1, k = kMin)
-
+actualXY = onlineSummary[, c("posX", "posY")]
+err_cv1 <- calcError(estXYkmin1, actualXY)
 trainPoints = offlineSummary[offlineSummary$angle == 0 & offlineSummary$mac == 
     "00:0f:a3:39:e1:c0", c("posX", "posY")]
 
@@ -1348,8 +1422,12 @@ segments(x0 = kMin, x1 = kMin, y0 = 1100, y1 = rmseMin, col = grey(0.4), lty = 2
 text(x = kMin - 2, y = rmseMin + 40, label = as.character(round(rmseMin)), col = grey(0.4))
 
 
-estXYkmin = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
+estXYkmin2 = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
     4], offlineSummary, numAngles = 1, k = kMin)
+
+
+actualXY = onlineSummary[, c("posX", "posY")]
+err_cv2 <- calcError(estXYkmin2, actualXY)
 
 trainPoints = offlineSummary[offlineSummary$angle == 0 & offlineSummary$mac == 
     "00:0f:a3:39:e1:c0", c("posX", "posY")]
@@ -1375,8 +1453,7 @@ actualXY = onlineSummary[, c("posX", "posY")]
 errdf$k <- 1:nrow(errdf)
 errdf %>% gather_("Router", "RMSE", names(errdf)[-length(errdf)]) %>% ggplot() + 
     geom_line(aes(x = k, y = RMSE, color = Router)) + plt_theme + ggtitle("RMSE Over K by Router Subset")
-data.frame(router = c("router a", "router b"), `minimum rmse` = c(min(errdf$router_a), 
-    min(errdf$router_b)))
+data.frame(router = c("router a", "router b"), `online rmse` = c(err_cv1, err_cv2))
 offline <- readData("offline.final.trace.txt")
 # fix up the xypos
 offline$posXY <- paste(offline$posX, offline$posY, sep = "-")
@@ -1521,7 +1598,7 @@ for (j in 1:v) {
 
 errdf$both <- err
 plot(y = err, x = (1:K), type = "l", lwd = 2, ylim = c(800, 2100), xlab = "Number of Neighbors", 
-    ylab = "Sum of Square Errors", main = "Error vs K, with Router A Data")
+    ylab = "Sum of Square Errors", main = "Error vs K, with all Data")
 
 rmseMin = min(err)
 kMin = which(err == rmseMin)[1]
@@ -1533,8 +1610,10 @@ segments(x0 = kMin, x1 = kMin, y0 = 1100, y1 = rmseMin, col = grey(0.4), lty = 2
 text(x = kMin - 2, y = rmseMin + 40, label = as.character(round(rmseMin)), col = grey(0.4))
 
 
-estXYkmin = predXY2(newSignals = onlineSummary[, 6:12], newAngles = onlineSummary[, 
+estXYkmin3 = predXY2(newSignals = onlineSummary[, 6:12], newAngles = onlineSummary[, 
     5], offlineSummary, numAngles = 1, k = kMin)
+actualXY = onlineSummary[, c("posX", "posY")]
+err_cv3 <- calcError(estXYkmin3, actualXY)
 
 trainPoints = offlineSummary[offlineSummary$angle == 0 & offlineSummary$mac == 
     "00:0f:a3:39:e1:c0", c("posX", "posY")]
@@ -1561,9 +1640,9 @@ actualXY = onlineSummary[, c("posX", "posY")]
 errdf %>% gather_("Router", "RMSE", names(errdf)[-(length(errdf) - 1)]) %>% 
     ggplot() + geom_line(aes(x = k, y = RMSE, color = Router)) + plt_theme + 
     ggtitle("RMSE Over K by Router Subset")
-data.frame(router = c("router a", "router b", "both"), `minimum rmse` = c(min(errdf$router_a), 
-    min(errdf$router_b), min(errdf$both)))
 
+data.frame(router = c("router a", "router b", "both"), `online rmse` = c(err_cv1, 
+    err_cv2, err_cv3))
 offline <- readData("offline.final.trace.txt")
 # fix up the xypos
 offline$posXY <- paste(offline$posX, offline$posY, sep = "-")
@@ -1632,27 +1711,34 @@ selectTrain1 <- function(angleNewObs, signals = NULL, m = 1) {
 }
 
 
-findNN1 <- function(newSignal, trainSubset) {
-    diffs <- apply(trainSubset[, 4:9], 1, function(x) x - newSignal)
-    dists <- apply(diffs, 2, function(x) sqrt(sum(x^2)))
-    closest <- order(dists)
-    weightDF <- trainSubset[closest, 1:3]
-    weightDF$weight <- 1/closest
-    return(weightDF)
+findNN_weighted = function(newSignal, trainSubset) {
+    diffs = apply(trainSubset[, 4:9], 1, function(x) x - newSignal)
+    dists <- sqrt(colSums(diffs^2))  # why is the book using apply when R is vectorized?
+    weighted_dists <- (1/dists)/(sum(1/dists))
+    closest = order(dists)
+    return(list(trainSubset[closest, 1:3], (1/dists)[order(weighted_dists, decreasing = TRUE)]))
 }
 
-predXY1 <- function(newSignals, newAngles, trainData, numAngles = 1, k = 3) {
-    closeXY <- list(length = nrow(newSignals))
-    
-    for (i in 1:nrow(newSignals)) {
+
+library(foreach)
+library(doParallel)
+cl <- makeCluster(parallel::detectCores() - 1)
+registerDoParallel(cl)
+predXY_weighted = function(newSignals, newAngles, trainData, numAngles = 1, 
+    k = 3) {
+    l <- nrow(newSignals)
+    res <- foreach(i = 1:nrow(newSignals)) %do% {
         trainSS <- selectTrain1(newAngles[i], trainData, m = numAngles)
-        closeXY[[i]] <- findNN1(newSignal = as.numeric(newSignals[i, ]), trainSS)
+        nn <- findNN_weighted(newSignal = as.numeric(newSignals[i, ]), trainSS)[[1]]
+        wdist <- findNN_weighted(newSignal = as.numeric(newSignals[i, ]), trainSS)[[2]]
+        weighted_dist <- wdist[1:k]/sum(wdist[1:k])
+        lab <- as.matrix(nn[1:k, 2:3]/weighted_dist)
+        return(lab)
     }
-    estXY <- lapply(closeXY, function(x) sapply(x[, 2:3], function(x) mean(x[1:k])))
-    estXY <- do.call("rbind", estXY)
+    estXY = lapply(res, colSums)
+    estXY = do.call("rbind", estXY)
     return(estXY)
 }
-
 
 v = 11
 permuteLocs = sample(unique(offlineSummary$posXY))
@@ -1686,8 +1772,9 @@ onlineFold = subset(onlineCVSummary, posXY %in% permuteLocs[, 1])
 
 offlineFold = subset(offlineSummary, posXY %in% permuteLocs[, -1])
 
-estFold = predXY1(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
+estFold = predXY_weighted(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
     4], offlineFold, numAngles = 1, k = 3)
+
 
 actualFold = onlineFold[, c("posX", "posY")]
 
@@ -1701,15 +1788,15 @@ for (j in 1:v) {
     actualFold = onlineFold[, c("posX", "posY")]
     
     for (k in 1:K) {
-        estFold = predXY1(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
+        estFold = predXY_weighted(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
             4], offlineFold, numAngles = 1, k = k)
         err[k] = err[k] + calcError(estFold, actualFold)
     }
 }
 
-errdf <- data.frame(router_a = err)
-plot(y = err, x = (1:K), type = "l", lwd = 2, ylim = c(800, 2100), xlab = "Number of Neighbors", 
-    ylab = "Sum of Square Errors", main = "Error vs K, with Router A Data")
+errdf$weighted <- err
+plot(y = err, x = (1:K), type = "l", lwd = 2, ylim = c(800, 8000), xlab = "Number of Neighbors", 
+    ylab = "Sum of Square Errors", main = "Error vs K, with weighted Data")
 
 rmseMin = min(err)
 kMin = which(err == rmseMin)[1]
@@ -1720,9 +1807,38 @@ segments(x0 = kMin, x1 = kMin, y0 = 1100, y1 = rmseMin, col = grey(0.4), lty = 2
 # mtext(kMin, side = 1, line = 1, at = kMin, col = grey(0.4))
 text(x = kMin - 2, y = rmseMin + 40, label = as.character(round(rmseMin)), col = grey(0.4))
 
-ok <- estXYkmin
-estXYkmin = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
+
+estXYkmin4 = predXY_weighted(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
     4], offlineSummary, numAngles = 1, k = kMin)
+actualXY = onlineSummary[, c("posX", "posY")]
+err_cv4 <- calcError(estXYkmin4, actualXY)
+
+trainPoints = offlineSummary[offlineSummary$angle == 0 & offlineSummary$mac == 
+    "00:0f:a3:39:e1:c0", c("posX", "posY")]
+
+
+floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL) {
+    
+    plot(0, 0, xlim = c(0, 35), ylim = c(-3, 15), type = "n", xlab = "", ylab = "", 
+        axes = FALSE, main = "Floor Map of Predictions", sub = "■ = Access Point, ● = Actual, ✷ = Predicted")
+    box()
+    if (!is.null(AP)) 
+        points(AP, pch = 15)
+    if (!is.null(trainPoints)) 
+        points(trainPoints, pch = 19, col = "grey", cex = 0.6)
+    
+    points(x = actualXY[, 1], y = actualXY[, 2], pch = 19, cex = 0.8)
+    points(x = estXY[, 1], y = estXY[, 2], pch = 8, cex = 0.8)
+    segments(x0 = estXY[, 1], y0 = estXY[, 2], x1 = actualXY[, 1], y1 = actualXY[, 
+        2], lwd = 2, col = "red")
+}
+actualXY = onlineSummary[, c("posX", "posY")]
+names(errdf)[-((length(errdf) - 2))]
+errdf %>% gather_("Router", "RMSE", names(errdf)[-(length(errdf) - 2)]) %>% 
+    ggplot() + geom_line(aes(x = k, y = RMSE, color = Router)) + plt_theme + 
+    ggtitle("RMSE Over K by Router Subset")
+data.frame(router = c("router a", "router b", "both", "weighted"), `online rmse` = c(err_cv1, 
+    err_cv2, err_cv3, err_cv4))
 # first we define the processline function, which unsurprisingly processes a
 # single line of the offline or online.txt
 library(tidyverse)
