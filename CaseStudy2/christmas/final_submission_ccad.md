@@ -1,7 +1,7 @@
 ---
 title: "Team CCAD Case Study 1: RTLS Analysis"
 author: "David Josephs, Andy Heroy, Carson Drake, Che' Cobb"
-date: "2020-01-20"
+date: "2020-01-21"
 output: 
   html_document:
     toc: true
@@ -71,6 +71,68 @@ knitr::read_chunk("excl_b.R")
 ```
 
 
+```r
+# first we define the processline function, which unsurprisingly processes a
+# single line of the offline or online.txt
+library(tidyverse)
+processLine = function(x) {
+    # here we split the line at the weird markers. Strsplit returns a list we
+    # take the first item of the list
+    tokens = strsplit(x, "[;=,]")[[1]]
+    if (length(tokens) == 10) {
+        return(NULL)
+    }
+    # now we are going to stack the tokens
+    tmp = matrix(tokens[-(1:10)], , 4, byrow = TRUE)
+    cbind(matrix(tokens[c(2, 4, 6:8, 10)], nrow(tmp), 6, byrow = TRUE), tmp)
+}
+roundOrientation = function(angles) {
+    refs = seq(0, by = 45, length = 9)
+    q = sapply(angles, function(o) which.min(abs(o - refs)))
+    c(refs[1:8], 0)[q]
+}
+# this reads in the data
+readData <- function(filename, subMacs = c("00:0f:a3:39:e1:c0", "00:0f:a3:39:dd:cd", 
+    "00:14:bf:b1:97:8a", "00:14:bf:3b:c7:c6", "00:14:bf:b1:97:90", "00:14:bf:b1:97:8d", 
+    "00:14:bf:b1:97:81")) {
+    # read it in line by line
+    txt = readLines(filename)
+    # ignore comments
+    lines = txt[substr(txt, 1, 1) != "#"]
+    # process (tokenize and stack) each line
+    tmp = lapply(lines, processLine)
+    # rbind each elemnt of the list together
+    offline = as.data.frame(do.call(rbind, tmp), stringsAsFactors = FALSE)
+    # set the names of our matrix
+    names(offline) = c("time", "scanMac", "posX", "posY", "posZ", "orientation", 
+        "mac", "signal", "channel", "type")
+    
+    # keep only signals from access points
+    offline = offline[offline$type == "3", ]
+    
+    # drop scanMac, posZ, channel, and type - no info in them
+    dropVars = c("scanMac", "posZ", "channel", "type")
+    offline = offline[, !(names(offline) %in% dropVars)]
+    
+    # drop more unwanted access points
+    offline = offline[offline$mac %in% subMacs, ]
+    
+    # convert numeric values
+    numVars = c("time", "posX", "posY", "orientation", "signal")
+    offline[numVars] = lapply(offline[numVars], as.numeric)
+    
+    # convert time to POSIX
+    offline$rawTime = offline$time
+    offline$time = offline$time/1000
+    class(offline$time) = c("POSIXt", "POSIXct")
+    
+    # round orientations to nearest 45
+    offline$angle = roundOrientation(offline$orientation)
+    
+    return(offline)
+}
+offline <- readData("offline.final.trace.txt")
+```
 
 We can view the basic structure of the formatted data in the table below:
 
@@ -94,20 +156,58 @@ We performed a two-fold analysis of the data and the two routers. First, a visua
 ## Exploratory Analysis
 
 
+```r
+router_b <- "00:0f:a3:39:dd:cd"
+router_a <- "00:0f:a3:39:e1:c0"
+fixfonts <- theme(text = element_text(family = "serif", , face = "bold"))
+plt_theme <- ggthemes::theme_hc() + fixfonts
+```
 
 ### Signal Strength vs Angle
 
 As we are determining the position of the item in question from what comes down to a signal strength and an angle, it is important first to look at the relationship between signal strength and angle. In the figure below, we  examine the general relationship between signal strength and angle by holding the position fixed:
 
 
+```r
+offline %>% mutate(angle = factor(angle)) %>% filter(posX == 2 & posY == 12) %>% 
+    ggplot + geom_boxplot(aes(y = signal, x = angle)) + facet_wrap(. ~ mac, 
+    ncol = 2) + ggtitle("Boxplot of Signal vs Angle at All MAC Addresses") + 
+    plt_theme
+```
+
+<div class="figure" style="text-align: center">
+<img src="final_submission_ccad_files/figure-html/all_box-1.svg" alt="**Signal Strength vs Angle**: *We see that in general the signal strength follows a sinusoidal pattern as the angles are rotated through. This is not surprising*"  />
+<p class="caption">**Signal Strength vs Angle**: *We see that in general the signal strength follows a sinusoidal pattern as the angles are rotated through. This is not surprising*</p>
+</div>
 
 This plot does not tell us anything that common sense would not: as we rotate through angles, the signal strength varies sinusoidally. This is because the sensor will either be pointed towards or away from the router. If we examine router B (top left), we get some sense of why Nolan and Lang preferred router A (top right). Router B has one of the weakest signals of all the routers, and contains the most outliers, which would likely make KNN analysis tricky (KNN is severely affected by outliers). Let us examine the differences between routers A and B more closely:
 
 
+```r
+offline %>% mutate(angle = factor(angle)) %>% filter(posX == 2 & posY == 12 & 
+    mac %in% c(router_a, router_b)) %>% ggplot() + geom_boxplot(aes(y = signal, 
+    x = angle)) + facet_wrap(. ~ mac, ncol = 1) + ggtitle("Signal vs Angle for a fixed position at selected MACS") + 
+    plt_theme
+```
+
+<div class="figure" style="text-align: center">
+<img src="final_submission_ccad_files/figure-html/box2-1.svg" alt="*Router B has much weaker signal than Router A*"  />
+<p class="caption">*Router B has much weaker signal than Router A*</p>
+</div>
 
 This shows the previously made point with greater detail: the signal from router B is weak and contains many outliers. Lets affirm this by examining a table of average signal strenghth across angles and standard deviation of signal across all angles:
 
 
+```r
+offline %>% mutate(angle = factor(angle)) %>% group_by(mac) %>% summarise(signal_avg = mean(signal), 
+    signal_std = sd(signal))
+```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["mac"],"name":[1],"type":["chr"],"align":["left"]},{"label":["signal_avg"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["signal_std"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"00:0f:a3:39:dd:cd","2":"-70","3":"8.1"},{"1":"00:0f:a3:39:e1:c0","2":"-54","3":"5.8"},{"1":"00:14:bf:3b:c7:c6","2":"-61","3":"7.1"},{"1":"00:14:bf:b1:97:81","2":"-56","3":"8.1"},{"1":"00:14:bf:b1:97:8a","2":"-57","3":"9.5"},{"1":"00:14:bf:b1:97:8d","2":"-54","3":"8.3"},{"1":"00:14:bf:b1:97:90","2":"-67","3":"10.6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 Again we see that router B has the weakest signal, however it is not clear that it is significantly weak, given all of the router's relatively wide standard deviations. Although the plots tell one story, this raises question to Nolan and Lang's choice of ignoring router B, it does not seem **too** different from the other routers.
 
@@ -116,10 +216,32 @@ Again we see that router B has the weakest signal, however it is not clear that 
 Next, we decided to closely examine the distribution of the signal at each angle at each router. This will show us how easily separable, or identifiable, each angle is at the router, which could be related to how easy it is to determine the position of the router from the underlying signal (triangles and cosines tell us angles are related to signals). Let us first examine the signal distribution at all MAC addresses:
 
 
+```r
+offline %>% mutate(angle = factor(angle)) %>% filter(posX == 2 & posY == 12) %>% 
+    ggplot(aes(signal, fill = angle)) + geom_density() + facet_wrap(. ~ mac, 
+    ncol = 1) + ggtitle("Per Angle Signal Density at the Two MACS") + plt_theme + 
+    scale_fill_viridis_d()
+```
+
+<div class="figure" style="text-align: center">
+<img src="final_submission_ccad_files/figure-html/all_dens-1.svg" alt="**Signal Density Plots**: *We see that for most routers, the angle creates clearly separate distributions, which should lead to easy position determination, however for router B this is not the case.*"  />
+<p class="caption">**Signal Density Plots**: *We see that for most routers, the angle creates clearly separate distributions, which should lead to easy position determination, however for router B this is not the case.*</p>
+</div>
 
 From this, we again see the weakness of the signal at router B. We can also note that the distributions of signal at each angle cover each other up almost completely at router B (except at 90 degrees). This does not bode well for being able to extract the position or angle from the signal data, and makes another point towards Nolan and Lang's exclusion of the router. Let us now compare the signal distributions for just routers A and B:
 
 
+```r
+offline %>% mutate(angle = factor(angle)) %>% filter(posX == 2 & posY == 12 & 
+    mac %in% c(router_a, router_b)) %>% ggplot(aes(signal, fill = angle)) + 
+    geom_density() + facet_wrap(. ~ mac, ncol = 1) + ggtitle("Per Angle Signal Density at the Two MACS") + 
+    plt_theme + scale_fill_viridis_d()
+```
+
+<div class="figure" style="text-align: center">
+<img src="final_submission_ccad_files/figure-html/two_dens-1.svg" alt="*Our previous observations hold true, the signal is significantly weaker at router B (*top*) than router A (*bottom*). It is also not apparent that the signals from router B come from separate distributions*"  />
+<p class="caption">*Our previous observations hold true, the signal is significantly weaker at router B (*top*) than router A (*bottom*). It is also not apparent that the signals from router B come from separate distributions*</p>
+</div>
 
 Router B (top) has a much weaker overall signal than router A, and the distributions of the signal do not appear to change too much with angle, in contrast to the clear change with angle at router A. The authors of this report believe that this was sufficient reason for Nolan and Lang to excluder router B. It is now time to test the correctness of Nolan and Lang's choice through practical analysis. For more detailed, but less pertinent visualizations of the data, please refer to Nolan and Lang's chapter on the subject.
 
@@ -321,7 +443,7 @@ floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL) {
 actualXY = onlineSummary[, c("posX", "posY")]
 ```
 
-Looks like the best value for K was about 6, with an error of 1348.83. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of  352.74. We will see how this stacks up compared to the others. Let us now turn our attention to router B:
+Looks like the best value for K was about 5, with an error of 1365.6. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of  417.18. We will see how this stacks up compared to the others. Let us now turn our attention to router B:
 
 
 ### K Nearest Neighbours Excluding Router A
@@ -446,7 +568,7 @@ floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL) {
 actualXY = onlineSummary[, c("posX", "posY")]
 ```
 
-Looks like the best value for K was about  8, with an error of  1080.44. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of  291. Lets compare the results to those of router B:
+Looks like the best value for K was about  5, with an error of  1119.56. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of  290.89. Lets compare the results to those of router B:
 
 
 ```r
@@ -470,7 +592,7 @@ data.frame(router = c("router a", "router b"), `online Sum of Square errors` = c
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["online.Sum.of.Square.errors"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"353"},{"1":"router b","2":"291"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["online.Sum.of.Square.errors"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"417"},{"1":"router b","2":"291"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -674,7 +796,7 @@ actualXY = onlineSummary[, c("posX", "posY")]
 ```
 
 
-Looks like the best value for K was about  5, with an error of  1404.08. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of  404.5. Lets compare to our previous results:
+Looks like the best value for K was about  3, with an error of  1498.56. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of  455.79. Lets compare to our previous results:
 
 
 ```r
@@ -699,7 +821,7 @@ data.frame(router = c("router a", "router b", "both"), `Online sum of squares` =
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Online.sum.of.squares"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"353"},{"1":"router b","2":"291"},{"1":"both","2":"404"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Online.sum.of.squares"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"417"},{"1":"router b","2":"291"},{"1":"both","2":"456"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -909,7 +1031,7 @@ actualXY = onlineSummary[, c("posX", "posY")]
 ```
 
 
-Looks like the best value for K was about  5, with an error of  6113.97. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of  272. Lets compare to our previous results:
+Looks like the best value for K was about  13, with an error of  5985.64. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of  279.39. Lets compare to our previous results:
 
 
 ```r
@@ -934,7 +1056,7 @@ data.frame(router = c("router a", "router b", "both", "weighted"), `Online sum o
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Online.sum.of.squares"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"353"},{"1":"router b","2":"291"},{"1":"both","2":"404"},{"1":"weighted","2":"272"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["router"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Online.sum.of.squares"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"router a","2":"417"},{"1":"router b","2":"291"},{"1":"both","2":"456"},{"1":"weighted","2":"279"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -964,10 +1086,66 @@ pander::pander(list(t = "Time stamp (Milliseconds) since 12:00am, January 1, 197
 knitr::read_chunk("utils.R")
 knitr::read_chunk("analysis_plots.R")
 knitr::read_chunk("excl_b.R")
-
-
-
-
+# first we define the processline function, which unsurprisingly processes a
+# single line of the offline or online.txt
+library(tidyverse)
+processLine = function(x) {
+    # here we split the line at the weird markers. Strsplit returns a list we
+    # take the first item of the list
+    tokens = strsplit(x, "[;=,]")[[1]]
+    if (length(tokens) == 10) {
+        return(NULL)
+    }
+    # now we are going to stack the tokens
+    tmp = matrix(tokens[-(1:10)], , 4, byrow = TRUE)
+    cbind(matrix(tokens[c(2, 4, 6:8, 10)], nrow(tmp), 6, byrow = TRUE), tmp)
+}
+roundOrientation = function(angles) {
+    refs = seq(0, by = 45, length = 9)
+    q = sapply(angles, function(o) which.min(abs(o - refs)))
+    c(refs[1:8], 0)[q]
+}
+# this reads in the data
+readData <- function(filename, subMacs = c("00:0f:a3:39:e1:c0", "00:0f:a3:39:dd:cd", 
+    "00:14:bf:b1:97:8a", "00:14:bf:3b:c7:c6", "00:14:bf:b1:97:90", "00:14:bf:b1:97:8d", 
+    "00:14:bf:b1:97:81")) {
+    # read it in line by line
+    txt = readLines(filename)
+    # ignore comments
+    lines = txt[substr(txt, 1, 1) != "#"]
+    # process (tokenize and stack) each line
+    tmp = lapply(lines, processLine)
+    # rbind each elemnt of the list together
+    offline = as.data.frame(do.call(rbind, tmp), stringsAsFactors = FALSE)
+    # set the names of our matrix
+    names(offline) = c("time", "scanMac", "posX", "posY", "posZ", "orientation", 
+        "mac", "signal", "channel", "type")
+    
+    # keep only signals from access points
+    offline = offline[offline$type == "3", ]
+    
+    # drop scanMac, posZ, channel, and type - no info in them
+    dropVars = c("scanMac", "posZ", "channel", "type")
+    offline = offline[, !(names(offline) %in% dropVars)]
+    
+    # drop more unwanted access points
+    offline = offline[offline$mac %in% subMacs, ]
+    
+    # convert numeric values
+    numVars = c("time", "posX", "posY", "orientation", "signal")
+    offline[numVars] = lapply(offline[numVars], as.numeric)
+    
+    # convert time to POSIX
+    offline$rawTime = offline$time
+    offline$time = offline$time/1000
+    class(offline$time) = c("POSIXt", "POSIXct")
+    
+    # round orientations to nearest 45
+    offline$angle = roundOrientation(offline$orientation)
+    
+    return(offline)
+}
+offline <- readData("offline.final.trace.txt")
 offline
 offline <- readData("offline.final.trace.txt")
 # fix up the xypos
@@ -1654,4 +1832,256 @@ errdf %>% gather_("Router", "RMSE", names(errdf)[-(length(errdf) - 2)]) %>%
     ggtitle("RMSE Over K by Router Subset")
 data.frame(router = c("router a", "router b", "both", "weighted"), `Online sum of squares` = c(err_cv1, 
     err_cv2, err_cv3, err_cv4))
+# first we define the processline function, which unsurprisingly processes a
+# single line of the offline or online.txt
+library(tidyverse)
+processLine = function(x) {
+    # here we split the line at the weird markers. Strsplit returns a list we
+    # take the first item of the list
+    tokens = strsplit(x, "[;=,]")[[1]]
+    if (length(tokens) == 10) {
+        return(NULL)
+    }
+    # now we are going to stack the tokens
+    tmp = matrix(tokens[-(1:10)], , 4, byrow = TRUE)
+    cbind(matrix(tokens[c(2, 4, 6:8, 10)], nrow(tmp), 6, byrow = TRUE), tmp)
+}
+roundOrientation = function(angles) {
+    refs = seq(0, by = 45, length = 9)
+    q = sapply(angles, function(o) which.min(abs(o - refs)))
+    c(refs[1:8], 0)[q]
+}
+# this reads in the data
+readData <- function(filename, subMacs = c("00:0f:a3:39:e1:c0", "00:0f:a3:39:dd:cd", 
+    "00:14:bf:b1:97:8a", "00:14:bf:3b:c7:c6", "00:14:bf:b1:97:90", "00:14:bf:b1:97:8d", 
+    "00:14:bf:b1:97:81")) {
+    # read it in line by line
+    txt = readLines(filename)
+    # ignore comments
+    lines = txt[substr(txt, 1, 1) != "#"]
+    # process (tokenize and stack) each line
+    tmp = lapply(lines, processLine)
+    # rbind each elemnt of the list together
+    offline = as.data.frame(do.call(rbind, tmp), stringsAsFactors = FALSE)
+    # set the names of our matrix
+    names(offline) = c("time", "scanMac", "posX", "posY", "posZ", "orientation", 
+        "mac", "signal", "channel", "type")
+    
+    # keep only signals from access points
+    offline = offline[offline$type == "3", ]
+    
+    # drop scanMac, posZ, channel, and type - no info in them
+    dropVars = c("scanMac", "posZ", "channel", "type")
+    offline = offline[, !(names(offline) %in% dropVars)]
+    
+    # drop more unwanted access points
+    offline = offline[offline$mac %in% subMacs, ]
+    
+    # convert numeric values
+    numVars = c("time", "posX", "posY", "orientation", "signal")
+    offline[numVars] = lapply(offline[numVars], as.numeric)
+    
+    # convert time to POSIX
+    offline$rawTime = offline$time
+    offline$time = offline$time/1000
+    class(offline$time) = c("POSIXt", "POSIXct")
+    
+    # round orientations to nearest 45
+    offline$angle = roundOrientation(offline$orientation)
+    
+    return(offline)
+}
+offline <- readData("offline.final.trace.txt")
+router_b <- "00:0f:a3:39:dd:cd"
+router_a <- "00:0f:a3:39:e1:c0"
+fixfonts <- theme(text = element_text(family = "serif", , face = "bold"))
+plt_theme <- ggthemes::theme_hc() + fixfonts
+offline %>% mutate(angle = factor(angle)) %>% filter(posX == 2 & posY == 12) %>% 
+    ggplot + geom_boxplot(aes(y = signal, x = angle)) + facet_wrap(. ~ mac, 
+    ncol = 2) + ggtitle("Boxplot of Signal vs Angle at All MAC Addresses") + 
+    plt_theme
+offline %>% mutate(angle = factor(angle)) %>% filter(posX == 2 & posY == 12 & 
+    mac %in% c(router_a, router_b)) %>% ggplot() + geom_boxplot(aes(y = signal, 
+    x = angle)) + facet_wrap(. ~ mac, ncol = 1) + ggtitle("Signal vs Angle for a fixed position at selected MACS") + 
+    plt_theme
+offline %>% mutate(angle = factor(angle)) %>% group_by(mac) %>% summarise(signal_avg = mean(signal), 
+    signal_std = sd(signal))
+offline %>% mutate(angle = factor(angle)) %>% filter(posX == 2 & posY == 12) %>% 
+    ggplot(aes(signal, fill = angle)) + geom_density() + facet_wrap(. ~ mac, 
+    ncol = 1) + ggtitle("Per Angle Signal Density at the Two MACS") + plt_theme + 
+    scale_fill_viridis_d()
+offline %>% mutate(angle = factor(angle)) %>% filter(posX == 2 & posY == 12 & 
+    mac %in% c(router_a, router_b)) %>% ggplot(aes(signal, fill = angle)) + 
+    geom_density() + facet_wrap(. ~ mac, ncol = 1) + ggtitle("Per Angle Signal Density at the Two MACS") + 
+    plt_theme + scale_fill_viridis_d()
+offline <- readData("offline.final.trace.txt")
+# fix up the xypos
+offline$posXY <- paste(offline$posX, offline$posY, sep = "-")
+byLocAngleAP = with(offline, by(offline, list(posXY, angle, mac), function(x) x))
+
+signalSummary = lapply(byLocAngleAP, function(oneLoc) {
+    ans = oneLoc[1, ]
+    ans$medSignal = median(oneLoc$signal)
+    ans$avgSignal = mean(oneLoc$signal)
+    ans$num = length(oneLoc$signal)
+    ans$sdSignal = sd(oneLoc$signal)
+    ans$iqrSignal = IQR(oneLoc$signal)
+    ans
+})
+offlineSummary_original = do.call("rbind", signalSummary)
+offlineSummary <- offlineSummary_original %>% filter(mac != router_b)
+
+online <- readData("online.final.trace.txt", subMacs = unique(offlineSummary$mac))
+online$posXY <- paste(online$posX, online$posY, sep = "-")
+
+keepVars = c("posXY", "posX", "posY", "orientation", "angle")
+byLoc = with(online, by(online, list(posXY), function(x) {
+    ans = x[1, keepVars]
+    avgSS = tapply(x$signal, x$mac, mean)
+    y = matrix(avgSS, nrow = 1, ncol = 6, dimnames = list(ans$posXY, names(avgSS)))
+    cbind(ans, y)
+}))
+
+onlineSummary = do.call("rbind", byLoc)
+reshapeSS1 <- function(data, varSignal = "signal", keepVars = c("posXY", "posX", 
+    "posY")) {
+    byLocation <- with(data, by(data, list(posXY), function(x) {
+        ans <- x[1, keepVars]
+        avgSS <- tapply(x[, varSignal], x$mac, mean)
+        y <- matrix(avgSS, nrow = 1, ncol = 6, dimnames = list(ans$posXY, names(avgSS)))
+        cbind(ans, y)
+    }))
+    
+    newDataSS <- do.call("rbind", byLocation)
+    return(newDataSS)
+}
+
+
+selectTrain1 <- function(angleNewObs, signals = NULL, m = 1) {
+    # m is the number of angles to keep between 1 and 5
+    refs <- seq(0, by = 45, length = 8)
+    nearestAngle <- roundOrientation(angleNewObs)
+    
+    if (m%%2 == 1) 
+        angles <- seq(-45 * (m - 1)/2, 45 * (m - 1)/2, length = m) else {
+        m = m + 1
+        angles <- seq(-45 * (m - 1)/2, 45 * (m - 1)/2, length = m)
+        if (sign(angleNewObs - nearestAngle) > -1) 
+            angles <- angles[-1] else angles <- angles[-m]
+    }
+    # round angles
+    angles <- angles + nearestAngle
+    angles[angles < 0] <- angles[angles < 0] + 360
+    angles[angles > 360] <- angles[angles > 360] - 360
+    angles <- sort(angles)
+    
+    offlineSubset <- signals[signals$angle %in% angles, ]
+    reshapeSS1(offlineSubset, varSignal = "avgSignal")
+}
+
+
+findNN1 <- function(newSignal, trainSubset) {
+    diffs <- apply(trainSubset[, 4:9], 1, function(x) x - newSignal)
+    dists <- apply(diffs, 2, function(x) sqrt(sum(x^2)))
+    closest <- order(dists)
+    weightDF <- trainSubset[closest, 1:3]
+    weightDF$weight <- 1/closest
+    return(weightDF)
+}
+
+
+predXY1 <- function(newSignals, newAngles, trainData, numAngles = 1, k = 3) {
+    closeXY <- list(length = nrow(newSignals))
+    
+    for (i in 1:nrow(newSignals)) {
+        trainSS <- selectTrain1(newAngles[i], trainData, m = numAngles)
+        closeXY[[i]] <- findNN1(newSignal = as.numeric(newSignals[i, ]), trainSS)
+    }
+    
+    estXY <- lapply(closeXY, function(x) sapply(x[, 2:3], function(x) mean(x[1:k])))
+    estXY <- do.call("rbind", estXY)
+    return(estXY)
+}
+byLocAngleAP = with(offline, by(offline, list(posXY, angle, mac), function(x) x))
+
+signalSummary = lapply(byLocAngleAP, function(oneLoc) {
+    ans = oneLoc[1, ]
+    ans$medSignal = median(oneLoc$signal)
+    ans$avgSignal = mean(oneLoc$signal)
+    ans$num = length(oneLoc$signal)
+    ans$sdSignal = sd(oneLoc$signal)
+    ans$iqrSignal = IQR(oneLoc$signal)
+    ans
+})
+
+offlineSummary_original = do.call("rbind", signalSummary)
+offlineSummary <- offlineSummary_original %>% filter(mac != router_b)
+
+
+keepVars = c("posXY", "posX", "posY", "orientation", "angle")
+byLoc = with(online, by(online, list(posXY), function(x) {
+    ans = x[1, keepVars]
+    avgSS = tapply(x$signal, x$mac, mean)
+    y = matrix(avgSS, nrow = 1, ncol = 6, dimnames = list(ans$posXY, names(avgSS)))
+    cbind(ans, y)
+}))
+
+onlineSummary = do.call("rbind", byLoc)
+estXYk3 = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
+    4], offlineSummary, numAngles = 3, k = NNeighbors)
+
+# nearest neighbor
+estXYk1 = predXY1(newSignals = onlineSummary[, 6:11], newAngles = onlineSummary[, 
+    4], offlineSummary, numAngles = 3, k = 1)
+v = 11
+permuteLocs = sample(unique(offlineSummary$posXY))
+permuteLocs = matrix(permuteLocs, ncol = v, nrow = floor(length(permuteLocs)/v))
+
+onlineFold = subset(offlineSummary, posXY %in% permuteLocs[, 1])
+reshapeSS1 = function(data, varSignal = "signal", keepVars = c("posXY", "posX", 
+    "posY"), sampleAngle = FALSE, refs = seq(0, 315, by = 45)) {
+    byLocation = with(data, by(data, list(posXY), function(x) {
+        if (sampleAngle) {
+            x = x[x$angle == sample(refs, size = 1), ]
+        }
+        ans = x[1, keepVars]
+        avgSS = tapply(x[, varSignal], x$mac, mean)
+        y = matrix(avgSS, nrow = 1, ncol = 6, dimnames = list(ans$posXY, names(avgSS)))
+        cbind(ans, y)
+    }))
+    
+    newDataSS = do.call("rbind", byLocation)
+    return(newDataSS)
+}
+
+
+offline = offline[offline$mac != "00:0f:a3:39:dd:cd", ]
+
+keepVars = c("posXY", "posX", "posY", "orientation", "angle")
+
+onlineCVSummary = reshapeSS1(offline, keepVars = keepVars, sampleAngle = TRUE)
+
+onlineFold = subset(onlineCVSummary, posXY %in% permuteLocs[, 1])
+
+offlineFold = subset(offlineSummary, posXY %in% permuteLocs[, -1])
+
+estFold = predXY1(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
+    4], offlineFold, numAngles = 1, k = 3)
+
+actualFold = onlineFold[, c("posX", "posY")]
+NNeighbors = 20
+K = NNeighbors
+err = numeric(K)
+
+for (j in 1:v) {
+    onlineFold = subset(onlineCVSummary, posXY %in% permuteLocs[, j])
+    offlineFold = subset(offlineSummary, posXY %in% permuteLocs[, -j])
+    actualFold = onlineFold[, c("posX", "posY")]
+    
+    for (k in 1:K) {
+        estFold = predXY1(newSignals = onlineFold[, 6:11], newAngles = onlineFold[, 
+            4], offlineFold, numAngles = 1, k = k)
+        err[k] = err[k] + calcError(estFold, actualFold)
+    }
+}
 ```

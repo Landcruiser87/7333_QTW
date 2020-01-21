@@ -17,7 +17,7 @@ output:
 ---
 
 ```{r setup, include = F}
-knitr::opts_chunk$set(warning = F, message = F, dev = "svg", fig.align = "center", cache = T)
+knitr::opts_chunk$set(warning = F, message = F, dev = "svg", fig.align = "center")
 knitr::opts_chunk$set(tidy = T)
 knitr::opts_chunk$set(comment = '#>')
 options(digits = 2)
