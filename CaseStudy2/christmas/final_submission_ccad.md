@@ -5,7 +5,6 @@ date: "2020-01-20"
 output: 
   html_document:
     toc: true
-    toc_float: true
     number_sections: true
     theme: united
     highlight: haddock
