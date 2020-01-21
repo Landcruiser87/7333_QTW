@@ -776,7 +776,6 @@ Lets see if we can bump our best results even lower by performing a weighted KNN
 
 To "weight" our K nearest neighbors algorithm, we have to make a simple adjustment to the
 
-***MAKE THIS WORK***
 
 
 ```{r search4}
@@ -883,7 +882,7 @@ predXY_weighted = function(newSignals, newAngles, trainData,
    nn <-  findNN_weighted(newSignal = as.numeric(newSignals[i,]), trainSS)[[1]]
    wdist <- findNN_weighted(newSignal = as.numeric(newSignals[i,]), trainSS)[[2]]
    weighted_dist <- wdist[1:k]/sum(wdist[1:k])
-   lab <- as.matrix(nn[1:k,2:3] / weighted_dist)
+   lab <- as.matrix(nn[1:k,2:3] * weighted_dist)
    return(lab)
   }
   estXY = lapply(res, colSums)

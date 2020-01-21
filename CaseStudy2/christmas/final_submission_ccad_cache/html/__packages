@@ -10,3 +10,6 @@ purrr
 dplyr
 stringr
 forcats
+foreach
+iterators
+doParallel
