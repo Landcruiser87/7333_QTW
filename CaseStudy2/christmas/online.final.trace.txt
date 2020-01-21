@@ -1,1 +1,1 @@
-/home/david/qtw/7333_QTW/CaseStudy2/Data/online.final.trace.txt
+../Data/online.final.trace.txt
