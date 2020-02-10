@@ -347,6 +347,7 @@ library(ggplot2)
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
+  filter(age !=0) %>%
   ggplot(aes(year, age)) +
   geom_boxplot()
 ```
@@ -369,6 +370,7 @@ age <- map(women_res_mat, ~ as.numeric(.x[ ,'ag']))
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
+  filter(age !=0) %>%
   ggplot(aes(year, age)) +
   geom_boxplot()
 ```
@@ -480,7 +482,8 @@ allWomen %>%
             ag_max = max(age,na.rm = T),
             ag_min = min(age,na.rm = T),
             ag_median = median(age,na.rm = T),
-            ag_sd = sd(age,na.rm = T))
+            ag_sd = sd(age,na.rm = T)) %>%
+  na.omit
 
 ```
 
