@@ -24,13 +24,13 @@ options(digits = 2)
 
 ```
 
-# Introduction
+# Introduction/Background
 
 The focus of this Case study is on data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners preparing for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblowssom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  We chose question 7 for our analysis, which is to create a dataframe for the women's race results from 1999-2012.  
 
 # Methodology
 
-Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation.   We applied similar techniques to the womens data in order to generate 
+Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation.   We applied similar techniques to the womens data in order to generate a dataframe of womens results from 1999-2012.  
 
 ```{r}
 #First we use rvest library to read in results.  
