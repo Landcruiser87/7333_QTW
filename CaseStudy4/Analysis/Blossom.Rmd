@@ -483,7 +483,7 @@ It is also interesting to look at how the average speed has changed over time th
 
 ```{r, fig.cap = "**Figure 5: M/W Avg Speed by Year**: Speed for each sex over the years"}
 all %>% group_by(sex, year) %>% summarise(`Average runTime` = mean(runTime, na.rm=T)) %>% na.omit %>%
-  ggplot() + geom_line(aes(color = sex, x = year, y = `Average runTime`)) + ggtitle("Blossom speed through the ages")
+  ggplot() + geom_line(aes(color = sex, x = year, y = `Average runTime`)) + ggtitle("Blossom Run Time through the ages")
 ```
 
 This trend can really imply two things. Either A) we are as a society getting much slower and much less in shape, or B) more people are attending the Blossom run every year, and the barrier for entry feels lower. To test that, we can check the count of the number of men and women attending each year:
