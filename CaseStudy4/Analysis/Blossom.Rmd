@@ -462,6 +462,7 @@ allWomen = do.call(rbind, womenDF)
 
 ```{r}
 head(allWomen)
+allWomen <- allWomen(order(-year, runTime))
 
 ```
 
