@@ -315,9 +315,9 @@ library(ggplot2)
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
-  filter(age, age !=0) %>%
+  filter(age, age >7) %>%
   ggplot(aes(year, age)) +
-  geom_boxplot()
+  geom_boxplot() + ggtitle("Men's Ages 1999-2012")
 ```
 
 
@@ -328,9 +328,9 @@ age <- map(women_res_mat, ~ as.numeric(.x[ ,'ag']))
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
-  filter(age, age !=0) %>%
+  filter(age, age > 7) %>%
   ggplot(aes(year, age)) +
-  geom_boxplot()
+  geom_boxplot() + ggtitle("Women's Ages 1999-2012")
 ```
 
 
