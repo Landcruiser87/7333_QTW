@@ -26,7 +26,7 @@ options(digits = 2)
 
 # Introduction/Background
 
-The focus of this Case study on data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblossom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
+The focus of this Case study is data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblossom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
 
 # Methodology
 
@@ -315,7 +315,7 @@ library(ggplot2)
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
-  # filter(age !=0) %>%
+  filter(age, age !=0) %>%
   ggplot(aes(year, age)) +
   geom_boxplot()
 ```
@@ -328,7 +328,7 @@ age <- map(women_res_mat, ~ as.numeric(.x[ ,'ag']))
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
-  # filter(age !=0) %>%
+  filter(age, age !=0) %>%
   ggplot(aes(year, age)) +
   geom_boxplot()
 ```
