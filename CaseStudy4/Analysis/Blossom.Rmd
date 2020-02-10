@@ -26,11 +26,11 @@ options(digits = 2)
 
 # Introduction/Background
 
-The focus of this Case study is data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblossom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
+The focus of this Case study is data cleaning of "messy" data.  The focus of our analysis is the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblossom.org has listed race results since 1973.  We will be examining the years 1999 to 2012.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
 
 # Methodology
 
-Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation.   We applied similar techniques to the womens data in order to generate a dataframe of womens results from 1999-2012.  We've listed off some of these techniques in a table below.  For more detailed information on data manipulation, we've also commented each code block to give the grader better insight into the actions performed.  
+Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation.   We applied similar techniques with different R libraries to the womens data in order to generate a dataframe of womens results.  We've listed off some of these techniques in a table below.  For more detailed information on data manipulation, we've also commented each code block to give the grader better insight into the actions performed.  
 
 ```{r tableguy, fig.cap = "Data Cleaning Summary"}
 pander::pander(
@@ -39,7 +39,7 @@ pander::pander(
     URLS = "Concatenate all URL's with base cherry blossom URL",
     extract_res_table = "Adding logic for various years different formats.  ie: ",
       list( A. = "If year is 2000, import on head 'font' tag, else import on 'pre' tag",
-            B. = "If year is 1999, split lines by '\\n', else split by '\\r\\n'",
+            B. = "If year is 1999, split lines by (\\n), else split by (\\r\\n)",
             C. = "For year 2001, change index for header/spacer row"),
     WriteTxtFiles = "Create mens/womens directories and store txt results for each year",
     findColLocs = "Using the spacer row to isolate columns",
