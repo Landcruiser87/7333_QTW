@@ -1,5 +1,5 @@
 ---
-title: "Team ACDC Case Study 2: Cherry Blossom"
+title: "Team ACDC Case Study 2: Cherry Blossom, PROBLEM 7"
 author: "David Josephs, Andy Heroy, Carson Drake, Che' Cobb"
 date: "`r Sys.Date()`"
 output: 
@@ -26,7 +26,7 @@ options(digits = 2)
 
 # Introduction/Background
 
-The focus of this Case study is on data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblowssom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
+The focus of this Case study is on data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblossom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
 
 # Methodology
 
@@ -35,12 +35,11 @@ Nolan and Lang start us off on the data cleaning process by demonstrating what n
 ```{r}
 #First we use rvest library to read in results.  
 library(rvest)
+library(tidyverse)
 ubase <- 'http://cherryblossom.org/'
 url <- paste0(ubase, 'results/2012/2012cucb10m-m.htm')
 doc <- read_html(url)
-```
 
-```{r}
 #Next we'll load up stringr (tidyverse) to create our function that will:
 # read in the URLs, read the the table nodes marked with 'pre', 
 # then split the strings based on new lines.
@@ -52,9 +51,7 @@ extract_res_table <- function(url) {
     str_split('\\r\\n') %>% 
     .[[1]]
 }
-```
 
-```{r}
 # List of the mens URLS
 men_urls <- c(
   'results/1999/cb99m.html',
@@ -72,44 +69,30 @@ men_urls <- c(
   'results/2011/2011cucb10m-m.htm',
   'results/2012/2012cucb10m-m.htm'
 )
-```
 
 
-```{r}
 #concatenate URLS to the base cherryblossom website.
 men_urls <- paste0(ubase, men_urls)
-head(men_urls, 3)
-```
 
 
-```{r}
 library(purrr)
 #Using purr to apply the extract_res_table function to the mens URLS and build a list with each row being a string of the year run.
 men_tables <- map(men_urls, extract_res_table)
-```
 
 
-```{r}
 #Looking at how many lines per year.  Noticing we've got low lengths(counts) on list entry 1 (Yr=1999), 2(Yr=2000), and 11(Yr=2009)
-map_int(men_tables, length)
-```
+#map_int(men_tables, length)
 
-```{r}
 #Taking a look at 1999 or first entry using str_sub
-str_sub(men_tables[[1]], 1, 200)
+#str_sub(men_tables[[1]], 1, 200)
 
-```
-
-```{r}
 #Therefore, need to split on a new line entry for 1999
 
 men_tables[[1]] <- str_split(men_tables[[1]], '\\n')[[1]]
-map_int(men_tables, length)
-```
+#map_int(men_tables, length)
 
 
 
-```{r}
 #Updating our extract_res_table function to recognize 1999 as a new line split.
 #Also adding logic for 2000 to look at the font tag for its data.
 
@@ -131,20 +114,16 @@ extract_res_table <- function(url, year = 2001) {
     str_split(regexp) %>% 
     .[[1]]
 }
-```
 
 
-```{r}
 # Time to recheck to see if all the data imported.
 years <- 1999:2012
 men_tables <- map2(men_urls, years, extract_res_table)
 names(men_tables) <- years
-map_int(men_tables, length)
+#map_int(men_tables, length)
 #Looking much better, now to the women!
-```
 
 
-```{r}
 #List of womens URLS
 women_urls <- c(
   'results/1999/cb99f.html',
@@ -162,10 +141,8 @@ women_urls <- c(
   'results/2011/2011cucb10m-f.htm',
   'results/2012/2012cucb10m-f.htm'
 )
-```
 
 
-```{r}
 #Inputting the same logic as for the mens and seeing what we get.
 women_urls <- paste0(ubase, women_urls)
 extract_res_table <- function(url, year = 2001, female = TRUE) {
@@ -186,21 +163,17 @@ extract_res_table <- function(url, year = 2001, female = TRUE) {
     str_split(regexp) %>% 
     .[[1]]
 }
-```
 
 
-```{r}
 #Now we import URL data for mens and womens and check their length(counts)
 men_tables <- map2(men_urls, years, extract_res_table, female = FALSE)
 women_tables <- map2(women_urls, years, extract_res_table, female = TRUE)
 names(men_tables) <- years
 names(women_tables) <- years
-map_int(men_tables, length)
-map_int(women_tables, length)
-```
+#map_int(men_tables, length)
+#map_int(women_tables, length)
 
 
-```{r}
 #Create directories for mens and womens.
 dir.create('men')
 dir.create('women')
@@ -212,9 +185,7 @@ walk2(men_tables,
 walk2(women_tables,
       paste('women', paste(years, 'txt', sep = '.'), sep = '/'),
       writeLines)
-```
 
-```{r}
 #Implementing column finding function from Nolan and Lang
 findColLocs = function(spacerRow) {
   
@@ -240,10 +211,8 @@ selectCols = function(shortColNames, headerRow, searchLocs) {
   
   headerRow = headerRow, searchLocs = searchLocs )
 }
-```
 
 
-```{r}
 #Creating extact variables function.
 
 extractVariables = 
@@ -270,34 +239,26 @@ extractVariables =
     
     return(Values)
   }
-```
 
 
-```{r}
 #Reads in formatted womens text files
 wfilenames <- list.files('women', pattern = '.txt$', full.names = TRUE)
 women_files <- map(wfilenames, readLines)
 names(women_files) <- str_match(wfilenames, 'women/(.*).txt')[ ,2]
-```
 
 
-```{r}
 #Reads in formatted mens text files
 mfilenames <- list.files('men', pattern = '.txt$', full.names = TRUE)
 men_files <- map(mfilenames, readLines)
 names(men_files) <- str_match(mfilenames, 'men/(.*).txt')[ ,2]
-```
 
 
-```{r}
 #Looking at mens summary
 men_res_mat <- map(men_files, extractVariables)
-length(men_res_mat)
-map_int(men_res_mat, nrow)
-```
+#length(men_res_mat)
+#map_int(men_res_mat, nrow)
 
 
-```{r}
 #adjusting the import files for header and spacer rows for year = 2001
 men_file_2001 <- men_files$`2001`
 women_file_2001 <- women_files$`2001`
@@ -308,34 +269,23 @@ header_row_2001 <- men_file_2001[eq_idx_2001 - 1] %>% str_to_lower()
 
 women_files$`2001`[2] <- header_row_2001
 women_files$`2001`[3] <- spacer_row_2001
-```
 
 
-```{r}
 #Looking at female results
 women_res_mat <- map(women_files, extractVariables)
-length(women_res_mat)
-map_int(women_res_mat, nrow)
-```
+#length(women_res_mat)
+#map_int(women_res_mat, nrow)
 
 
-```{r}
 #Formatting age to numeric for 2012
 age <- as.numeric(men_res_mat$`2012`[ ,'ag'])
-```
 
 
-```{r}
 #Get a peek
-tail(age)
-```
+#tail(age)
 
-
-```{r}
 #formatting all mens ages as numeric
 age <- map(men_res_mat, ~ as.numeric(.x[ ,'ag']))
-```
-
 
 ```{r, fig.cap = "**Figure 1: Mens Age Boxplots from 1999-2012**: *Mens median age looks to be decreasing over time.*"}
 
@@ -354,19 +304,9 @@ age %>%
 
 
 
-```{r}
-sapply(women_res_mat, nrow)
-```
-
-
-```{r}
-#Change womens age to numeric
-age <- map(women_res_mat, ~ as.numeric(.x[ ,'ag']))
-```
-
-
 ```{r, fig.cap = "**Figure 2: Womens Age Boxplots from 1999-2012**: *Women's age remains consistent over course of the 13 years.*"}
 #Look at womens box plots
+age <- map(women_res_mat, ~ as.numeric(.x[ ,'ag']))
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
@@ -376,13 +316,13 @@ age %>%
 ```
 
 
+
 ```{r}
+#print("men")
 #Looking at NA's accross womens ages
-sapply(age, function(x) sum(is.na(x)))
+#sapply(age, function(x) sum(is.na(x)))
 
-```
 
-```{r}
 #Converting time by str_split, then mapping them to numeric.
 convert_time <- function(t) {
   time_pieces <- str_split(t, ':')
@@ -392,10 +332,8 @@ convert_time <- function(t) {
     else 60 * x[1] + x[2] + x[3] / 60
   })
 }
-```
 
 
-```{r}
 #Creating DF for men/women.
 create_df = function(Res, year, sex) 
 {
@@ -418,10 +356,8 @@ create_df = function(Res, year, sex)
                        stringsAsFactors = FALSE)
   invisible(Results)
 }
-```
 
 
-```{r}
 # gets every line that starts with ===
 separatorIdx = grep("^===", men_files[["2006"]])
 # filters the list to 2006
@@ -454,25 +390,18 @@ womenResMat = sapply(women_files, extractVariables)
 
 womenDF = mapply(create_df, womenResMat, year = 1999:2012,
                  sex = rep("W", 14), SIMPLIFY = FALSE)
-```
 
-```{r}
 allMen = do.call(rbind, menDF)
 allWomen = do.call(rbind, womenDF)
 ```
 
-# Conclusion
 
 As you can see below, we created a dataframe for the womens data from years 1999-2012.  
 
 ```{r}
-allWomen <- allWomen(order(-year, runTime))
-head(allWomen)
-
-
-```
-
-```{r}
+#names(allWomen)
+allWomen <- allWomen %>% dplyr::arrange(year, runTime)
+#allWomen
 
 #Removing zero values and NA's for final summary
 allWomen<- allWomen[allWomen$age !=0,]
@@ -484,10 +413,70 @@ allWomen %>%
             ag_median = median(age,na.rm = T),
             ag_sd = sd(age,na.rm = T)) %>%
   na.omit
-
 ```
+
+And a similar data frame for all the mens data:
+
 
 ```{r}
+#names(allWomen)
+allMen <- allMen %>% dplyr::arrange(year, runTime)
+#allWomen
+
+#Removing zero values and NA's for final summary
+allMen<- allMen[allMen$age !=0,]
+allMen %>% 
+  group_by(year) %>% 
+  summarise(ag_mean = mean(age,na.rm = T),
+            ag_max = max(age,na.rm = T),
+            ag_min = min(age,na.rm = T),
+            ag_median = median(age,na.rm = T),
+            ag_sd = sd(age,na.rm = T)) %>%
+  na.omit
 
 ```
 
+
+Finally, in the name of equality, we can combine the men and women into a single data frame!
+
+```{r}
+all <- rbind(allMen, allWomen)
+all
+```
+
+With this, we can look at interesting comparisons between the two groups. First, we can determine who is faster, ignoring age:
+
+```{r, fig.cap = "**CAPTION**: *It appears the women of the cherry blossom race are slightly slower than the men*"}
+
+all %>% ggplot() +
+  geom_density(aes(fill=sex, x = runTime), alpha = 0.7) + ggtitle("Speed of Blossom Men and Women")
+
+```
+
+We can also look at the general age of the runners, grouped by gender:
+
+```{r, fig.cap = "**CAPTION**: *It appears they have the same age*"}
+all %>% ggplot() +
+  geom_density(aes(fill=sex, x = age), alpha = 0.7) + ggtitle("Age of Blossom Men and Women")
+```
+
+
+It is also interesting to look at how the average speed has changed over time through the years:
+
+```{r, fig.cap = "**CAPTION**: Speed for each sex over the years"}
+all %>% group_by(sex, year) %>% summarise(`Average runTime` = mean(runTime, na.rm=T)) %>% na.omit %>%
+  ggplot() + geom_line(aes(color = sex, x = year, y = `Average runTime`)) + ggtitle("Blossom speed through the ages")
+```
+
+This trend can really imply two things. Either A) we are as a society getting much slower and much less in shape, or B) more people are attending the Blossom run every year, and the barrier for entry feels lower. To test that, we can check the count of the number of men and women attending each year:
+
+
+```{r, fig.cap = "**CAPTION**: Attendance has been rising at the Blossom run!"}
+all %>% group_by(sex, year) %>% summarise(Attendance = n()) %>% na.omit %>%
+  ggplot() + geom_line(aes(color = sex, x = year, y = Attendance)) + ggtitle("Blossom Attendance Through the Ages")
+```
+
+A promising trend! It appears that attendence has been growing very fast for both genders, meaning the longer run times are due to increased attendance!
+
+
+# Conclusion
