@@ -332,12 +332,12 @@ tail(age)
 
 
 ```{r}
-#formatting all mens ages
+#formatting all mens ages as numeric
 age <- map(men_res_mat, ~ as.numeric(.x[ ,'ag']))
 ```
 
 
-```{r, fig.cap = "**Figure 1: Mens Age Boxplots from 1999-2012**: *Mens age decreasing over time.*"}
+```{r, fig.cap = "**Figure 1: Mens Age Boxplots from 1999-2012**: *Mens median age looks to be decreasing over time.*"}
 
 library(tibble)
 library(tidyr)
@@ -347,7 +347,7 @@ library(ggplot2)
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
-  filter(age !=0) %>%
+  # filter(age !=0) %>%
   ggplot(aes(year, age)) +
   geom_boxplot()
 ```
@@ -370,7 +370,7 @@ age <- map(women_res_mat, ~ as.numeric(.x[ ,'ag']))
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
-  filter(age !=0) %>%
+  # filter(age !=0) %>%
   ggplot(aes(year, age)) +
   geom_boxplot()
 ```
