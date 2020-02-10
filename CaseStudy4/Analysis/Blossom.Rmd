@@ -43,7 +43,7 @@ doc <- read_html(url)
 ```{r}
 #Next we'll load up stringr (tidyverse) to create our function that will:
 # read in the URLs, read the the table nodes marked with 'pre', 
-# then split the strings based on
+# then split the strings based on new lines.
 library(stringr)
 extract_res_table <- function(url) {
   read_html(url) %>% 
@@ -55,7 +55,7 @@ extract_res_table <- function(url) {
 ```
 
 ```{r}
-#List of the mens URLS
+# List of the mens URLS
 men_urls <- c(
   'results/1999/cb99m.html',
   'results/2000/Cb003m.htm',
@@ -84,19 +84,25 @@ head(men_urls, 3)
 
 ```{r}
 library(purrr)
+#Using purr to apply the extract_res_table function to the mens URLS and build a list with each row being a string of the year run.
 men_tables <- map(men_urls, extract_res_table)
 ```
 
 
 ```{r}
+#Looking at how many lines per year.  Noticing we've got low lengths(counts) on list entry 1 (Yr=1999), 2(Yr=2000), and 11(Yr=2009)
 map_int(men_tables, length)
 ```
 
 ```{r}
+#Taking a look at 1999 or first entry using str_sub
 str_sub(men_tables[[1]], 1, 200)
+
 ```
 
 ```{r}
+#Therefore, need to split on a new line entry for 1999
+
 men_tables[[1]] <- str_split(men_tables[[1]], '\\n')[[1]]
 map_int(men_tables, length)
 ```
@@ -104,15 +110,18 @@ map_int(men_tables, length)
 
 
 ```{r}
+#Updating our extract_res_table function to recognize 1999 as a new line split.
+#Also adding logic for 2000 to look at the font tag for its data.
+
 extract_res_table <- function(url, year = 2001) {
   selector <- if (year == 2000) 'font' else 'pre'
   regexp <- if (year == 1999) '\\n' else '\\r\\n'
-  
+  #read urls and respective table tags
   result <- read_html(url) %>% 
     html_nodes(selector)
   
   if (year == 2000) result <- result[[4]]
-  
+  #parsehtmltext
   result <- result %>% 
     html_text()
   
