@@ -429,7 +429,7 @@ separatorRowX = paste(substring(separatorRow, 1, 63), " ",
                       substring(separatorRow, 65, nchar(separatorRow)), 
                       sep = "")
 
-# reokaces the === with the separator row
+# replaces the === with the separator row
 men_files[['2006']][separatorIdx] = separatorRowX
 
 # extracts vars from the files
@@ -459,14 +459,30 @@ allMen = do.call(rbind, menDF)
 allWomen = do.call(rbind, womenDF)
 ```
 
+# Conclusion
+
+As you can see below, we created a dataframe for the womens data from years 1999-2012.  
 
 ```{r}
-head(allWomen)
 allWomen <- allWomen(order(-year, runTime))
+head(allWomen)
+
 
 ```
 
+```{r}
 
+#Removing zero values and NA's for final summary
+allWomen<- allWomen[allWomen$age !=0,]
+allWomen %>% 
+  group_by(year) %>% 
+  summarise(ag_mean = mean(age,na.rm = T),
+            ag_max = max(age,na.rm = T),
+            ag_min = min(age,na.rm = T),
+            ag_median = median(age,na.rm = T),
+            ag_sd = sd(age,na.rm = T))
+
+```
 
 ```{r}
 
