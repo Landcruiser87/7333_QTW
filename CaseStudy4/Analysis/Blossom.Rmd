@@ -30,9 +30,10 @@ The focus of this Case study is on data cleaning of "messy" data.  The subject o
 
 # Methodology
 
-Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation techiques.  We applied similar techniques to the womens data in order to generate 
+Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation.   We applied similar techniques to the womens data in order to generate 
 
 ```{r}
+#First we use rvest library to read in results.  
 library(rvest)
 ubase <- 'http://cherryblossom.org/'
 url <- paste0(ubase, 'results/2012/2012cucb10m-m.htm')
@@ -40,6 +41,9 @@ doc <- read_html(url)
 ```
 
 ```{r}
+#Next we'll load up stringr (tidyverse) to create our function that will:
+# read in the URLs, read the the table nodes marked with 'pre', 
+# then split the strings based on
 library(stringr)
 extract_res_table <- function(url) {
   read_html(url) %>% 
@@ -51,6 +55,7 @@ extract_res_table <- function(url) {
 ```
 
 ```{r}
+#List of the mens URLS
 men_urls <- c(
   'results/1999/cb99m.html',
   'results/2000/Cb003m.htm',
@@ -71,6 +76,7 @@ men_urls <- c(
 
 
 ```{r}
+#concatenate URLS to the base cherryblossom website.
 men_urls <- paste0(ubase, men_urls)
 head(men_urls, 3)
 ```
@@ -80,8 +86,6 @@ head(men_urls, 3)
 library(purrr)
 men_tables <- map(men_urls, extract_res_table)
 ```
-
-    
 
 
 ```{r}
@@ -343,6 +347,7 @@ age %>%
 ```{r}
 sapply(age, function(x) sum(is.na(x)))
 
+```
 
 ```{r}
 convert_time <- function(t) {
@@ -421,7 +426,6 @@ head(allWomen)
 
 
 ```{r}
-years = 1999:2012
 
 ```
 
