@@ -337,7 +337,8 @@ age <- map(men_res_mat, ~ as.numeric(.x[ ,'ag']))
 ```
 
 
-```{r}
+```{r, fig.cap = "**Figure 1: Mens Age Boxplots from 1999-2012**: *Mens age decreasing over time.*"}
+
 library(tibble)
 library(tidyr)
 library(ggplot2)
@@ -363,7 +364,7 @@ age <- map(women_res_mat, ~ as.numeric(.x[ ,'ag']))
 ```
 
 
-```{r}
+```{r, fig.cap = "**Figure 2: Womens Age Boxplots from 1999-2012**: *Women's age remains consistent over course of the 13 years.*"}
 #Look at womens box plots
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
@@ -461,6 +462,7 @@ allWomen = do.call(rbind, womenDF)
 
 ```{r}
 head(allWomen)
+
 ```
 
 
