@@ -26,11 +26,27 @@ options(digits = 2)
 
 # Introduction/Background
 
-The focus of this Case study is on data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblossom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
+The focus of this Case study on data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblossom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
 
 # Methodology
 
-Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation.   We applied similar techniques to the womens data in order to generate a dataframe of womens results from 1999-2012.  
+Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation.   We applied similar techniques to the womens data in order to generate a dataframe of womens results from 1999-2012.  We've listed off some of these techniques in a table below.  For more detailed information on data manipulation, we've also commented each code block to give the grader better insight into the actions performed.  
+
+```{r tableguy, fig.cap = "Data Cleaning Summary"}
+pander::pander(
+ list(
+      DataImport = "Importing using stringr collecting on the pre node and splitting it based on new lines. ",
+    URLS = "Concatenate all URL's with base cherry blossom URL",
+    extract_res_table = "Adding logic for various years different formats.  ie - ",
+      list( A = "If year is 2000, import on head 'font' tag, else import on 'pre' tag",
+            B = "If year is 1999, split lines by '\\n', else split by '\\r\\n'",
+            C = "For year 2001, change index for header/spacer row"),
+    WriteTxtFiles = "Create mens/womens directories and store txt results for each year",
+    findColLocs = "Using the spacer row to isolate columns",
+    selectCols = "Applies names and indexes start position",
+    extractVariables = "Uses findColLocs and SelectCols to format the and collect data"
+    ))
+```
 
 ```{r}
 #First we use rvest library to read in results.  
@@ -287,6 +303,8 @@ age <- as.numeric(men_res_mat$`2012`[ ,'ag'])
 #formatting all mens ages as numeric
 age <- map(men_res_mat, ~ as.numeric(.x[ ,'ag']))
 
+```
+
 ```{r, fig.cap = "**Figure 1: Mens Age Boxplots from 1999-2012**: *Mens median age looks to be decreasing over time.*"}
 
 library(tibble)
@@ -446,7 +464,7 @@ all
 
 With this, we can look at interesting comparisons between the two groups. First, we can determine who is faster, ignoring age:
 
-```{r, fig.cap = "**CAPTION**: *It appears the women of the cherry blossom race are slightly slower than the men*"}
+```{r, fig.cap = "**Figure 3:M/W Speed Density**: *It appears the women of the cherry blossom race are slightly slower than the men*"}
 
 all %>% ggplot() +
   geom_density(aes(fill=sex, x = runTime), alpha = 0.7) + ggtitle("Speed of Blossom Men and Women")
@@ -455,7 +473,7 @@ all %>% ggplot() +
 
 We can also look at the general age of the runners, grouped by gender:
 
-```{r, fig.cap = "**CAPTION**: *It appears they have the same age*"}
+```{r, fig.cap = "**Figure 4: M/W Age Density**: *It appears they have the same age*"}
 all %>% ggplot() +
   geom_density(aes(fill=sex, x = age), alpha = 0.7) + ggtitle("Age of Blossom Men and Women")
 ```
@@ -463,7 +481,7 @@ all %>% ggplot() +
 
 It is also interesting to look at how the average speed has changed over time through the years:
 
-```{r, fig.cap = "**CAPTION**: Speed for each sex over the years"}
+```{r, fig.cap = "**Figure 5: M/W Avg Speed by Year**: Speed for each sex over the years"}
 all %>% group_by(sex, year) %>% summarise(`Average runTime` = mean(runTime, na.rm=T)) %>% na.omit %>%
   ggplot() + geom_line(aes(color = sex, x = year, y = `Average runTime`)) + ggtitle("Blossom speed through the ages")
 ```
@@ -471,7 +489,7 @@ all %>% group_by(sex, year) %>% summarise(`Average runTime` = mean(runTime, na.r
 This trend can really imply two things. Either A) we are as a society getting much slower and much less in shape, or B) more people are attending the Blossom run every year, and the barrier for entry feels lower. To test that, we can check the count of the number of men and women attending each year:
 
 
-```{r, fig.cap = "**CAPTION**: Attendance has been rising at the Blossom run!"}
+```{r, fig.cap = "**Figure 6**: Attendance has been rising at the Blossom run!"}
 all %>% group_by(sex, year) %>% summarise(Attendance = n()) %>% na.omit %>%
   ggplot() + geom_line(aes(color = sex, x = year, y = Attendance)) + ggtitle("Blossom Attendance Through the Ages")
 ```
