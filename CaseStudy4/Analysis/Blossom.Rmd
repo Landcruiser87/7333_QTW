@@ -121,12 +121,12 @@ extract_res_table <- function(url, year = 2001) {
     html_nodes(selector)
   
   if (year == 2000) result <- result[[4]]
-  #parsehtmltext
+  #parse the htmltext
   result <- result %>% 
     html_text()
   
   if (year == 2009) return(result)
-  
+  #splits the table nodes with respective function for year
   result %>% 
     str_split(regexp) %>% 
     .[[1]]
@@ -135,14 +135,17 @@ extract_res_table <- function(url, year = 2001) {
 
 
 ```{r}
+# Time to recheck to see if all the data imported.
 years <- 1999:2012
 men_tables <- map2(men_urls, years, extract_res_table)
 names(men_tables) <- years
 map_int(men_tables, length)
+#Looking much better, now to the women!
 ```
 
 
 ```{r}
+#List of womens URLS
 women_urls <- c(
   'results/1999/cb99f.html',
   'results/2000/Cb003f.htm',
@@ -163,6 +166,7 @@ women_urls <- c(
 
 
 ```{r}
+#Inputting the same logic as for the mens and seeing what we get.
 women_urls <- paste0(ubase, women_urls)
 extract_res_table <- function(url, year = 2001, female = TRUE) {
   selector <- if (year == 2000) 'font' else 'pre'
@@ -186,7 +190,7 @@ extract_res_table <- function(url, year = 2001, female = TRUE) {
 
 
 ```{r}
-
+#Now we import URL data for mens and womens and check their length(counts)
 men_tables <- map2(men_urls, years, extract_res_table, female = FALSE)
 women_tables <- map2(women_urls, years, extract_res_table, female = TRUE)
 names(men_tables) <- years
@@ -197,9 +201,11 @@ map_int(women_tables, length)
 
 
 ```{r}
+#Create directories for mens and womens.
 dir.create('men')
 dir.create('women')
 
+#Writing the text files to the directories for each year
 walk2(men_tables,
       paste('men', paste(years, 'txt', sep = '.'), sep = '/'),
       writeLines)
@@ -209,6 +215,7 @@ walk2(women_tables,
 ```
 
 ```{r}
+#Implementing column finding function from Nolan and Lang
 findColLocs = function(spacerRow) {
   
   spaceLocs = gregexpr(" ", spacerRow)[[1]]
@@ -237,23 +244,25 @@ selectCols = function(shortColNames, headerRow, searchLocs) {
 
 
 ```{r}
+#Creating extact variables function.
+
 extractVariables = 
   function(file, varNames =c("name", "home", "ag", "gun",
                              "net", "time"))
   {
-    eqIndex = grep("^===", file)
+    eqIndex = grep("^===", file)                          #Find the first row of data
 
-    spacerRow = file[eqIndex] 
-    headerRow = tolower(file[ eqIndex - 1 ])
+    spacerRow = file[eqIndex]                             #locate the spacer row
+    headerRow = tolower(file[ eqIndex - 1 ])              #goes one row back for the header
     body = file[ -(1 : eqIndex) ]
 
-    footnotes = grep("^[[:blank:]]*(\\*|\\#)", body)
+    footnotes = grep("^[[:blank:]]*(\\*|\\#)", body)      #Locates a footer, removes if there is one.
     if ( length(footnotes) > 0 ) body = body[ -footnotes ]
-    blanks = grep("^[[:blank:]]*$", body)
+    blanks = grep("^[[:blank:]]*$", body)                 #Locates blanks, removes blanks 
     if (length(blanks) > 0 ) body = body[ -blanks ]
     
-    searchLocs = findColLocs(spacerRow)
-    locCols = selectCols(varNames, headerRow, searchLocs)
+    searchLocs = findColLocs(spacerRow)                   #Uses FindColLocs function to find columns
+    locCols = selectCols(varNames, headerRow, searchLocs) 
     
     Values = mapply(substr, list(body), start = locCols[1, ], 
                     stop = locCols[2, ])
@@ -265,6 +274,7 @@ extractVariables =
 
 
 ```{r}
+#Reads in formatted womens text files
 wfilenames <- list.files('women', pattern = '.txt$', full.names = TRUE)
 women_files <- map(wfilenames, readLines)
 names(women_files) <- str_match(wfilenames, 'women/(.*).txt')[ ,2]
@@ -272,6 +282,7 @@ names(women_files) <- str_match(wfilenames, 'women/(.*).txt')[ ,2]
 
 
 ```{r}
+#Reads in formatted mens text files
 mfilenames <- list.files('men', pattern = '.txt$', full.names = TRUE)
 men_files <- map(mfilenames, readLines)
 names(men_files) <- str_match(mfilenames, 'men/(.*).txt')[ ,2]
@@ -279,6 +290,7 @@ names(men_files) <- str_match(mfilenames, 'men/(.*).txt')[ ,2]
 
 
 ```{r}
+#Looking at mens summary
 men_res_mat <- map(men_files, extractVariables)
 length(men_res_mat)
 map_int(men_res_mat, nrow)
@@ -286,6 +298,7 @@ map_int(men_res_mat, nrow)
 
 
 ```{r}
+#adjusting the import files for header and spacer rows for year = 2001
 men_file_2001 <- men_files$`2001`
 women_file_2001 <- women_files$`2001`
 
@@ -299,6 +312,7 @@ women_files$`2001`[3] <- spacer_row_2001
 
 
 ```{r}
+#Looking at female results
 women_res_mat <- map(women_files, extractVariables)
 length(women_res_mat)
 map_int(women_res_mat, nrow)
@@ -306,16 +320,19 @@ map_int(women_res_mat, nrow)
 
 
 ```{r}
+#Formatting age to numeric for 2012
 age <- as.numeric(men_res_mat$`2012`[ ,'ag'])
 ```
 
 
 ```{r}
+#Get a peek
 tail(age)
 ```
 
 
 ```{r}
+#formatting all mens ages
 age <- map(men_res_mat, ~ as.numeric(.x[ ,'ag']))
 ```
 
@@ -324,6 +341,7 @@ age <- map(men_res_mat, ~ as.numeric(.x[ ,'ag']))
 library(tibble)
 library(tidyr)
 library(ggplot2)
+#quick boxplot of mens age distributions
 
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
@@ -340,11 +358,13 @@ sapply(women_res_mat, nrow)
 
 
 ```{r}
+#Change womens age to numeric
 age <- map(women_res_mat, ~ as.numeric(.x[ ,'ag']))
 ```
 
 
 ```{r}
+#Look at womens box plots
 age %>% 
   enframe(name = 'year', value = 'age') %>% 
   unnest() %>% 
@@ -354,11 +374,13 @@ age %>%
 
 
 ```{r}
+#Looking at NA's accross womens ages
 sapply(age, function(x) sum(is.na(x)))
 
 ```
 
 ```{r}
+#Converting time by str_split, then mapping them to numeric.
 convert_time <- function(t) {
   time_pieces <- str_split(t, ':')
   map_dbl(time_pieces, function(x) {
@@ -371,6 +393,7 @@ convert_time <- function(t) {
 
 
 ```{r}
+#Creating DF for men/women.
 create_df = function(Res, year, sex) 
 {
   if ( !is.na(Res[1, 'net']) ) useTime = Res[ , 'net']
