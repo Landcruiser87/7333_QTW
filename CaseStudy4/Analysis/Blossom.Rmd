@@ -26,7 +26,7 @@ options(digits = 2)
 
 # Introduction
 
-The focus of this Case study is on the Cherry Blossom 10 mile race held annually in Washtington DC since 1973.  The race was created as a training event for top-tier runners preparing for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own particular challenge in the racing community.  Over 17,000 runners participate in the 
+The focus of this Case study is on data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners preparing for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblowssom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  
 
 
 ```{r}
