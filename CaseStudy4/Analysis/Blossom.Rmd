@@ -37,10 +37,10 @@ pander::pander(
  list(
       DataImport = "Importing using stringr collecting on the pre node and splitting it based on new lines. ",
     URLS = "Concatenate all URL's with base cherry blossom URL",
-    extract_res_table = "Adding logic for various years different formats.  ie - ",
-      list( A = "If year is 2000, import on head 'font' tag, else import on 'pre' tag",
-            B = "If year is 1999, split lines by '\\n', else split by '\\r\\n'",
-            C = "For year 2001, change index for header/spacer row"),
+    extract_res_table = "Adding logic for various years different formats.  ie: ",
+      list( A. = "If year is 2000, import on head 'font' tag, else import on 'pre' tag",
+            B. = "If year is 1999, split lines by '\\n', else split by '\\r\\n'",
+            C. = "For year 2001, change index for header/spacer row"),
     WriteTxtFiles = "Create mens/womens directories and store txt results for each year",
     findColLocs = "Using the spacer row to isolate columns",
     selectCols = "Applies names and indexes start position",
@@ -498,3 +498,10 @@ A promising trend! It appears that attendence has been growing very fast for bot
 
 
 # Conclusion
+
+This case study exemplifies what Data scientists everywhere will confront in their daily work life.  While we would prefer to be focused on feature creation and modeling, most of our time is spent cleaning data so that it can be analyzed.  The Cherry Blossom dataset is a great example of the types of data entry/collection errors that data scientists confront on a daily basis.  For further analysis, one might consider doing an individual analysis of top runners over time and collecting their individual training data (heart rate and GPS) in order to try and establish which years of training yielded them the best times.  Some models that might prove useful are Random Forests, XGBoost, or logistic regression.
+
+
+
+
+
