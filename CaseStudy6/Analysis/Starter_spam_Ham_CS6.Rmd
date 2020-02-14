@@ -29,7 +29,7 @@ options(digits = 2)
 
 #spamPath = system.file(package = "RSpamData")
 #spamPath = "/Users/nolan/RPackages/RSpamData"spamPath = "."
-spamPath = "./Data/Spam/"
+spamPath = "../Data/spam/"
 #list.dirs(spamPath, full.names = FALSE)
 
 ```
@@ -43,7 +43,6 @@ list.files(path = paste(spamPath, "messages",
 ```{r}
 f=list.files(path = paste(spamPath,'messages/spam', sep=.Platform$file.sep))
 length(f)
-
 ```
 
 ```{r}
