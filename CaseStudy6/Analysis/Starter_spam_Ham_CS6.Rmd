@@ -1230,7 +1230,7 @@ getMessageRecipients =
 
 emailDF = createDerivedDF(emailStruct)
 dim(emailDF)
-save(emailDF, file = "spamAssassinDerivedDF.rda")
+save(emailDF, file = "emailDF.rda")
 
 ```
 
