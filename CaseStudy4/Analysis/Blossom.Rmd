@@ -471,7 +471,7 @@ With this, we can look at interesting comparisons between the two groups. First,
 ```{r, fig.cap = "**Figure 3:M/W Speed Density**: *It appears the women of the cherry blossom race are slightly slower than the men*"}
 
 all %>% ggplot() +
-  geom_density(aes(fill=sex, x = runTime), alpha = 0.7) + ggtitle("Speed of Blossom Men and Women")
+  geom_density(aes(fill=sex, x = runTime), alpha = 0.7) + ggtitle("Speed of Cherry Blossom Men and Women")
 
 ```
 
@@ -479,7 +479,7 @@ We can also look at the general age of the runners, grouped by gender:
 
 ```{r, fig.cap = "**Figure 4: M/W Age Density**: *It appears they have the same age*"}
 all %>% ggplot() +
-  geom_density(aes(fill=sex, x = age), alpha = 0.7) + ggtitle("Age of Blossom Men and Women")
+  geom_density(aes(fill=sex, x = age), alpha = 0.7) + ggtitle("Age of Cherry Blossom Men and Women")
 ```
 
 

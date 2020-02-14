@@ -1,5 +1,5 @@
 ---
-title: "Team ACDC Case Study 2: Cherry Blossom, PROBLEM 7"
+title: "Team ACDC Case Study 2: Cherry Blossom, Problem 7"
 author: "David Josephs, Andy Heroy, Carson Drake, Che' Cobb"
 date: "2020-02-10"
 output: 
@@ -20,11 +20,48 @@ output:
 
 # Introduction/Background
 
-The focus of this Case study is on data cleaning of "messy" data.  The subject of our analysis is focused on the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblossom.org has listed race results since 1973.  We will be examining the years 1999 to 2012 in this case study.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
+The focus of this Case study is data cleaning of "messy" data.  The focus of our analysis is the Cherry Blossom 10 mile race held annually in Washington, DC.  The race was created in 1973 as a training event for top-tier runners training for the Boston Marathon.  However, its popularity has grown considerably since then and become recognized as its own unique challenge in the racing community.  The website cherryblossom.org has listed race results since 1973.  We will be examining the years 1999 to 2012.  We chose question 7 from Nolan and Lang for our analysis.  Which asks to re-create the men's web scraping and data cleaning process and create a dataframe for the women's race results from 1999-2012.  
 
 # Methodology
 
-Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation.   We applied similar techniques to the womens data in order to generate a dataframe of womens results from 1999-2012.  
+Nolan and Lang start us off on the data cleaning process by demonstrating what needed to be done to the mens data in order to transform it into useable data.  They accomplished this through regex functions and data manipulation.   We applied similar techniques with different R libraries to the womens data in order to generate a dataframe of womens results.  We've listed off some of these techniques in a table below.  For more detailed information on data manipulation, we've also commented each code block to give the grader better insight into the actions performed.  
+
+
+```r
+pander::pander(list(DataImport = "Importing using stringr collecting on the pre node and splitting it based on new lines. ", 
+    URLS = "Concatenate all URL's with base cherry blossom URL", extract_res_table = "Adding logic for various years different formats.  ie: ", 
+    list("If year is 2000, import on head 'font' tag, else import on 'pre' tag", 
+        "If year is 1999, split lines by `\\n`, else split by `\\r\\n`", "For year 2001, change index for header/spacer row"), 
+    WriteTxtFiles = "Create mens/womens directories and store txt results for each year", 
+    findColLocs = "Using the spacer row to isolate columns", selectCols = "Applies names and indexes start position", 
+    extractVariables = "Uses findColLocs and SelectCols to format the and collect data", 
+    create_df = "Creates dataframe", list(usetime = "Logic for handling gun time, net time and time. Replaces blank rows", 
+        runTime = "Converts time to minutes(numeric)")))
+```
+
+
+
+  * **DataImport**: Importing using stringr collecting on the pre node and splitting it based on new lines.
+  * **URLS**: Concatenate all URL's with base cherry blossom URL
+  * **extract_res_table**: Adding logic for various years different formats.  ie:
+  *
+
+      * If year is 2000, import on head 'font' tag, else import on 'pre' tag
+      * If year is 1999, split lines by `\n`, else split by `\r\n`
+      * For year 2001, change index for header/spacer row
+
+  * **WriteTxtFiles**: Create mens/womens directories and store txt results for each year
+  * **findColLocs**: Using the spacer row to isolate columns
+  * **selectCols**: Applies names and indexes start position
+  * **extractVariables**: Uses findColLocs and SelectCols to format the and collect data
+  * **create_df**: Creates dataframe
+  *
+
+      * **usetime**: Logic for handling gun time, net time and time. Replaces blank rows
+      * **runTime**: Converts time to minutes(numeric)
+
+
+<!-- end of list -->
 
 
 ```r
@@ -283,14 +320,15 @@ age <- as.numeric(men_res_mat$`2012`[ ,'ag'])
 age <- map(men_res_mat, ~ as.numeric(.x[ ,'ag']))
 ```
 
+
 ```r
 library(tibble)
 library(tidyr)
 library(ggplot2)
 # quick boxplot of mens age distributions
 
-age %>% enframe(name = "year", value = "age") %>% unnest() %>% # filter(age !=0) %>%
-ggplot(aes(year, age)) + geom_boxplot()
+age %>% enframe(name = "year", value = "age") %>% unnest() %>% filter(age, age > 
+    7) %>% ggplot(aes(year, age)) + geom_boxplot() + ggtitle("Men's Ages 1999-2012")
 ```
 
 <div class="figure" style="text-align: center">
@@ -304,8 +342,8 @@ ggplot(aes(year, age)) + geom_boxplot()
 ```r
 # Look at womens box plots
 age <- map(women_res_mat, ~as.numeric(.x[, "ag"]))
-age %>% enframe(name = "year", value = "age") %>% unnest() %>% # filter(age !=0) %>%
-ggplot(aes(year, age)) + geom_boxplot()
+age %>% enframe(name = "year", value = "age") %>% unnest() %>% filter(age, age > 
+    7) %>% ggplot(aes(year, age)) + geom_boxplot() + ggtitle("Women's Ages 1999-2012")
 ```
 
 <div class="figure" style="text-align: center">
@@ -426,7 +464,7 @@ allMen %>% group_by(year) %>% summarise(ag_mean = mean(age, na.rm = T), ag_max =
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["year"],"name":[1],"type":["int"],"align":["right"]},{"label":["ag_mean"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["ag_max"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["ag_min"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["ag_median"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["ag_sd"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"1999","2":"40","3":"80","4":"11","5":"40","6":"10"},{"1":"2000","2":"40","3":"79","4":"11","5":"40","6":"11"},{"1":"2001","2":"40","3":"80","4":"12","5":"39","6":"11"},{"1":"2002","2":"40","3":"79","4":"1","5":"39","6":"11"},{"1":"2003","2":"40","3":"80","4":"2","5":"39","6":"11"},{"1":"2004","2":"39","3":"81","4":"13","5":"38","6":"11"},{"1":"2005","2":"40","3":"82","4":"12","5":"38","6":"11"},{"1":"2006","2":"39","3":"82","4":"13","5":"38","6":"11"},{"1":"2007","2":"39","3":"80","4":"9","5":"37","6":"11"},{"1":"2008","2":"38","3":"84","4":"12","5":"36","6":"11"},{"1":"2010","2":"37","3":"86","4":"11","5":"35","6":"11"},{"1":"2011","2":"38","3":"83","4":"8","5":"36","6":"11"},{"1":"2012","2":"38","3":"89","4":"9","5":"35","6":"11"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["year"],"name":[1],"type":["int"],"align":["right"]},{"label":["ag_mean"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["ag_max"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["ag_min"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["ag_median"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["ag_sd"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"1999","2":"40","3":"80","4":"11","5":"40","6":"10"},{"1":"2000","2":"40","3":"79","4":"11","5":"40","6":"11"},{"1":"2001","2":"40","3":"80","4":"12","5":"39","6":"11"},{"1":"2002","2":"40","3":"79","4":"1","5":"39","6":"11"},{"1":"2003","2":"40","3":"80","4":"2","5":"39","6":"11"},{"1":"2004","2":"39","3":"81","4":"13","5":"38","6":"11"},{"1":"2005","2":"40","3":"82","4":"12","5":"38","6":"11"},{"1":"2006","2":"39","3":"82","4":"13","5":"38","6":"11"},{"1":"2007","2":"39","3":"80","4":"9","5":"37","6":"11"},{"1":"2008","2":"38","3":"84","4":"12","5":"36","6":"11"},{"1":"2009","2":"37","3":"85","4":"10","5":"35","6":"11"},{"1":"2010","2":"37","3":"86","4":"11","5":"35","6":"11"},{"1":"2011","2":"38","3":"83","4":"8","5":"36","6":"11"},{"1":"2012","2":"38","3":"89","4":"9","5":"35","6":"11"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
@@ -450,24 +488,24 @@ With this, we can look at interesting comparisons between the two groups. First,
 
 ```r
 all %>% ggplot() + geom_density(aes(fill = sex, x = runTime), alpha = 0.7) + 
-    ggtitle("Speed of Blossom Men and Women")
+    ggtitle("Speed of Cherry Blossom Men and Women")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="Blossom_files/figure-html/unnamed-chunk-8-1.svg" alt="**CAPTION**: *It appears the women of the cherry blossom race are slightly slower than the men*"  />
-<p class="caption">**CAPTION**: *It appears the women of the cherry blossom race are slightly slower than the men*</p>
+<img src="Blossom_files/figure-html/unnamed-chunk-8-1.svg" alt="**Figure 3:M/W Speed Density**: *It appears the women of the cherry blossom race are slightly slower than the men*"  />
+<p class="caption">**Figure 3:M/W Speed Density**: *It appears the women of the cherry blossom race are slightly slower than the men*</p>
 </div>
 
 We can also look at the general age of the runners, grouped by gender:
 
 
 ```r
-all %>% ggplot() + geom_density(aes(fill = sex, x = age), alpha = 0.7) + ggtitle("Age of Blossom Men and Women")
+all %>% ggplot() + geom_density(aes(fill = sex, x = age), alpha = 0.7) + ggtitle("Age of Cherry Blossom Men and Women")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="Blossom_files/figure-html/unnamed-chunk-9-1.svg" alt="**CAPTION**: *It appears they have the same age*"  />
-<p class="caption">**CAPTION**: *It appears they have the same age*</p>
+<img src="Blossom_files/figure-html/unnamed-chunk-9-1.svg" alt="**Figure 4: M/W Age Density**: *It appears they have the same age*"  />
+<p class="caption">**Figure 4: M/W Age Density**: *It appears they have the same age*</p>
 </div>
 
 
@@ -477,12 +515,12 @@ It is also interesting to look at how the average speed has changed over time th
 ```r
 all %>% group_by(sex, year) %>% summarise(`Average runTime` = mean(runTime, 
     na.rm = T)) %>% na.omit %>% ggplot() + geom_line(aes(color = sex, x = year, 
-    y = `Average runTime`)) + ggtitle("Blossom speed through the ages")
+    y = `Average runTime`)) + ggtitle("Cherry Blossom Run Time 1999-2012")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="Blossom_files/figure-html/unnamed-chunk-10-1.svg" alt="**CAPTION**: Speed for each sex over the years"  />
-<p class="caption">**CAPTION**: Speed for each sex over the years</p>
+<img src="Blossom_files/figure-html/unnamed-chunk-10-1.svg" alt="**Figure 5: M/W Avg Speed by Year**: Speed for each sex over the years"  />
+<p class="caption">**Figure 5: M/W Avg Speed by Year**: Speed for each sex over the years</p>
 </div>
 
 This trend can really imply two things. Either A) we are as a society getting much slower and much less in shape, or B) more people are attending the Blossom run every year, and the barrier for entry feels lower. To test that, we can check the count of the number of men and women attending each year:
@@ -491,15 +529,22 @@ This trend can really imply two things. Either A) we are as a society getting mu
 
 ```r
 all %>% group_by(sex, year) %>% summarise(Attendance = n()) %>% na.omit %>% 
-    ggplot() + geom_line(aes(color = sex, x = year, y = Attendance)) + ggtitle("Blossom Attendance Through the Ages")
+    ggplot() + geom_line(aes(color = sex, x = year, y = Attendance)) + ggtitle("Cherry Blossom Attendance 1999-2012")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="Blossom_files/figure-html/unnamed-chunk-11-1.svg" alt="**CAPTION**: Attendance has been rising at the Blossom run!"  />
-<p class="caption">**CAPTION**: Attendance has been rising at the Blossom run!</p>
+<img src="Blossom_files/figure-html/unnamed-chunk-11-1.svg" alt="**Figure 6**: Attendance has been rising at the Blossom run!"  />
+<p class="caption">**Figure 6**: Attendance has been rising at the Blossom run!</p>
 </div>
 
 A promising trend! It appears that attendence has been growing very fast for both genders, meaning the longer run times are due to increased attendance!
 
 
 # Conclusion
+
+This case study exemplifies what Data scientists everywhere will confront in their daily work life.  While we would prefer to be focused on feature creation and modeling, most of our time is spent cleaning data so that it can be analyzed.  The Cherry Blossom dataset is a great example of the types of data entry/collection errors that data scientists confront on a daily basis.  For further analysis, one might consider doing an individual analysis of top runners over time and collecting their individual training data (heart rate and GPS) in order to try and establish which years of training yielded them the best times.  Some models that might prove useful are Random Forests, XGBoost, or logistic regression.
+
+
+
+
+
