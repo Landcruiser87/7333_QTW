@@ -29,7 +29,7 @@ options(digits = 2)
 
 #spamPath = system.file(package = "RSpamData")
 #spamPath = "/Users/nolan/RPackages/RSpamData"spamPath = "."
-spamPath = "./Spam/"
+spamPath = "./Data/Spam/"
 #list.dirs(spamPath, full.names = FALSE)
 
 ```
