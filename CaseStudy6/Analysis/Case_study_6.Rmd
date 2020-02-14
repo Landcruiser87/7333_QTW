@@ -38,9 +38,10 @@ options(digits = 2)
 # it seems to run fine on windows but crash on linux
 # so this was a good compromise without digging too deeply into the web of 
 # lapplys
-load("data.Rda")
+load("./Data/data.Rda")
 emails <- emailDFrp
 # probably do the n
+# This function...  is strange.
 setupRnum = function(data) {
   logicalVars = which(sapply(data, is.logical))
   facVars = lapply(data[ , logicalVars], 
@@ -53,13 +54,26 @@ setupRnum = function(data) {
 emails = setupRnum(emails)
 
 emails[is.na(emails)]<-0
-emails
+Data <- emails
 ```
 
 # Analysis
 
 ## Minimum Split
 
+```{r}
+library(rpart)
+library(caret)
+
+#Not sure how to split email as is. Must investigate. 
+train.index <- createDataPartition(Data$?????, p = .7, list = FALSE)
+train <- Data[ train.index,]
+test  <- Data[-train.index,]
+
+
+
+
+```
 Minsplit vs ntrees and accuracy/related metrics
 
 ## Ratio of minsplit and minbuxkets
