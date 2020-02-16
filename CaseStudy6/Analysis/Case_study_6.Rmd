@@ -96,6 +96,16 @@ rpart_fit = rpart(isSpam ~ .,
 #prp(rpart_fit, extra = 106)
 rpart.plot(rpart_fit)
 
+#Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
+
+rp_predict <- predict(rpart_fit,
+                      newdata = df_test_rpart[, names(df_test_rpart) != "isSpam"],
+                      type = "class")
+
+#summary(rp_predict)
+
+spam_predict = rp_predict[ df_test_rpart$isSpam == "T"]
+ham_predict = rp_predict[ df_test_rpart$isSpam == "F"]
 
 
 
