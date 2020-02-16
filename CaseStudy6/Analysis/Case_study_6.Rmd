@@ -52,9 +52,9 @@ setupRnum = function(data) {
 }
 
 emails = setupRnum(emails)
-
+dim(emails)
 emails[is.na(emails)]<-0
-Data <- emails
+df_rpart <- emails
 ```
 
 # Analysis
@@ -64,6 +64,14 @@ Data <- emails
 ```{r}
 library(rpart)
 library(caret)
+set.seed(54)
+isSpam = table(df_rpart$isSpam)["T"]
+isHam = table(df_rpart$isSpam)["F"]
+
+testSpamidx = sample(isSpam, size= floor(isSpam/3))
+testHamidx = sample(isHam, size= floor(isHam/3))
+
+
 
 #Not sure how to split email as is. Must investigate. 
 train.index <- createDataPartition(Data$?????, p = .7, list = FALSE)
