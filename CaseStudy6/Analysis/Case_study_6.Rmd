@@ -69,12 +69,15 @@ library(dplyr)
 library(rpart.plot)
 set.seed(54)
 
-is_Spam <- table(df_process$isSpam)["T"]
-is_Ham <- table(df_process$isSpam)["F"]
+#Get a count for spam and ham
+is_Spam_ct <- table(df_process$isSpam)["T"]
+is_Ham_ct <- table(df_process$isSpam)["F"]
 
-testSpamidx = sample(is_Spam, size = floor(is_Spam/3))
-testHamidx = sample(is_Ham, size = floor(is_Ham/3))
+#Sample the indexes
+testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/3))
+testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/3))
 
+#Create DF for test and train
 df_test_rpart = rbind(df_process[df_process$isSpam == "T",][testSpamidx,],
                       df_process[df_process$isSpam == "F",][testHamidx, ])
 
@@ -83,9 +86,16 @@ df_train_rpart = rbind(df_process[df_process$isSpam == "T",][-testSpamidx,],
 
 dim(df_train_rpart)
 
-rpart_fit = rpart(isSpam ~ ., data = df_train_rpart, method = "class")
+#Fitting the regression tree.
+rpart_fit = rpart(isSpam ~ ., 
+                  data = df_train_rpart,
+                  minsplit = 2,
+                  method = "class")
 
-prp(rpart_fit, extra = 106)
+#Plot it with either prp or rpart.plot
+#prp(rpart_fit, extra = 106)
+rpart.plot(rpart_fit)
+
 
 
 
