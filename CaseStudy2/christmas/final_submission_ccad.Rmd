@@ -76,7 +76,7 @@ We can view the basic structure of the formatted data in the table below:
 offline
 ```
 
-Nolan and Lang collected data from a total of 7 access points: five Linksys routers and two Alpha routers. However, their analysis only contained information from the Linksys routers and a single Alpha router (6 routers in total). They chose to keep information from the router at MAC address `00:0f:a3:39:e1:c0`, which we will refer to as ***Router A***, and discard information from the router at MAC address `00:0f:a3:39:dd:cd`, referred to as ***Router B***. In this study, we will determine whether or not Nolan and Lang were justified in their choice to discard router B, and attempt to understand why that choice was made.
+Nolan and Lang collected data from a total of 7 access points: five Linksys routers and two Alpha routers. However, their analysis only contained information from the Linksys routers and a single Alpha router (6 routers in total). They chose to keep information from the router at MAC address `00:0f:a3:39:e1:c0`, which we will refer to as ***Router A***, and discard information from the router at MAC address `00:0f:a3:39:dd:cd`, referred to as ***Router B***. In this study, we will determine whether or not Nolan and Lang were justified in their choice to discard router B, and attempt to understand why that choice was made. 
 
 # Analysis
 
