@@ -36,7 +36,7 @@ library(rpart.plot)
 
 # Introduction
 
-Spam email is an ever present annoyance in most of modern day life. This case study is to examine the Spam Assassin dataset (http://spamassassin.apache.org) in which we evaluate 9000 emails with spam filters by both classification tree's and recursive partitioning.  To do this, the libararies rpart and caret are utilized and we attempt to improve upon model classification accuracies by exploring the many parameters available in the rpart.control function.  
+Spam email is an ever present annoyance in most of modern day life. This case study is to examine the Spam Assassin dataset (http://spamassassin.apache.org) in which we evaluate 9000 emails with spam filters by classification tree's and recursive partitioning.  To do this, the libararies rpart and caret are utilized and we attempt to improve upon model classification accuracies by exploring the many parameters available in the rpart.control function.  
 
 #TODO - expand intro.  Kinda sucks 
 
@@ -147,12 +147,21 @@ ham_predict = rp_predict[ df_test_rpart$isSpam == "F"]
 sum(spam_predict == "T")/length(spam_predict)
 sum(ham_predict == "T")/length(ham_predict)
 
+```
 
-complexityVals = c(seq(0.00001, 0.0001, length=19),
-                   seq(0.0001, 0.001, length=19), 
-                   seq(0.001, 0.005, length=9),
-                   seq(0.005, 0.01, length=9))
 
+## Parameter Search
+```{r paramsearch}
+
+cp <- c(cp=c(0.00001,.0001,.005,.001))
+
+max_depth <- c(max_depth = round(seq(3,30,length=10),0))
+
+min_split <- c(min_split = round(seq(2, 100, length=30),0))
+
+min_bucket <-c(min_bucket = round(seq(2, 100, length=30),0)%%2)
+
+params <- expand.grid(cp, max_depth, min_split, min_bucket)
 
 
 ```
