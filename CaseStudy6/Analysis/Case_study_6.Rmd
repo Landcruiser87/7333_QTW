@@ -86,9 +86,9 @@ df_process <- emails
 
 # Analysis
 
-To start off the analysis, we've used the methods provided in Nolan and Lang [1] for importing a clean dataset that can be parsed for examples of spam/ham and the generated features about each email message.  We're to answer the question of exploring the rpart.control function so we will import the generated dataset from the starter RMD that was provided by Dr. Slater.  See the appendix for the code that contains all processing functions and setup of the data.
+To start off the analysis, we've used the methods provided in Nolan and Lang [1] for importing a clean dataset that can be parsed for examples of spam or ham messages and the generated features about each email message.  We're to answer the question of exploring the rpart.control function so we will import the generated dataset from the starter RMD that was provided by Dr. Slater.  See the appendix for the code that contains all processing functions and setup of the data.
 
-In order to properly quantify the decision tree's performance we now define the metrics we use to evaluate results.  Since this is a classification problem, our metrics will be accuracy, precision, recall and F1-Score. Our goal is to minimize the amount of false positives, and false negatives within resulting confusion matrix's.  
+In order to properly quantify the decision tree's performance we now define the metrics we use to evaluate results.  Since this is a classification problem, our metrics will be accuracy, precision, recall and F1-Score. Our goal is to minimize the amount of false positives, and false negatives within the resulting confusion matrix's.  
 
 ```{r parmtable, fig.cap = "Performance Metrics"}
 pander::pander(
