@@ -83,7 +83,23 @@ df_process <- emails
 
 # Analysis
 
-To start off the analysis, we've used the methods provided in Nolan and Lang [1] for importing a clean dataset that can be parsed for examples of spam and the generated features about each email message.  We're to answer the question of exploring the rpart.control function so we will import the generated dataset from the starter RMD that was provided by Dr. Slater.  See the appendix for the code that was associated with it.  
+To start off the analysis, we've used the methods provided in Nolan and Lang [1] for importing a clean dataset that can be parsed for examples of spam/ham and the generated features about each email message.  We're to answer the question of exploring the rpart.control function so we will import the generated dataset from the starter RMD that was provided by Dr. Slater.  See the appendix for the code that contains all processing functions and setup of the data.
+
+In order to properly quantify the decision tree's performance we now define the metrics we use to evaluate results.  Since this is a classification problem, our metrics will be accuracy, precision, recall and F1-Score. Our goal is to minimize the amount of false positives, and false negatives within resulting confusion matrix's.  
+
+```{r parmtable, fig.cap = "Performance Metrics"}
+pander::pander(
+ list( Accuracy = "Accuracy is defined as the number of correct predictions divided by the total number of predictions.",
+            list("(True Positive + False Negatives)/Total amount of samples"),
+       Precision = "Precision is defined as the ratio of correctly predicted positives to the total number of predicted positive observations.",
+            list("True Positives/(True Positives + False Positives)"),
+       Recall = "Recall is defined as the ratio of correct positives to all the observations in the class",
+            list("True Positives/(True Positives + False Positives"),
+       F1-Score = "F1 score is defined as a weighted average of Precision and Recall. This metric is more useful when you have uneven class balances but it sometimes useful as it includes false postivies and false negatives. ",
+            list("2*(Recall*Precision)/(Recall + Position")
+       
+ ))
+```
 
 Our next step is to explore the recursive partitioning algotithm to pass it various parameters that may improve its classification accuracy.  The parameters that we're going to explore are listed below.  
 
@@ -169,30 +185,65 @@ data.frame(t(get_metrics(rp_predict)))
 ```{r paramsearch}
 
 #Setting up parameters for the rpart.control gridsearch
-
 cp <- c(cp=c(0.00001,.0001,.005,.001))
-
 max_depth <- c(max_depth = round(seq(3,30,length=10),0))
-
 min_split <- c(min_split = round(seq(2, 100, length=30),0) + (round(seq(2, 100, length=30),0)%%2))
-
-min_bucket <-c(min_split/2)
-
 params <- expand.grid(cp=cp, max_depth=max_depth, min_split=min_split, min_bucket=min_bucket)
+combo_count <- nrow(params)
 
-#combo_count <- nrow(params)
-
+treedepth <- function(fit) {
+  nodes <- as.numeric(rownames(fit$frame))
+  max(rpart:::tree.depth(nodes))
+}
 #Possibly sample these because its 36000 combinations
-param_sample = params[sample(nrow(params),2400),]
-
+workers <- makeCluster(parallel::detectCores()-1)
+registerDoParallel(workers)
+invisible(clusterCall(workers, function() library(rpart)))
+res <- foreach(i =  1:nrow(params), .combine=rbind) %dopar% {
+  model <- rpart(isSpam ~ ., data = spam_train, method="class",
+                control = do.call(rpart.control,list(params[i,]))
+  )
+  preds <- predict(model, newdata=spam_test, type="class")
+  confusion_mat <- function(preds, truth) {
+    return(table(preds,truth))
+  }
+  accuracy <- function(preds, truth=spam_test$isSpam) {
+    cm <- confusion_mat(preds, truth)
+    sum(diag(cm))/sum(cm)
+  }
+  precision <- function(preds, truth=spam_test$isSpam) {
+    cm <- confusion_mat(preds, truth)
+    diag(cm) / colSums(cm)
+  }
+  treedepth <- function(fit) {
+    nodes <- as.numeric(rownames(fit$frame))
+    max(rpart:::tree.depth(nodes))
+  }
+  recall <- function(preds, truth=spam_test$isSpam) {
+    cm <- confusion_mat(preds, truth)
+    diag(cm) / rowSums(cm)
+  }
+  f1 <- function(preds, truth=spam_test$isSpam, positive.class = "T") {
+    precision <- precision(preds, truth)
+    recall <- recall(preds, truth)
+    f1 <-  ifelse(precision + recall == 0, 0, 2 * precision * recall / (precision + recall))
+    #Assuming that F1 is zero when it's not possible compute it
+    f1[is.na(f1)] <- 0
+    #Binary F1 or Multi-class macro-averaged F1
+    ifelse(nlevels(truth) == 2, f1[positive.class], mean(f1))
+  }
+  metrics <- list("accuracy" = accuracy, "precision" = precision, "recall" = recall, "f1_score" =  f1)
+  get_metrics <- function(preds, truth = spam_test$isSpam){
+    unlist(lapply(metrics, function(f) f(preds)))
+  }
+  metr <- get_metrics(preds)
+  ntree <- c("treedepth" = treedepth(model))
+  return(c(params[i,],metr, ntree))
+}
+save(data.frame(res), "grid.Rda")
 
 ```
 
-
-```{r paramfunc}
-
-
-````
 
 
 Minsplit vs ntrees and accuracy/related metrics
