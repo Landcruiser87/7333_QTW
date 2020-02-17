@@ -89,7 +89,7 @@ men_urls <- c(
   'results/2011/2011cucb10m-m.htm',
   'results/2012/2012cucb10m-m.htm'
 )
-
+ 
 
 #concatenate URLS to the base cherryblossom website.
 men_urls <- paste0(ubase, men_urls)
