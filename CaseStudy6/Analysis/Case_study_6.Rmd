@@ -47,7 +47,7 @@ Consider the other parameters that can be used to control the recursive partitio
 
 # Background
 
-The spam assassin dataset is contrived of 9000 emails each comprised of a header, message body and attachment.  The first goal is to understand the design of the email structure in order to correctly indentify what portion of the email is the header, message body and attachments.  After dropping attachments, the headers and message bodies are processed for characteristics that possibly could mark an email as spam.  Looking for characteristics such as capitolization, punctuation or word counts of known spam words that can be found within.  
+The spam assassin dataset is contrived of 9000 emails each comprised of a header, message body and attachments.  The first goal is to understand the design of the email structure in order to correctly identify what portion of the email is the header, message body and attachments.  After dropping attachments, the headers and message bodies are processed for characteristics that possibly could mark an email as spam.  Looking for characteristics such as capitolization, punctuation or word counts of known spam words that can be found within.  
 
 ## Data Description
 
@@ -87,18 +87,20 @@ To start off the analysis, we've used the methods provided in Nolan and Lang [1]
 
 Our next step is to explore the recursive partitioning algotithm to pass it various parameters that may improve its classification accuracy.  The parameters that we're going to explore are listed below.  
 
-```{r parmtable, fig.cap = "Data Cleaning Summary"}
+```{r parmtable, fig.cap = "rpart.control parameters"}
 pander::pander(
  list(
     cp-complexity ="This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.  Our experiment will evaluate cp at the following intervals: .00001, .0001, .005, and 0.01",
     minsplit = "Seeing as a tree is the result of the rpart classification.  The minesplit parameter defintes the number of observations necessary in an a parent node in order to quality that branch to be split.  We chose to 3:1 ratio of minsplit to minbucket.",
     minbucket = "This parameter controls the lowest number of observations that can exist in an end/terminal node.",
-    maxdepth = "This parameter defines how deep a final tree can be built by limiting the amount of levels of nodes that can be created.  The help files suggest not going too deep in a tree as it will result in overfitting."
+    maxdepth = "This parameter defines how deep a final tree can be built by limiting the amount of levels of nodes that can be created.  The help files suggest not going too deep in a tree as it will result in overfitting.  Therefore we won't build a tree greater than 30 levels."
 
     ))
 ```
 
 
+
+Now that we've defined some of the available rpart.control functions, its time to start buiding decision tree's.  To start, we'll show what the decision tree output looks like with the default values for rpart.  Afterwords, we expand the parameters to a gridsearch of the available configurations in order to improve the models accuracy and classification.  
 
 
 ## Default R part Analysis
