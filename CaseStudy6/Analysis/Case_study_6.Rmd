@@ -28,8 +28,24 @@ options(digits = 2)
 
 # Introduction
 
+Spam email is an ever present annoyance in most of modern day life. This case study is to examine the Spam Assassin dataset (http://spamassassin.apache.org) in which we evaluate 9000 emails with spam filters by both classification tree's and recursive partitioning.  To do this, the libararies rpart and caret are utilized and we attempt to improve upon model classification accuracies by exploring the many parameters available in the rpart.control function.  
+
+#TODO - expand intro.  Kinda sucks 
+
+we've selected question 19 from the Nolan and Lang book for our analysis and exploration. The question states. 
+
+Consider the other parameters that can be used to control the recursive partitioning process. Read the documentation for them in the rpart.control() documentation. Also, carry out an Internet search for more information on how to tweak the rpart() tuning parameters. Experiment with values for these parameters. Do the trees that result make sense with your understanding of how the parameters are used? Can you improve the prediction using them?
+
+# Background
+
+The spam assassin dataset is contrived of 9000 emails each comprised of a header, message body and attachment.  The first goal is to understand the design of the email structure in order to correctly indentify what portion of the email is the header, message body and attachments.  After dropping attachments, the headers and message bodies are processed for characteristics that possibly could mark an email as spam.  Looking for characteristics such as capitolization, punctuation or word counts of known spam words that can be found within.  
 
 ## Data Description
+
+# TODO - 
+
+# Note.  Could just make a giant r_script with all the functions and load it into here.
+
 
 
 ```{r dataload}
