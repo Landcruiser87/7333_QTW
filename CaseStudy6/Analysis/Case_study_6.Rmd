@@ -26,6 +26,14 @@ options(digits = 2)
 
 ```
 
+```{r Load_Libraries}
+library(rpart)
+library(caret)
+library(dplyr)
+library(rpart.plot)
+
+```
+
 # Introduction
 
 Spam email is an ever present annoyance in most of modern day life. This case study is to examine the Spam Assassin dataset (http://spamassassin.apache.org) in which we evaluate 9000 emails with spam filters by both classification tree's and recursive partitioning.  To do this, the libararies rpart and caret are utilized and we attempt to improve upon model classification accuracies by exploring the many parameters available in the rpart.control function.  
@@ -42,10 +50,7 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 
 ## Data Description
 
-# TODO - 
-
 # Note.  Could just make a giant r_script with all the functions and load it into here.
-
 
 
 ```{r dataload}
@@ -54,6 +59,7 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 # it seems to run fine on windows but crash on linux
 # so this was a good compromise without digging too deeply into the web of 
 # lapplys
+
 load("./Data/data.Rda")
 emails <- emailDFrp
 # probably do the n
@@ -76,13 +82,28 @@ df_process <- emails
 
 # Analysis
 
-## Minimum Split
+To start off the analysis, we've used the methods provided in Nolan and Lang [1] for importing a clean dataset that can be parsed for examples of spam and the generated features about each email message.  We're to answer the question of exploring the rpart.control function so we will import the generated dataset from the starter RMD that was provided by Dr. Slater.  See the appendix for the code that was associated with it.  
+
+Our next step is to explore the recursive partitioning algotithm to pass it various parameters that may improve its classification accuracy.  The parameters that we're goign to explore are listed below.  
+
+```{r parmtable, fig.cap = "Data Cleaning Summary"}
+pander::pander(
+ list(
+    cp-complexity ="This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.  Our experiment will evaluate cp at the following intervals: .00001, .0001, .005, and 0.01",
+    minsplit = "Seeing as a tree is the result of the rpart classification.  The minesplit parameter defintes the number of observations necessary in order to quality that branch to be split.  We chose to 3:1 ratio of minsplit to minbucket.",
+    minbucket = "This parameter controls the lowest number of observations that can exist in an end node.",
+    maxdepth = "This parameter defines how deep a final tree can be built by limiting the amount of levels of nodes that can be created.  The help files suggest not going too deep in a tree as it will result in overfitting."
+
+    ))
+```
+
+
+
+
+## Default R part Analysis
 
 ```{r}
-library(rpart)
-library(caret)
-library(dplyr)
-library(rpart.plot)
+
 set.seed(54)
 
 #Get a count for spam and ham
@@ -123,6 +144,14 @@ rp_predict <- predict(rpart_fit,
 spam_predict = rp_predict[ df_test_rpart$isSpam == "T"]
 ham_predict = rp_predict[ df_test_rpart$isSpam == "F"]
 
+sum(spam_predict == "T")/length(spam_predict)
+sum(ham_predict == "T")/length(ham_predict)
+
+
+complexityVals = c(seq(0.00001, 0.0001, length=19),
+                   seq(0.0001, 0.001, length=19), 
+                   seq(0.001, 0.005, length=9),
+                   seq(0.005, 0.01, length=9))
 
 
 
@@ -156,3 +185,7 @@ maybe
 # Conclusion
 
 Use cases for interesitng chouces
+
+## References
+[1] D. Lang and D. Nolan, Data Science in R: A Case Studies Approach to Computation Reasoning and Problem Solving. New York, New York: CRC Press. 
+
