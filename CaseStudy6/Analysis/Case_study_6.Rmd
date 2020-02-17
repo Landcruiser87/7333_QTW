@@ -1,5 +1,5 @@
 ---
-title: 'Team ACDC Case Study 6: Spam Ham, Problem 19'
+title: 'Team CCAD Case Study 6: Spam Ham, Problem 19'
 author: "David Josephs, Andy Heroy, Carson Drake, Che' Cobb"
 date: '`r Sys.Date()`'
 output:
@@ -64,7 +64,7 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 # so this was a good compromise without digging too deeply into the web of 
 # lapplys
 
-load("./Data/data.Rda")
+emailDFrp <- read.csv("./Data/data.csv")
 emails <- emailDFrp
 
 setupRnum = function(data) {
