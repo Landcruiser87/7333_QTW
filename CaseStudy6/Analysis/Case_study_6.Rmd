@@ -1,20 +1,22 @@
 ---
-title: "Team ACDC Case Study 6: Spam Ham, Problem 19"
+title: 'Team ACDC Case Study 6: Spam Ham, Problem 19'
 author: "David Josephs, Andy Heroy, Carson Drake, Che' Cobb"
-date: "`r Sys.Date()`"
-output: 
+date: '`r Sys.Date()`'
+output:
   html_document:
-    toc: true
-    number_sections: true
-    theme: readable
-    highlight: haddock
     code_folding: hide
     df_print: paged
-    keep_md: TRUE
-    fig_width: 10
+    fig_caption: yes
     fig_height: 10
-    fig_retina: true
-    fig_caption: true
+    fig_retina: yes
+    fig_width: 10
+    highlight: haddock
+    keep_md: yes
+    number_sections: yes
+    theme: readable
+    toc: yes
+  pdf_document:
+    toc: yes
 ---
 
 
@@ -36,11 +38,10 @@ library(rpart.plot)
 
 # Introduction
 
-Spam email is an ever present annoyance in most of modern day life. This case study is to examine the Spam Assassin dataset (http://spamassassin.apache.org) in which we evaluate 9000 emails with spam filters by classification tree's and recursive partitioning.  To do this, the libararies rpart and caret are utilized and we attempt to improve upon model classification accuracies by exploring the many parameters available in the rpart.control function.  
+Spam email is an ever present annoyance in most of modern day life. This case study is to examine the Spam Assassin dataset (http://spamassassin.apache.org) in which we evaluate 9000 emails with spam filters by classification tree's and recursive partitioning.  To do this, the libararies rpart is utilized and we attempt to improve upon default model classification accuracies by exploring the many parameters available in the rpart.control function.  
 
-#TODO - expand intro.  Kinda sucks 
 
-we've selected question 19 from the Nolan and Lang book for our analysis and exploration. The question states. 
+we've selected question 19 from the Nolan and Lang book for our analysis and exploration. The question states: 
 
 Consider the other parameters that can be used to control the recursive partitioning process. Read the documentation for them in the rpart.control() documentation. Also, carry out an Internet search for more information on how to tweak the rpart() tuning parameters. Experiment with values for these parameters. Do the trees that result make sense with your understanding of how the parameters are used? Can you improve the prediction using them?
 
@@ -60,10 +61,9 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 # so this was a good compromise without digging too deeply into the web of 
 # lapplys
 
-load("./Data/data.Rda")
+load("../Data/data.Rda")
 emails <- emailDFrp
-# probably do the n
-# This function...  is strange.
+
 setupRnum = function(data) {
   logicalVars = which(sapply(data, is.logical))
   facVars = lapply(data[ , logicalVars], 
@@ -91,8 +91,8 @@ Our next step is to explore the recursive partitioning algotithm to pass it vari
 pander::pander(
  list(
     cp-complexity ="This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.  Our experiment will evaluate cp at the following intervals: .00001, .0001, .005, and 0.01",
-    minsplit = "Seeing as a tree is the result of the rpart classification.  The minesplit parameter defintes the number of observations necessary in order to quality that branch to be split.  We chose to 3:1 ratio of minsplit to minbucket.",
-    minbucket = "This parameter controls the lowest number of observations that can exist in an end node.",
+    minsplit = "Seeing as a tree is the result of the rpart classification.  The minesplit parameter defintes the number of observations necessary in an a parent node in order to quality that branch to be split.  We chose to 3:1 ratio of minsplit to minbucket.",
+    minbucket = "This parameter controls the lowest number of observations that can exist in an end/terminal node.",
     maxdepth = "This parameter defines how deep a final tree can be built by limiting the amount of levels of nodes that can be created.  The help files suggest not going too deep in a tree as it will result in overfitting."
 
     ))
@@ -166,16 +166,16 @@ min_bucket <-c(min_split/2)
 
 params <- expand.grid(cp=cp, max_depth=max_depth, min_split=min_split, min_bucket=min_bucket)
 
-combo_count <- nrow(params)
+#combo_count <- nrow(params)
 
 #Possibly sample these because its 36000 combinations
+param_sample = params[sample(nrow(params),2400),]
 
 
 ```
 
 
 ```{r paramfunc}
-
 
 
 ````
