@@ -33,7 +33,10 @@ library(rpart)
 library(caret)
 library(dplyr)
 library(rpart.plot)
-
+library(parallel)
+library(doParallel)
+library(foreach)
+library(iterators)
 ```
 
 # Introduction
@@ -188,6 +191,8 @@ data.frame(t(get_metrics(rp_predict)))
 cp <- c(cp=c(0.00001,.0001,.005,.001))
 max_depth <- c(max_depth = round(seq(3,30,length=10),0))
 min_split <- c(min_split = round(seq(2, 100, length=30),0) + (round(seq(2, 100, length=30),0)%%2))
+min_bucket <-c(min_split/2)
+
 params <- expand.grid(cp=cp, max_depth=max_depth, min_split=min_split, min_bucket=min_bucket)
 combo_count <- nrow(params)
 
