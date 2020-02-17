@@ -61,7 +61,7 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 # so this was a good compromise without digging too deeply into the web of 
 # lapplys
 
-load("../Data/data.Rda")
+load("./Data/data.Rda")
 emails <- emailDFrp
 
 setupRnum = function(data) {
@@ -108,47 +108,59 @@ Now that we've defined some of the available rpart.control functions, its time t
 ```{r}
 
 set.seed(54)
-
 #Get a count for spam and ham
 is_Spam_ct <- table(df_process$isSpam)["T"]
 is_Ham_ct <- table(df_process$isSpam)["F"]
 
 #Sample the indexes
-testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/3))
-testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/3))
+# note createdatapartition is stratified
+train_idx <- createDataPartition(df_process$isSpam, p = 0.66, list = F)
+spam_train <- df_process[train_idx,]
+spam_test <- df_process[-train_idx,]
 
-#Create DF for test and train
-df_test_rpart = rbind(df_process[df_process$isSpam == "T",][testSpamidx,],
-                      df_process[df_process$isSpam == "F",][testHamidx, ])
-
-df_train_rpart = rbind(df_process[df_process$isSpam == "T",][-testSpamidx,],
-                      df_process[df_process$isSpam == "F",][-testHamidx, ])
-
-dim(df_train_rpart)
 
 #Fitting the regression tree.
 rpart_fit = rpart(isSpam ~ ., 
-                  data = df_train_rpart,
+                  data = spam_train,
                   minsplit = 2,
                   method = "class")
-
 #Plot it with either prp or rpart.plot
 #prp(rpart_fit, extra = 106)
 rpart.plot(rpart_fit)
-
 #Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
-
 rp_predict <- predict(rpart_fit,
-                      newdata = df_test_rpart[, names(df_test_rpart) != "isSpam"],
+                      newdata = spam_test,
                       type = "class")
 
-#summary(rp_predict)
-
-spam_predict = rp_predict[ df_test_rpart$isSpam == "T"]
-ham_predict = rp_predict[ df_test_rpart$isSpam == "F"]
-
-sum(spam_predict == "T")/length(spam_predict)
-sum(ham_predict == "T")/length(ham_predict)
+confusion_mat <- function(preds, truth) {
+  return(table(preds,truth))
+}
+accuracy <- function(preds, truth=spam_test$isSpam) {
+  cm <- confusion_mat(preds, truth)
+  sum(diag(cm))/sum(cm)
+}
+precision <- function(preds, truth=spam_test$isSpam) {
+  cm <- confusion_mat(preds, truth)
+  diag(cm) / colSums(cm)
+}
+recall <- function(preds, truth=spam_test$isSpam) {
+  cm <- confusion_mat(preds, truth)
+  diag(cm) / rowSums(cm)
+}
+f1 <- function(preds, truth=spam_test$isSpam, positive.class = "T") {
+  precision <- precision(preds, truth)
+  recall <- recall(preds, truth)
+  f1 <-  ifelse(precision + recall == 0, 0, 2 * precision * recall / (precision + recall))
+  #Assuming that F1 is zero when it's not possible compute it
+  f1[is.na(f1)] <- 0
+  #Binary F1 or Multi-class macro-averaged F1
+  ifelse(nlevels(truth) == 2, f1[positive.class], mean(f1))
+}
+metrics <- list("accuracy" = accuracy, "precision" = precision, "recall" = recall, "f1_score" =  f1)
+get_metrics <- function(preds, truth = spam_test$isSpam){
+  unlist(lapply(metrics, function(f) f(preds)))
+}
+data.frame(t(get_metrics(rp_predict)))
 
 ```
 
