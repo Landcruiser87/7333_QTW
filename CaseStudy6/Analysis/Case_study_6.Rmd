@@ -154,6 +154,8 @@ sum(ham_predict == "T")/length(ham_predict)
 ## Parameter Search
 ```{r paramsearch}
 
+#Setting up parameters for the rpart.control gridsearch
+
 cp <- c(cp=c(0.00001,.0001,.005,.001))
 
 max_depth <- c(max_depth = round(seq(3,30,length=10),0))
@@ -164,11 +166,21 @@ min_bucket <-c(min_split/2)
 
 params <- expand.grid(cp=cp, max_depth=max_depth, min_split=min_split, min_bucket=min_bucket)
 
-combo_count <- nrows(params)
+combo_count <- nrow(params)
 
+#Possibly sample these because its 36000 combinations
 
 
 ```
+
+
+```{r paramfunc}
+
+
+
+````
+
+
 Minsplit vs ntrees and accuracy/related metrics
 
 ## Ratio of minsplit and minbuxkets
