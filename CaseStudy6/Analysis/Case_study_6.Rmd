@@ -52,10 +52,6 @@ Consider the other parameters that can be used to control the recursive partitio
 
 The spam assassin dataset is contrived of 9000 emails each comprised of a header, message body and attachments.  The first goal is to understand the design of the email structure in order to correctly identify what portion of the email is the header, message body and attachments.  After dropping attachments, the headers and message bodies are processed for characteristics that possibly could mark an email as spam.  Looking for characteristics such as capitolization, punctuation or word counts of known spam words that can be found within.  
 
-## Data Description
-
-# Note.  Could just make a giant r_script with all the functions and load it into here.
-
 
 ```{r dataload}
 # we are starting from here, 
@@ -64,7 +60,7 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 # so this was a good compromise without digging too deeply into the web of 
 # lapplys
 
-emailDFrp <- read.csv("./Data/data.csv")
+emailDFrp <- read.csv("C:/githubrepo/7333_QTW/CaseStudy6/Data/data.csv")
 emails <- emailDFrp
 
 setupRnum = function(data) {
@@ -90,17 +86,16 @@ To start off the analysis, we've used the methods provided in Nolan and Lang [1]
 
 In order to properly quantify the decision tree's performance we now define the metrics we use to evaluate results.  Since this is a classification problem, our metrics will be accuracy, precision, recall and F1-Score. Our goal is to minimize the amount of false positives, and false negatives within the resulting confusion matrix's.  
 
-```{r MetricTable, fig.cap = "Performance Metrics"}
+```{r metrictable, fig.cap = "Performance Metrics"}
 pander::pander(
  list( Accuracy = "Accuracy is defined as the number of correct predictions divided by the total number of predictions.",
             list("(True Positive + False Negatives)/Total amount of samples"),
-       Precision = "Precision is defined as the ratio of correctly predicted positives to the total number of predicted positive observations.",
+       "Precision" = "Precision is defined as the ratio of correctly predicted positives to the total number of predicted positive observations.",
             list("True Positives/(True Positives + False Positives)"),
-       Recall = "Recall is defined as the ratio of correct positives to all the observations in the class",
+       "Recall" = "Recall is defined as the ratio of correct positives to all the observations in the class",
             list("True Positives/(True Positives + False Positives"),
-       F1-Score = "F1 score is defined as a weighted average of Precision and Recall. This metric is more useful when you have uneven class balances but it sometimes useful as it includes false postivies and false negatives. ",
-            list("2*(Recall*Precision)/(Recall + Position")
-       
+       "F1-Score" = "F1 score is defined as a weighted average of Precision and Recall. This metric is more useful when you have uneven class balances but it sometimes useful as it includes false postivies and false negatives. ",
+            list("2x(Recall x Precision)/(Recall + Position)")
  ))
 ```
 
@@ -109,11 +104,10 @@ Our next step is to explore the recursive partitioning algotithm to pass it vari
 ```{r parmtable, fig.cap = "rpart.control parameters"}
 pander::pander(
  list(
-    cp-complexity ="This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.  Our experiment will evaluate cp at the following intervals: .00001, .0001, .005, and 0.01",
-    minsplit = "Seeing as a tree is the result of the rpart classification.  The minesplit parameter defintes the number of observations necessary in an a parent node in order to quality that branch to be split.  We chose to 3:1 ratio of minsplit to minbucket.",
-    minbucket = "This parameter controls the lowest number of observations that can exist in an end/terminal node.",
-    maxdepth = "This parameter defines how deep a final tree can be built by limiting the amount of levels of nodes that can be created.  The help files suggest not going too deep in a tree as it will result in overfitting.  Therefore we won't build a tree greater than 30 levels."
-
+    "cp-complexity" ="This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.  Our experiment will evaluate cp at the following intervals: .00001, .0001, .005, and 0.01",
+    "minsplit" = "Seeing as a tree is the result of the rpart classification.  The minsplit parameter defintes the number of observations necessary in an a parent node in order to quality that branch to be split.  We chose to 3:1 ratio of minsplit to minbucket.",
+    "minbucket" = "This parameter controls the lowest number of observations that can exist in an end/terminal node.",
+    "maxdepth" = "This parameter defines how deep a final tree can be built by limiting the amount of levels of nodes that can be created.  The help files suggest not going too deep in a tree as it will result in overfitting.  Therefore we won't build a tree greater than 30 levels."
     ))
 ```
 
