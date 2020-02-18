@@ -261,6 +261,7 @@ rp_predict3 <- predict(rpart_tree3,
 
 data.frame(t(get_metrics(rp_predict3)))
 
+
 ```
 
 
@@ -282,6 +283,7 @@ rp_predict4 <- predict(rpart_tree4,
                       type = "class")
 
 data.frame(t(get_metrics(rp_predict4)))
+
 
 ```
 
