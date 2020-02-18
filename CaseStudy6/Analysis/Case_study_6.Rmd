@@ -61,6 +61,7 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 # lapplys
 
 emailDFrp <- read.csv("C:/githubrepo/7333_QTW/CaseStudy6/Data/data.csv")
+#load(./Data/data.rda)
 emails <- emailDFrp
 
 setupRnum = function(data) {
@@ -73,7 +74,6 @@ setupRnum = function(data) {
 }
 
 emails = setupRnum(emails)
-dim(emails)
 emails[is.na(emails)]<-0
 
 df_process <- emails
@@ -194,6 +194,104 @@ combo_count <- nrow(params)
 
 ```
 
+## Che Tree's
+
+```{r}
+
+set.seed(54)
+is_Spam_ct <- table(df_process$isSpam)["T"]
+is_Ham_ct <- table(df_process$isSpam)["F"]
+testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/3))
+testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/3))
+testDF = 
+  rbind( df_process[ df_process$isSpam == "T", ][testSpamIdx, ],
+         df_process[df_process$isSpam == "F", ][testHamIdx, ] )
+trainDF =
+  rbind( df_process[df_process$isSpam == "T", ][-testSpamIdx, ], 
+         df_process[df_process$isSpam == "F", ][-testHamIdx, ])
+testcontrolparam1 <- rpart(isSpam ~., data=trainDF, na.action = na.rpart, method = "class",
+                           control=rpart.control(minsplit = 3, maxdepth=30, minbucket = 2, cp = 0.010)) 
+rpart.plot(testcontrolparam1, extra = 1)
+predictions = predict(testcontrolparam1, 
+       newdata = testDF[, names(testDF) != "isSpam"],
+       type = "class")
+ 
+predsForHam = predictions[ testDF$isSpam == "F" ]
+summary(predsForHam)
+sum(predsForHam == "T") / length(predsForHam)
+predsForSpam = predictions[ testDF$isSpam == "T" ]
+sum(predsForSpam == "F") / length(predsForSpam)
+set.seed(54)
+testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
+testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
+                    
+                    
+testDF = 
+  rbind( df_process[ df_process$isSpam == "T", ][testSpamIdx, ],
+         df_process[df_process$isSpam == "F", ][testHamIdx, ] )
+trainDF =
+  rbind( df_process[df_process$isSpam == "T", ][-testSpamIdx, ], 
+         df_process[df_process$isSpam == "F", ][-testHamIdx, ])
+testcontrolparam2 <- rpart(isSpam ~., data=trainDF, na.action = na.rpart, method = "class",
+                           control=rpart.control(minsplit = 3, maxdepth= 2, minbucket = 2, cp = 0.010)) 
+rpart.plot(testcontrolparam2, extra = 1)
+predictions = predict(testcontrolparam2, 
+       newdata = testDF[, names(testDF) != "isSpam"],
+       type = "class")
+ 
+predsForHam = predictions[ testDF$isSpam == "F" ]
+summary(predsForHam)
+sum(predsForHam == "T") / length(predsForHam)
+predsForSpam = predictions[ testDF$isSpam == "T" ]
+sum(predsForSpam == "F") / length(predsForSpam)
+set.seed(54)
+testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
+testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
+                    
+                    
+testDF = 
+  rbind( df_process[ df_process$isSpam == "T", ][testSpamIdx, ],
+         df_process[df_process$isSpam == "F", ][testHamIdx, ] )
+trainDF =
+  rbind( df_process[df_process$isSpam == "T", ][-testSpamIdx, ], 
+         df_process[df_process$isSpam == "F", ][-testHamIdx, ])
+testcontrolparam3 <- rpart(isSpam ~., data=trainDF, na.action = na.rpart, method = "class",
+                           control=rpart.control(minsplit = 3, maxdepth=30, minbucket = 2, cp = 0.005)) 
+rpart.plot(testcontrolparam3, extra = 1)
+predictions = predict(testcontrolparam3, 
+       newdata = testDF[, names(testDF) != "isSpam"],
+       type = "class")
+ 
+predsForHam = predictions[ testDF$isSpam == "F" ]
+summary(predsForHam)
+sum(predsForHam == "T") / length(predsForHam)
+predsForSpam = predictions[ testDF$isSpam == "T" ]
+sum(predsForSpam == "F") / length(predsForSpam)
+set.seed(54)
+testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
+testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
+                    
+                    
+testDF = 
+  rbind( df_process[ df_process$isSpam == "T", ][testSpamIdx, ],
+         df_process[df_process$isSpam == "F", ][testHamIdx, ] )
+trainDF =
+  rbind( df_process[df_process$isSpam == "T", ][-testSpamIdx, ], 
+         df_process[df_process$isSpam == "F", ][-testHamIdx, ])
+testcontrolparam4 <- rpart(isSpam ~., data=trainDF, na.action = na.rpart, method = "class",
+                           control=rpart.control(minsplit = 3, maxdepth=2, minbucket = 2, cp = 0.005)) 
+rpart.plot(testcontrolparam4, extra = 1)
+predictions = predict(testcontrolparam4, 
+       newdata = testDF[, names(testDF) != "isSpam"],
+       type = "class")
+ 
+predsForHam = predictions[ testDF$isSpam == "F" ]
+summary(predsForHam)
+sum(predsForHam == "T") / length(predsForHam)
+predsForSpam = predictions[ testDF$isSpam == "T" ]
+sum(predsForSpam == "F") / length(predsForSpam)
+
+```
 
 
 Minsplit vs ntrees and accuracy/related metrics
