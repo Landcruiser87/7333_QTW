@@ -212,7 +212,6 @@ rpart_tree1 <- rpart(isSpam ~.,
                                                  cp = 0.010)) 
 
 rpart.plot(rpart_tree1)
-#Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
 rp_predict1 <- predict(rpart_tree1,
                       newdata = spam_test,
                       type = "class")
@@ -235,7 +234,6 @@ rpart_tree2 <- rpart(isSpam ~., data=spam_train,
                                            cp = 0.010)) 
 
 rpart.plot(rpart_tree2)
-#Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
 rp_predict2 <- predict(rpart_tree2,
                       newdata = spam_test,
                       type = "class")
@@ -257,7 +255,6 @@ rpart_tree3 <- rpart(isSpam ~., data=spam_train,
                                            cp = 0.005)) 
 
 rpart.plot(rpart_tree3)
-#Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
 rp_predict3 <- predict(rpart_tree3,
                       newdata = spam_test,
                       type = "class")
@@ -280,7 +277,6 @@ rpart_tree4 <- rpart(isSpam ~., data=spam_train,
                                    cp = 0.005))
 
 rpart.plot(rpart_tree4)
-#Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
 rp_predict4 <- predict(rpart_tree4,
                       newdata = spam_test,
                       type = "class")
