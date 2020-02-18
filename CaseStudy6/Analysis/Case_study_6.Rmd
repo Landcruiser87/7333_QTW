@@ -118,7 +118,7 @@ pander::pander(
 Now that we've defined some of the available rpart.control functions, its time to start buiding decision tree's.  To start, we'll show what the decision tree output looks like with the default values for rpart.  Afterwords, we expand the parameters to a gridsearch of the available configurations in order to improve the models accuracy and classification.  
 
 
-## Default R part Analysis
+## Default parameters decision tree
 
 ```{r}
 
@@ -196,7 +196,7 @@ combo_count <- nrow(params)
 
 ```
 
-## Che Tree's
+## Tree Exploration
 
 ```{r}
 
@@ -223,6 +223,10 @@ summary(predsForHam)
 sum(predsForHam == "T") / length(predsForHam)
 predsForSpam = predictions[ testDF$isSpam == "T" ]
 sum(predsForSpam == "F") / length(predsForSpam)
+
+
+
+
 set.seed(54)
 testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
 testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
@@ -246,6 +250,10 @@ summary(predsForHam)
 sum(predsForHam == "T") / length(predsForHam)
 predsForSpam = predictions[ testDF$isSpam == "T" ]
 sum(predsForSpam == "F") / length(predsForSpam)
+
+
+
+
 set.seed(54)
 testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
 testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
@@ -269,6 +277,12 @@ summary(predsForHam)
 sum(predsForHam == "T") / length(predsForHam)
 predsForSpam = predictions[ testDF$isSpam == "T" ]
 sum(predsForSpam == "F") / length(predsForSpam)
+
+
+
+
+
+
 set.seed(54)
 testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
 testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
