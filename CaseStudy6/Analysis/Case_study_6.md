@@ -56,6 +56,7 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 # lapplys
 
 emailDFrp <- read.csv("https://raw.githubusercontent.com/Landcruiser87/7333_QTW/master/CaseStudy6/Data/data.csv")
+emailDFrp$X <- NULL
 # load(./Data/data.rda)
 emails <- emailDFrp
 
@@ -126,7 +127,7 @@ Our next step is to explore the recursive partitioning algotithm to pass it vari
 
 
 ```r
-pander::pander(list(`cp-complexity` = "This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.  Our experiment will evaluate cp at the following intervals: .00001, .0001, .005, and 0.01", 
+pander::pander(list(`cp-complexity` = "This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.", 
     minsplit = "Seeing as a tree is the result of the rpart classification.  The minsplit parameter defintes the number of observations necessary in an a parent node in order to quality that branch to be split.  We chose to 3:1 ratio of minsplit to minbucket.", 
     minbucket = "This parameter controls the lowest number of observations that can exist in an end/terminal node.", 
     maxdepth = "This parameter defines how deep a final tree can be built by limiting the amount of levels of nodes that can be created.  The help files suggest not going too deep in a tree as it will result in overfitting.  Therefore we won't build a tree greater than 30 levels."))
@@ -134,7 +135,7 @@ pander::pander(list(`cp-complexity` = "This parameter is meant to improve comput
 
 
 
-  * **cp-complexity**: This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.  Our experiment will evaluate cp at the following intervals: .00001, .0001, .005, and 0.01
+  * **cp-complexity**: This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.
   * **minsplit**: Seeing as a tree is the result of the rpart classification.  The minsplit parameter defintes the number of observations necessary in an a parent node in order to quality that branch to be split.  We chose to 3:1 ratio of minsplit to minbucket.
   * **minbucket**: This parameter controls the lowest number of observations that can exist in an end/terminal node.
   * **maxdepth**: This parameter defines how deep a final tree can be built by limiting the amount of levels of nodes that can be created.  The help files suggest not going too deep in a tree as it will result in overfitting.  Therefore we won't build a tree greater than 30 levels.
@@ -146,7 +147,7 @@ pander::pander(list(`cp-complexity` = "This parameter is meant to improve comput
 Now that we've defined some of the available rpart.control functions, its time to start buiding decision tree's.  To start, we'll show what the decision tree output looks like with the default values for rpart.  Afterwords, we expand the parameters to a gridsearch of the available configurations in order to improve the models accuracy and classification.  
 
 
-## Default R part Analysis
+## Default parameters decision tree
 
 
 ```r
@@ -204,210 +205,186 @@ metrics <- list(accuracy = accuracy, precision = precision, recall = recall,
 get_metrics <- function(preds, truth = spam_test$isSpam) {
     unlist(lapply(metrics, function(f) f(preds)))
 }
-data.frame(t(get_metrics(rp_predict)))
+
+get_depth <- function(fit) {
+    nodes <- as.numeric(rownames(fit$frame))
+    max(rpart:::tree.depth(nodes))
+}
+
+get_leaves <- function(fit) {
+    sum(fit$frame$var == "<leaf>")
+}
+
+make_metric_frame <- function(fit, pred) {
+    out = c(leaves = get_leaves(fit), depth = get_depth(fit), get_metrics(pred))
+    return(data.frame(t(out)))
+}
+
+result_0 <- make_metric_frame(rpart_fit, rp_predict)
+result_0
 ```
 
 <div data-pagedtable="false">
   <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["accuracy"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["precision.F"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["precision.T"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["recall.F"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["recall.T"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["f1_score"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.82","2":"0.96","3":"0.4","4":"0.82","5":"0.77","6":"0.53"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["leaves"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["depth"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["accuracy"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["precision.F"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["precision.T"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["recall.F"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["recall.T"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["f1_score"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"17","2":"9","3":"0.92","4":"0.96","5":"0.79","6":"0.93","7":"0.87","8":"0.83"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 
 
-## Parameter Search
-
-```r
-# Setting up parameters for the rpart.control gridsearch
-cp <- c(cp = c(1e-05, 1e-04, 0.005, 0.001))
-max_depth <- c(max_depth = round(seq(3, 30, length = 10), 0))
-min_split <- c(min_split = round(seq(2, 100, length = 30), 0) + (round(seq(2, 
-    100, length = 30), 0)%%2))
-min_bucket <- c(min_split/2)
-
-params <- expand.grid(cp = cp, max_depth = max_depth, min_split = min_split, 
-    min_bucket = min_bucket)
-combo_count <- nrow(params)
-```
-
-## Che Tree's
 
 
 ```r
-set.seed(54)
-is_Spam_ct <- table(df_process$isSpam)["T"]
-is_Ham_ct <- table(df_process$isSpam)["F"]
-testSpamIdx = sample(is_Spam_ct, size = floor(is_Spam_ct/3))
-testHamIdx = sample(is_Ham_ct, size = floor(is_Ham_ct/3))
-testDF = rbind(df_process[df_process$isSpam == "T", ][testSpamIdx, ], df_process[df_process$isSpam == 
-    "F", ][testHamIdx, ])
-trainDF = rbind(df_process[df_process$isSpam == "T", ][-testSpamIdx, ], df_process[df_process$isSpam == 
-    "F", ][-testHamIdx, ])
-testcontrolparam1 <- rpart(isSpam ~ ., data = trainDF, na.action = na.rpart, 
-    method = "class", control = rpart.control(minsplit = 3, maxdepth = 30, minbucket = 2, 
-        cp = 0.01))
-rpart.plot(testcontrolparam1, extra = 1)
-predictions = predict(testcontrolparam1, newdata = testDF[, names(testDF) != 
-    "isSpam"], type = "class")
-
-predsForHam = predictions[testDF$isSpam == "F"]
-summary(predsForHam)
+# #Setting up parameters for the rpart.control gridsearch cp <-
+# c(cp=c(0.00001,.0001,.005,.001)) max_depth <- c(max_depth =
+# round(seq(3,30,length=10),0)) min_split <- c(min_split = round(seq(2, 100,
+# length=30),0) + (round(seq(2, 100, length=30),0)%%2)) min_bucket
+# <-c(min_split/2) params <- expand.grid(cp=cp, max_depth=max_depth,
+# min_split=min_split, min_bucket=min_bucket) combo_count <- nrow(params)
 ```
 
-```
-#>    F    T 
-#> 2232   85
-```
+## Tree Exploration
+
 
 ```r
-sum(predsForHam == "T")/length(predsForHam)
-```
+# First Tree combination
 
-```
-#> [1] 0.037
-```
+rpart_tree1 <- rpart(isSpam ~ ., data = spam_train, na.action = na.rpart, method = "class", 
+    control = rpart.control(minsplit = 3, maxdepth = 30, minbucket = 2, cp = 0.01))
 
-```r
-predsForSpam = predictions[testDF$isSpam == "T"]
-sum(predsForSpam == "F")/length(predsForSpam)
-```
-
-```
-#> [1] 0.63
-```
-
-```r
-set.seed(54)
-testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
-testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
-
-
-testDF = rbind(df_process[df_process$isSpam == "T", ][testSpamIdx, ], df_process[df_process$isSpam == 
-    "F", ][testHamIdx, ])
-trainDF = rbind(df_process[df_process$isSpam == "T", ][-testSpamIdx, ], df_process[df_process$isSpam == 
-    "F", ][-testHamIdx, ])
-testcontrolparam2 <- rpart(isSpam ~ ., data = trainDF, na.action = na.rpart, 
-    method = "class", control = rpart.control(minsplit = 3, maxdepth = 2, minbucket = 2, 
-        cp = 0.01))
-rpart.plot(testcontrolparam2, extra = 1)
+rpart.plot(rpart_tree1)
 ```
 
 <img src="Case_study_6_files/figure-html/unnamed-chunk-2-1.svg" style="display: block; margin: auto;" />
 
 ```r
-predictions = predict(testcontrolparam2, newdata = testDF[, names(testDF) != 
-    "isSpam"], type = "class")
+rp_predict1 <- predict(rpart_tree1, newdata = spam_test, type = "class")
 
-predsForHam = predictions[testDF$isSpam == "F"]
-summary(predsForHam)
-```
 
-```
-#>    F    T 
-#> 2232   85
+result_1 <- make_metric_frame(rpart_tree1, rp_predict1)
+result_1
 ```
 
-```r
-sum(predsForHam == "T")/length(predsForHam)
-```
-
-```
-#> [1] 0.037
-```
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["leaves"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["depth"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["accuracy"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["precision.F"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["precision.T"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["recall.F"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["recall.T"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["f1_score"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"17","2":"9","3":"0.92","4":"0.96","5":"0.79","6":"0.93","7":"0.87","8":"0.83"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 
 ```r
-predsForSpam = predictions[testDF$isSpam == "T"]
-sum(predsForSpam == "F")/length(predsForSpam)
+# result_1 <-
+# data.frame(t(c('depth'=get_depth(rpart_tree1),get_metrics(rp_predict1))))
+# result_1
 ```
 
-```
-#> [1] 0.63
-```
+
 
 ```r
-set.seed(54)
-testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
-testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
+# 2nd Tree combination
+rpart_tree2 <- rpart(isSpam ~ ., data = spam_train, na.action = na.rpart, method = "class", 
+    control = rpart.control(minsplit = 3, maxdepth = 2, minbucket = 2, cp = 0.01))
 
-
-testDF = rbind(df_process[df_process$isSpam == "T", ][testSpamIdx, ], df_process[df_process$isSpam == 
-    "F", ][testHamIdx, ])
-trainDF = rbind(df_process[df_process$isSpam == "T", ][-testSpamIdx, ], df_process[df_process$isSpam == 
-    "F", ][-testHamIdx, ])
-testcontrolparam3 <- rpart(isSpam ~ ., data = trainDF, na.action = na.rpart, 
-    method = "class", control = rpart.control(minsplit = 3, maxdepth = 30, minbucket = 2, 
-        cp = 0.005))
-rpart.plot(testcontrolparam3, extra = 1)
-predictions = predict(testcontrolparam3, newdata = testDF[, names(testDF) != 
-    "isSpam"], type = "class")
-
-predsForHam = predictions[testDF$isSpam == "F"]
-summary(predsForHam)
+rpart.plot(rpart_tree2)
 ```
 
-```
-#>    F    T 
-#> 2232   85
-```
+<img src="Case_study_6_files/figure-html/unnamed-chunk-3-1.svg" style="display: block; margin: auto;" />
 
 ```r
-sum(predsForHam == "T")/length(predsForHam)
-```
-
-```
-#> [1] 0.037
-```
-
-```r
-predsForSpam = predictions[testDF$isSpam == "T"]
-sum(predsForSpam == "F")/length(predsForSpam)
-```
-
-```
-#> [1] 0.63
-```
-
-```r
-set.seed(54)
-testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
-testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
+rp_predict2 <- predict(rpart_tree2, newdata = spam_test, type = "class")
 
 
-testDF = rbind(df_process[df_process$isSpam == "T", ][testSpamIdx, ], df_process[df_process$isSpam == 
-    "F", ][testHamIdx, ])
-trainDF = rbind(df_process[df_process$isSpam == "T", ][-testSpamIdx, ], df_process[df_process$isSpam == 
-    "F", ][-testHamIdx, ])
-testcontrolparam4 <- rpart(isSpam ~ ., data = trainDF, na.action = na.rpart, 
-    method = "class", control = rpart.control(minsplit = 3, maxdepth = 2, minbucket = 2, 
-        cp = 0.005))
-rpart.plot(testcontrolparam4, extra = 1)
-predictions = predict(testcontrolparam4, newdata = testDF[, names(testDF) != 
-    "isSpam"], type = "class")
-
-predsForHam = predictions[testDF$isSpam == "F"]
-summary(predsForHam)
+# result_2 <-
+# data.frame(t(c('depth'=get_depth(rpart_tree2),get_metrics(rp_predict2))))
+# result_2
+result_2 <- make_metric_frame(rpart_tree2, rp_predict2)
+result_2
 ```
 
-```
-#>    F    T 
-#> 2232   85
-```
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["leaves"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["depth"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["accuracy"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["precision.F"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["precision.T"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["recall.F"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["recall.T"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["f1_score"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"4","2":"2","3":"0.85","4":"0.95","5":"0.56","6":"0.86","7":"0.79","8":"0.66"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
+
 
 ```r
-sum(predsForHam == "T")/length(predsForHam)
+# 3rd Tree combination
+rpart_tree3 <- rpart(isSpam ~ ., data = spam_train, na.action = na.rpart, method = "class", 
+    control = rpart.control(minsplit = 3, maxdepth = 30, minbucket = 2, cp = 0.005))
+
+rpart.plot(rpart_tree3)
 ```
 
-```
-#> [1] 0.037
-```
+<img src="Case_study_6_files/figure-html/unnamed-chunk-4-1.svg" style="display: block; margin: auto;" />
 
 ```r
-predsForSpam = predictions[testDF$isSpam == "T"]
-sum(predsForSpam == "F")/length(predsForSpam)
+rp_predict3 <- predict(rpart_tree3, newdata = spam_test, type = "class")
+
+
+result_3 <- make_metric_frame(rpart_tree3, rp_predict3)
+result_3
 ```
 
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["leaves"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["depth"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["accuracy"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["precision.F"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["precision.T"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["recall.F"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["recall.T"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["f1_score"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"23","2":"9","3":"0.93","4":"0.97","5":"0.81","6":"0.94","7":"0.89","8":"0.85"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
+
+
+
+```r
+# 4rd Tree combination
+rpart_tree4 <- rpart(isSpam ~ ., data = spam_train, na.action = na.rpart, method = "class", 
+    control = rpart.control(minsplit = 3, maxdepth = 2, minbucket = 2, cp = 0.005))
+
+rpart.plot(rpart_tree4)
 ```
-#> [1] 0.63
+
+<img src="Case_study_6_files/figure-html/unnamed-chunk-5-1.svg" style="display: block; margin: auto;" />
+
+```r
+rp_predict4 <- predict(rpart_tree4, newdata = spam_test, type = "class")
+
+
+result_4 <- make_metric_frame(rpart_tree4, rp_predict4)
+result_4
 ```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["leaves"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["depth"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["accuracy"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["precision.F"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["precision.T"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["recall.F"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["recall.T"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["f1_score"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"4","2":"2","3":"0.85","4":"0.95","5":"0.56","6":"0.86","7":"0.79","8":"0.66"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
+
+
+
+```r
+# 4rd Tree combination
+rpart_tree5 <- rpart(isSpam ~ ., data = spam_train, na.action = na.rpart, method = "class", 
+    control = rpart.control(minsplit = 1, maxdepth = 30, minbucket = 1, cp = 1e-07))
+
+rpart.plot(rpart_tree5)
+```
+
+<img src="Case_study_6_files/figure-html/unnamed-chunk-6-1.svg" style="display: block; margin: auto;" />
+
+```r
+rp_predict5 <- predict(rpart_tree5, newdata = spam_test, type = "class")
+
+result_5 <- make_metric_frame(rpart_tree5, rp_predict5)
+result_5
+```
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source type="application/json">
+{"columns":[{"label":["leaves"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["depth"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["accuracy"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["precision.F"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["precision.T"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["recall.F"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["recall.T"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["f1_score"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"265","2":"30","3":"0.96","4":"0.98","5":"0.91","6":"0.97","7":"0.93","8":"0.92"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+
+
 
 
 Minsplit vs ntrees and accuracy/related metrics

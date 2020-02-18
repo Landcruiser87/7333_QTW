@@ -61,6 +61,7 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 # lapplys
 
 emailDFrp <- read.csv("https://raw.githubusercontent.com/Landcruiser87/7333_QTW/master/CaseStudy6/Data/data.csv")
+emailDFrp$X <- NULL
 #load(./Data/data.rda)
 emails <- emailDFrp
 
@@ -175,7 +176,27 @@ metrics <- list("accuracy" = accuracy, "precision" = precision, "recall" = recal
 get_metrics <- function(preds, truth = spam_test$isSpam){
   unlist(lapply(metrics, function(f) f(preds)))
 }
-data.frame(t(get_metrics(rp_predict)))
+
+get_depth <- function(fit) {
+  nodes <- as.numeric(rownames(fit$frame))
+  max(rpart:::tree.depth(nodes))
+}
+
+get_leaves <- function(fit) {
+  sum(fit$frame$var=="<leaf>")
+}
+
+make_metric_frame <- function(fit, pred) {
+  out = c(
+          "leaves" = get_leaves(fit),
+          "depth" = get_depth(fit),
+          get_metrics(pred)
+  )
+  return(data.frame(t(out)))
+}
+
+result_0 <- make_metric_frame(rpart_fit, rp_predict)
+result_0
 
 ```
 
@@ -216,15 +237,17 @@ rp_predict1 <- predict(rpart_tree1,
                       newdata = spam_test,
                       type = "class")
 
-data.frame(t(get_metrics(rp_predict1)))
 
+result_1 <- make_metric_frame(rpart_tree1, rp_predict1)
+result_1
+#result_1 <- data.frame(t(c("depth"=get_depth(rpart_tree1),get_metrics(rp_predict1))))
+#result_1
 ```
 
 
 ```{r}
 
 #2nd Tree combination
-
 rpart_tree2 <- rpart(isSpam ~., data=spam_train, 
                      na.action = na.rpart, 
                      method = "class",
@@ -238,8 +261,11 @@ rp_predict2 <- predict(rpart_tree2,
                       newdata = spam_test,
                       type = "class")
 
-data.frame(t(get_metrics(rp_predict2)))
 
+#result_2 <- data.frame(t(c("depth"=get_depth(rpart_tree2),get_metrics(rp_predict2))))
+#result_2
+result_2 <- make_metric_frame(rpart_tree2, rp_predict2)
+result_2
 ```
 
 
@@ -259,9 +285,9 @@ rp_predict3 <- predict(rpart_tree3,
                       newdata = spam_test,
                       type = "class")
 
-data.frame(t(get_metrics(rp_predict3)))
 
-
+result_3 <- make_metric_frame(rpart_tree3, rp_predict3)
+result_3
 ```
 
 
@@ -272,7 +298,7 @@ data.frame(t(get_metrics(rp_predict3)))
 rpart_tree4 <- rpart(isSpam ~., data=spam_train, 
                      na.action = na.rpart, 
                      method = "class",
-                     rpart.control(minsplit = 3, 
+                     control=rpart.control(minsplit = 3, 
                                    maxdepth=2, 
                                    minbucket = 2, 
                                    cp = 0.005))
@@ -282,10 +308,33 @@ rp_predict4 <- predict(rpart_tree4,
                       newdata = spam_test,
                       type = "class")
 
-data.frame(t(get_metrics(rp_predict4)))
 
-
+result_4 <- make_metric_frame(rpart_tree4, rp_predict4)
+result_4
 ```
+
+
+
+```{r}
+
+#4rd Tree combination
+rpart_tree5 <- rpart(isSpam ~., data=spam_train, 
+                     na.action = na.rpart, 
+                     method = "class",
+                     control=rpart.control(minsplit = 1, 
+                                   maxdepth=30, 
+                                   minbucket = 1, 
+                                   cp = 1e-7))
+
+rpart.plot(rpart_tree5)
+rp_predict5 <- predict(rpart_tree5,
+                      newdata = spam_test,
+                      type = "class")
+
+result_5 <- make_metric_frame(rpart_tree5, rp_predict5)
+result_5
+```
+
 
 
 
