@@ -60,15 +60,17 @@ The spam assassin dataset is contrived of 9000 emails each comprised of a header
 # so this was a good compromise without digging too deeply into the web of 
 # lapplys
 
-emailDFrp <- read.csv("C:/githubrepo/7333_QTW/CaseStudy6/Data/data.csv")
+emailDFrp <- read.csv("https://raw.githubusercontent.com/Landcruiser87/7333_QTW/master/CaseStudy6/Data/data.csv")
 #load(./Data/data.rda)
 emails <- emailDFrp
+
+str(emails$isSpam)
 
 setupRnum = function(data) {
   logicalVars = which(sapply(data, is.logical))
   facVars = lapply(data[ , logicalVars], 
                    function(x) {
-                      x = as.numeric(x)
+                      x = as.factor(x)
                    })
   cbind(facVars, data[ , - logicalVars])
 }
@@ -77,7 +79,7 @@ emails = setupRnum(emails)
 emails[is.na(emails)]<-0
 
 df_process <- emails
-
+levels(df_process$isSpam) <- c("F","T")
 ```
 
 # Analysis
@@ -201,8 +203,8 @@ combo_count <- nrow(params)
 set.seed(54)
 is_Spam_ct <- table(df_process$isSpam)["T"]
 is_Ham_ct <- table(df_process$isSpam)["F"]
-testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/3))
-testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/3))
+testSpamIdx = sample(is_Spam_ct, size = floor(is_Spam_ct/3))
+testHamIdx = sample(is_Ham_ct, size = floor(is_Ham_ct/3))
 testDF = 
   rbind( df_process[ df_process$isSpam == "T", ][testSpamIdx, ],
          df_process[df_process$isSpam == "F", ][testHamIdx, ] )
