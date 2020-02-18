@@ -180,18 +180,18 @@ data.frame(t(get_metrics(rp_predict)))
 ```
 
 
-## Parameter Search
+
 ```{r paramsearch}
 
-#Setting up parameters for the rpart.control gridsearch
-cp <- c(cp=c(0.00001,.0001,.005,.001))
-max_depth <- c(max_depth = round(seq(3,30,length=10),0))
-min_split <- c(min_split = round(seq(2, 100, length=30),0) + (round(seq(2, 100, length=30),0)%%2))
-min_bucket <-c(min_split/2)
-
-params <- expand.grid(cp=cp, max_depth=max_depth, min_split=min_split, min_bucket=min_bucket)
-combo_count <- nrow(params)
-
+# #Setting up parameters for the rpart.control gridsearch
+# cp <- c(cp=c(0.00001,.0001,.005,.001))
+# max_depth <- c(max_depth = round(seq(3,30,length=10),0))
+# min_split <- c(min_split = round(seq(2, 100, length=30),0) + (round(seq(2, 100, length=30),0)%%2))
+# min_bucket <-c(min_split/2)
+# 
+# params <- expand.grid(cp=cp, max_depth=max_depth, min_split=min_split, min_bucket=min_bucket)
+# combo_count <- nrow(params)
+# 
 
 
 ```
@@ -200,114 +200,95 @@ combo_count <- nrow(params)
 
 ```{r}
 
-set.seed(54)
-is_Spam_ct <- table(df_process$isSpam)["T"]
-is_Ham_ct <- table(df_process$isSpam)["F"]
-testSpamIdx = sample(is_Spam_ct, size = floor(is_Spam_ct/3))
-testHamIdx = sample(is_Ham_ct, size = floor(is_Ham_ct/3))
-testDF = 
-  rbind( df_process[ df_process$isSpam == "T", ][testSpamIdx, ],
-         df_process[df_process$isSpam == "F", ][testHamIdx, ] )
-trainDF =
-  rbind( df_process[df_process$isSpam == "T", ][-testSpamIdx, ], 
-         df_process[df_process$isSpam == "F", ][-testHamIdx, ])
-testcontrolparam1 <- rpart(isSpam ~., data=trainDF, na.action = na.rpart, method = "class",
-                           control=rpart.control(minsplit = 3, maxdepth=30, minbucket = 2, cp = 0.010)) 
-rpart.plot(testcontrolparam1, extra = 1)
-predictions = predict(testcontrolparam1, 
-       newdata = testDF[, names(testDF) != "isSpam"],
-       type = "class")
- 
-predsForHam = predictions[ testDF$isSpam == "F" ]
-summary(predsForHam)
-sum(predsForHam == "T") / length(predsForHam)
-predsForSpam = predictions[ testDF$isSpam == "T" ]
-sum(predsForSpam == "F") / length(predsForSpam)
+#First Tree combination
 
+rpart_tree1 <- rpart(isSpam ~., 
+                           data=spam_train, 
+                           na.action = na.rpart, 
+                           method = "class",
+                           control=rpart.control(minsplit = 3, 
+                                                 maxdepth=30, 
+                                                 minbucket = 2, 
+                                                 cp = 0.010)) 
 
+rpart.plot(rpart_tree1)
+#Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
+rp_predict1 <- predict(rpart_tree1,
+                      newdata = spam_test,
+                      type = "class")
 
-
-set.seed(54)
-testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
-testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
-                    
-                    
-testDF = 
-  rbind( df_process[ df_process$isSpam == "T", ][testSpamIdx, ],
-         df_process[df_process$isSpam == "F", ][testHamIdx, ] )
-trainDF =
-  rbind( df_process[df_process$isSpam == "T", ][-testSpamIdx, ], 
-         df_process[df_process$isSpam == "F", ][-testHamIdx, ])
-testcontrolparam2 <- rpart(isSpam ~., data=trainDF, na.action = na.rpart, method = "class",
-                           control=rpart.control(minsplit = 3, maxdepth= 2, minbucket = 2, cp = 0.010)) 
-rpart.plot(testcontrolparam2, extra = 1)
-predictions = predict(testcontrolparam2, 
-       newdata = testDF[, names(testDF) != "isSpam"],
-       type = "class")
- 
-predsForHam = predictions[ testDF$isSpam == "F" ]
-summary(predsForHam)
-sum(predsForHam == "T") / length(predsForHam)
-predsForSpam = predictions[ testDF$isSpam == "T" ]
-sum(predsForSpam == "F") / length(predsForSpam)
-
-
-
-
-set.seed(54)
-testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
-testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
-                    
-                    
-testDF = 
-  rbind( df_process[ df_process$isSpam == "T", ][testSpamIdx, ],
-         df_process[df_process$isSpam == "F", ][testHamIdx, ] )
-trainDF =
-  rbind( df_process[df_process$isSpam == "T", ][-testSpamIdx, ], 
-         df_process[df_process$isSpam == "F", ][-testHamIdx, ])
-testcontrolparam3 <- rpart(isSpam ~., data=trainDF, na.action = na.rpart, method = "class",
-                           control=rpart.control(minsplit = 3, maxdepth=30, minbucket = 2, cp = 0.005)) 
-rpart.plot(testcontrolparam3, extra = 1)
-predictions = predict(testcontrolparam3, 
-       newdata = testDF[, names(testDF) != "isSpam"],
-       type = "class")
- 
-predsForHam = predictions[ testDF$isSpam == "F" ]
-summary(predsForHam)
-sum(predsForHam == "T") / length(predsForHam)
-predsForSpam = predictions[ testDF$isSpam == "T" ]
-sum(predsForSpam == "F") / length(predsForSpam)
-
-
-
-
-
-
-set.seed(54)
-testSpamidx = sample(is_Spam_ct, size = floor(is_Spam_ct/2))
-testHamidx = sample(is_Ham_ct, size = floor(is_Ham_ct/2))
-                    
-                    
-testDF = 
-  rbind( df_process[ df_process$isSpam == "T", ][testSpamIdx, ],
-         df_process[df_process$isSpam == "F", ][testHamIdx, ] )
-trainDF =
-  rbind( df_process[df_process$isSpam == "T", ][-testSpamIdx, ], 
-         df_process[df_process$isSpam == "F", ][-testHamIdx, ])
-testcontrolparam4 <- rpart(isSpam ~., data=trainDF, na.action = na.rpart, method = "class",
-                           control=rpart.control(minsplit = 3, maxdepth=2, minbucket = 2, cp = 0.005)) 
-rpart.plot(testcontrolparam4, extra = 1)
-predictions = predict(testcontrolparam4, 
-       newdata = testDF[, names(testDF) != "isSpam"],
-       type = "class")
- 
-predsForHam = predictions[ testDF$isSpam == "F" ]
-summary(predsForHam)
-sum(predsForHam == "T") / length(predsForHam)
-predsForSpam = predictions[ testDF$isSpam == "T" ]
-sum(predsForSpam == "F") / length(predsForSpam)
+data.frame(t(get_metrics(rp_predict1)))
 
 ```
+
+
+```{r}
+
+#2nd Tree combination
+
+rpart_tree2 <- rpart(isSpam ~., data=spam_train, 
+                     na.action = na.rpart, 
+                     method = "class",
+                     control=rpart.control(minsplit = 3, 
+                                           maxdepth= 2, 
+                                           minbucket = 2, 
+                                           cp = 0.010)) 
+
+rpart.plot(rpart_tree2)
+#Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
+rp_predict2 <- predict(rpart_tree2,
+                      newdata = spam_test,
+                      type = "class")
+
+data.frame(t(get_metrics(rp_predict2)))
+
+```
+
+
+```{r}
+
+#3rd Tree combination
+rpart_tree3 <- rpart(isSpam ~., data=spam_train, 
+                     na.action = na.rpart, 
+                     method = "class",
+                     control=rpart.control(minsplit = 3, 
+                                           maxdepth=30, 
+                                           minbucket = 2, 
+                                           cp = 0.005)) 
+
+rpart.plot(rpart_tree3)
+#Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
+rp_predict3 <- predict(rpart_tree3,
+                      newdata = spam_test,
+                      type = "class")
+
+data.frame(t(get_metrics(rp_predict3)))
+
+```
+
+
+
+```{r}
+
+#4rd Tree combination
+rpart_tree4 <- rpart(isSpam ~., data=spam_train, 
+                     na.action = na.rpart, 
+                     method = "class",
+                     rpart.control(minsplit = 3, 
+                                   maxdepth=2, 
+                                   minbucket = 2, 
+                                   cp = 0.005))
+
+rpart.plot(rpart_tree4)
+#Now lets make some predictions.  We'll predict on the df_test_rpart, with the fit we just achieved directly above. 
+rp_predict4 <- predict(rpart_tree4,
+                      newdata = spam_test,
+                      type = "class")
+
+data.frame(t(get_metrics(rp_predict4)))
+
+```
+
 
 
 Minsplit vs ntrees and accuracy/related metrics
