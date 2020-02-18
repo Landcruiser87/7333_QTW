@@ -106,7 +106,7 @@ Our next step is to explore the recursive partitioning algotithm to pass it vari
 ```{r parmtable, fig.cap = "rpart.control parameters"}
 pander::pander(
  list(
-    "cp-complexity" ="This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.  Our experiment will evaluate cp at the following intervals: .00001, .0001, .005, and 0.01",
+    "cp-complexity" ="This parameter is meant to improve computing efficiency in order to avoid uncessary splits if there isn't an increase in R-squared value.",
     "minsplit" = "Seeing as a tree is the result of the rpart classification.  The minsplit parameter defintes the number of observations necessary in an a parent node in order to quality that branch to be split.  We chose to 3:1 ratio of minsplit to minbucket.",
     "minbucket" = "This parameter controls the lowest number of observations that can exist in an end/terminal node.",
     "maxdepth" = "This parameter defines how deep a final tree can be built by limiting the amount of levels of nodes that can be created.  The help files suggest not going too deep in a tree as it will result in overfitting.  Therefore we won't build a tree greater than 30 levels."
