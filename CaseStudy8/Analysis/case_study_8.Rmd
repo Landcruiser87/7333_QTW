@@ -1,0 +1,110 @@
+---
+title: 'Team CCAD Case Study 8: Crox stock ARIMA analysis'
+author: "David Josephs, Andy Heroy, Carson Drake, Che' Cobb"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    fig_caption: true
+    fig_height: 10
+    fig_retina: yes
+    fig_width: 10
+    highlight: haddock
+    keep_md: yes
+    number_sections: yes
+    theme: readable
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+
+```{r setup, include = F}
+knitr::opts_chunk$set(warning = F, message = F, dev = "svg", fig.align = "center")
+#knitr::opts_chunk$set(tidy = T)
+knitr::opts_chunk$set(comment = '#>')
+options(digits = 2)
+
+```
+
+```{r Load_Libraries}
+library(quantmod)
+library(tswge)
+library(dplyr)
+library(tidyverse)
+
+counter <- function() {
+  x <- 0
+  return (
+          function() {
+            x <<- x+1
+            return(x)
+          }
+
+  )
+}
+
+cnt <- counter()
+
+cap <- function(str) {
+  paste("**Figure", cnt(), ":**",str)
+}
+```
+
+# Introduction
+
+# Background
+
+# TSWGE
+
+# ARIMA models
+
+
+```{r getStockData}
+
+library(quantmod)
+crox <- getSymbols("CROX",src = "yahoo")
+cstock <- CROX
+candleChart(cstock, theme = "white")
+str(cstock)
+cstock %<>% data.frame
+cadj  <- cstock$CROX.Adjusted
+
+diff1  <- . %>% artrans.wge(phi.tr = 1)
+cadj_diff <- diff1(cadj)
+aic5.wge(cadj_diff)
+
+
+```
+
+
+
+```{r}
+
+crox <- read.csv("C:/Users/andyh/Google Drive/Education/SMU/Courses/DS_6373_Time_Series/Unit6/crox.csv", header = TRUE) 
+plotts.wge(crox$Close)
+plotts.sample.wge(crox$Close)
+
+#Taking the first difference of the crox data.
+Dif1 = artrans.wge(crox$Close, 1)
+plotts.sample.wge(Dif1)
+aic5.wge(Dif1)
+acf(Dif1)
+
+
+
+x=gen.aruma.wge(n=80, s=4, sn = 81) #tswge function to generate ARIMA and Seasonal Models
+Dif = artrans.wge(x,c(0,0,0,1)) #Take out the (1-B^4)
+aic5.wge(Dif) #Check the structure of the noise
+
+```
+
+
+# Stock Analysis
+
+# Grid Search?  
+### I think he wants us to run a grid search of p,d,q.  But we'll use AIC5 for that. 
+
+
+# Conclusion
