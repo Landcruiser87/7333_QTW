@@ -28,7 +28,7 @@ options(digits = 2)
 
 ```
 
-```{r Load_Libraries}
+```{r Load_Libraries_Counter}
 library(quantmod)
 library(tswge)
 library(dplyr)
@@ -60,10 +60,11 @@ cap <- function(str) {
 
 # ARIMA models
 
+# Stock Analysis
+
 
 ```{r getStockData}
 
-library(quantmod)
 crox <- getSymbols("CROX",src = "yahoo")
 cstock <- CROX
 candleChart(cstock, theme = "white")
@@ -99,9 +100,6 @@ Dif = artrans.wge(x,c(0,0,0,1)) #Take out the (1-B^4)
 aic5.wge(Dif) #Check the structure of the noise
 
 ```
-
-
-# Stock Analysis
 
 # Grid Search?  
 ### I think he wants us to run a grid search of p,d,q.  But we'll use AIC5 for that. 
