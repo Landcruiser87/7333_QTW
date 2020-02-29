@@ -32,6 +32,7 @@ options(digits = 2)
 library(quantmod)
 library(tswge)
 library(dplyr)
+library(magrittr)
 library(tidyverse)
 
 counter <- function() {
