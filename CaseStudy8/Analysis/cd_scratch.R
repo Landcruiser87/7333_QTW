@@ -68,5 +68,5 @@ lapply(stonks, plotBasic)
 
 stonks = lapply(stonks, getDiff)
 
-lapply(stonks, function(x) auto.arima(x$data$close))
+lapply(stonks, function(x) auto.arima(x$data$close, ic = "bic", num.cores = NULL))
 
