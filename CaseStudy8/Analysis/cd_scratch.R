@@ -6,7 +6,7 @@ library(tswge)
 library(dplyr)
 library(magrittr)
 library(tidyverse)
-
+library(forecast)
 
 # Data Functions ----------------------------------------------------------
 
@@ -67,3 +67,6 @@ stonks = lapply(c('AMD','AAPL','NVDA'), getStonk)
 lapply(stonks, plotBasic)
 
 stonks = lapply(stonks, getDiff)
+
+lapply(stonks, function(x) auto.arima(x$data$close))
+
