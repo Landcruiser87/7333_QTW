@@ -70,7 +70,7 @@ cstock <- CROX
 candleChart(cstock, theme = "white")
 str(cstock)
 cstock %<>% data.frame
-cadj  <- cstock$CROX.Adjusted
+cadj  <- cstock$CROX.Close
 
 diff1  <- . %>% artrans.wge(phi.tr = 1)
 cadj_diff <- diff1(cadj)
