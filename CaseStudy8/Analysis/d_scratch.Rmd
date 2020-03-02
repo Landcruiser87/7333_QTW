@@ -148,7 +148,7 @@ To introduce the most general form of the ARIMA model, we will introduce some ne
 This allows us to write seasonal ARIMA with order $(p,d,q)$ and seasonality $s$ as:
 
 $$
-\Phi_p(B)(1-B)^d
+\Phi_p(B)(1-B)^d(1-B^s)X_t = \Theta_q(B)\epsilon_t
 $$
 
 
@@ -280,9 +280,11 @@ ase
 
 Again, it is just a thin wrapper for tswge, we forecast the series backwards and get the ASE. Lets test it out:
 
-```{r, fig.cap=caption("Looks like an ok forecast")}
-(ase_hand_un <- assess(crox_train, arma, n.ahead=5, phi = train_hand_est$phi))
-```
+```{r, fig.cap=cap("Looks like a pretty good forecast")}
+ase_hand_un <- assess(crox_train, arma, n.ahead=5, phi = train_hand_est$phi)
+title(main="5 step back forecast")
+ase_hand_un
+``` 
 
 This is a pretty good forecast! Lets go ahead and automate one too:
 
@@ -296,7 +298,19 @@ bics <- hush(aic5.wge(crox_train, type='bic'))
 pander::pander(list(aics, bics))
 ```
 
-It looks like we were pretty close! We will go ahead and try out an ARMA(3,1) model as well, for the sake of thoroughness.
+
+It looks like we were pretty close! We will go ahead and try out an ARMA(3,1) model as well, for the sake of thoroughness. The analysis will be less verbose this time, as there is nothing new under the sun.
+
+```{r, fig.cap=cap("These residuals do not look much better, at a higher model complexity...")}
+est_auto_un <- estimate(crox_train, p=3, q = 1)
+plot_res(est_auto_un$res)
+```
+
+Lets go ahead and check with our Ljung Box too:
+
+```{r}
+ljung_box(est_auto_un$res, 3, 1)
+```
 
 ```{r}
 

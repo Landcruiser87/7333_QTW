@@ -234,7 +234,7 @@ generate
 #>     func <- rlang::parse_expr(phrase)
 #>     eval(rlang::call2(func, ...))
 #> }
-#> <bytecode: 0x4b749c8>
+#> <bytecode: 0xbe3ba58>
 #> <environment: namespace:tswgewrapped>
 ```
 
@@ -267,7 +267,7 @@ estimate
 #>         return(tswge::est.ar.wge(xs, p, type, ...))
 #>     }
 #> }
-#> <bytecode: 0x4bc4918>
+#> <bytecode: 0xc6a7cf0>
 #> <environment: namespace:tswgewrapped>
 ```
 
@@ -303,22 +303,179 @@ acf(generate(arma, n=length(crox_train), phi = train_hand_est$phi, plot=FALSE))
 <p class="caption">**Figure 6 :** ACF of a sample series</p>
 </div>
 
-This looks pretty good! We can check goodness of fit with two methods: first using residual plotting, and second using the `ljung_box` function, which performs the ljung_box test. The ljung box test has a null hypothesis which the residuals are white noise, and an alternative that the residuals are correlated in some way. It is a portmanteau test. first we will look at the residuals visually:
+This looks pretty good! We can check goodness of fit with two methods: first using residual plotting, and second using the `ljung_box` function, which performs the ljung_box test. The ljung box test has a null hypothesis which the residuals are white noise, and an alternative that the residuals are correlated in some way. It is a portmanteau test. First we will look at the residuals visually. It is important to do this because the ljung box test, while the best of statistical tests for autocorrelation, has low statistical power.
 
 
 ```r
 plot_res <-  function (res) {
      par(mfrow = c(1, 2))
      plot(res, type = "b")
+     title(main="Residual plot")
      acf(res)
+     title(main="Residual ACF")
      par(mfrow = c(1, 1))
  }
 
-tswgewrapped::plot_res(train_hand_est$res)
+plot_res(train_hand_est$res)
 ```
 
-<img src="d_scratch_files/figure-html/unnamed-chunk-10-1.svg" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-10-1.svg" alt="The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values."  />
+<p class="caption">The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values.</p>
+</div>
 
+This looks like an *alright* fit, however to double check we will go ahead with the portmanteau test. It is advisible to conduct this test at multiple lags, particularly 24 and 48 (suggested by box). Luckily, tswgewrapped has this all covered for us (source code included, no smoke and mirrors).
+
+
+```r
+ljung_box
+```
+
+```
+#> function (x, p, q, k_val = c(24, 48)) 
+#> {
+#>     ljung <- function(k) {
+#>         hush(tswge::ljung.wge(x = x, p = p, q = q, K = k))
+#>     }
+#>     sapply(k_val, ljung)
+#> }
+#> <bytecode: 0x4bfbc18>
+#> <environment: namespace:tswgewrapped>
+```
+
+```r
+ljung_box(train_hand_est$res, 3,0)
+```
+
+```
+#>            [,1]             [,2]            
+#> test       "Ljung-Box test" "Ljung-Box test"
+#> K          24               48              
+#> chi.square 34               61              
+#> df         21               45              
+#> pval       0.033            0.06
+```
+
+So this is in agreement with our plot. Our fit is pretty close, however it is probably not a perfect fit. We did not model all the autocorrelation out of the data, thus this is not the best model. For a baseline, we will backcast and get the ASE of our model. For the sake of transparency, we will show the tswgewrapped source code below:
+
+
+```r
+assess
+```
+
+```
+#> function (x, ...) 
+#> {
+#>     bcast <- fcst(x = x, ..., lastn = T)
+#>     ASE <- ase(x, bcast)
+#>     return(ASE)
+#> }
+#> <bytecode: 0x29217d8>
+#> <environment: namespace:tswgewrapped>
+```
+
+```r
+fcst
+```
+
+```
+#> function (type, ...) 
+#> {
+#>     phrase <- paste0("tswge::fore.", rlang::enexpr(type), ".wge")
+#>     func <- rlang::parse_expr(phrase)
+#>     eval(rlang::expr((!!func)(...)))
+#> }
+#> <bytecode: 0x2b3c8c8>
+#> <environment: namespace:tswgewrapped>
+```
+
+```r
+ase
+```
+
+```
+#> function (x, xhat) 
+#> {
+#>     s <- length(x) - length(xhat$f) + 1
+#>     n <- length(x)
+#>     mean((xhat$f - x[s:n])^2)
+#> }
+#> <bytecode: 0x8e638b0>
+#> <environment: namespace:tswgewrapped>
+```
+
+Again, it is just a thin wrapper for tswge, we forecast the series backwards and get the ASE. Lets test it out:
+
+
+```r
+ase_hand_un <- assess(crox_train, arma, n.ahead=5, phi = train_hand_est$phi)
+title(main="5 step back forecast")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-13-1.svg" alt="**Figure 7 :** Looks like a pretty good forecast"  />
+<p class="caption">**Figure 7 :** Looks like a pretty good forecast</p>
+</div>
+
+```r
+ase_hand_un
+```
+
+```
+#> [1] 1.1
+```
+
+This is a pretty good forecast! Lets go ahead and automate one too:
+
+### Grid search analysis of the untransformed data
+
+First, we will use AIC and BIC to determine the optimal values of p and q. Note the aic5.wge and tswgewrapped::aicbic are just criterion based grid searches. Lets go ahead and run it (note, we are using the tswgewrapped::hush function to avoid some annoying tswge output):
+
+
+```r
+aics <- hush(aic5.wge(crox_train))
+bics <- hush(aic5.wge(crox_train, type='bic'))
+pander::pander(list(aics, bics))
+```
+
+
+
+  *
+
+    --------------------------
+     &nbsp;   p   q     aic
+    -------- --- --- ---------
+     **11**   3   1   -0.6896
+
+     **10**   3   0   -0.6871
+
+     **14**   4   1   -0.6858
+
+     **13**   4   0   -0.6853
+
+     **16**   5   0   -0.6849
+    --------------------------
+
+  *
+
+    --------------------------
+     &nbsp;   p   q     bic
+    -------- --- --- ---------
+     **10**   3   0   -0.6533
+
+     **4**    1   0   -0.6503
+
+     **11**   3   1   -0.6474
+
+     **6**    1   2   -0.6472
+
+     **13**   4   0   -0.643
+    --------------------------
+
+
+<!-- end of list -->
+
+It looks like we were pretty close! We will go ahead and try out an ARMA(3,1) model as well, for the sake of thoroughness.
 
 
 ```r
