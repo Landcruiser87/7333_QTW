@@ -6,9 +6,9 @@ output:
   html_document:
     df_print: paged
     fig_caption: true
-    fig_height: 10
+#    fig_height: 10
     fig_retina: yes
-    fig_width: 10
+#    fig_width: 10
     highlight: haddock
     keep_md: yes
     number_sections: yes
@@ -132,7 +132,7 @@ To introduce the most general form of the ARIMA model, we will introduce some ne
 This allows us to write seasonal ARIMA with order $(p,d,q)$ and seasonality $s$ as:
 
 $$
-\Phi_p(B)(1-B)^d
+\Phi_p(B)(1-B)^d(1-B^s)X_t = \Theta_q(B)\epsilon_t
 $$
 
 
@@ -312,7 +312,6 @@ plot_res <-  function (res) {
      plot(res, type = "b")
      title(main="Residual plot")
      acf(res)
-     title(main="Residual ACF")
      par(mfrow = c(1, 1))
  }
 
@@ -320,8 +319,8 @@ plot_res(train_hand_est$res)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-10-1.svg" alt="The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values."  />
-<p class="caption">The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values.</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-10-1.svg" alt="**Figure 7 :** The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values."  />
+<p class="caption">**Figure 7 :** The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values.</p>
 </div>
 
 This looks like an *alright* fit, however to double check we will go ahead with the portmanteau test. It is advisible to conduct this test at multiple lags, particularly 24 and 48 (suggested by box). Luckily, tswgewrapped has this all covered for us (source code included, no smoke and mirrors).
@@ -413,8 +412,8 @@ title(main="5 step back forecast")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-13-1.svg" alt="**Figure 7 :** Looks like a pretty good forecast"  />
-<p class="caption">**Figure 7 :** Looks like a pretty good forecast</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-13-1.svg" alt="**Figure 8 :** Looks like a pretty good forecast"  />
+<p class="caption">**Figure 8 :** Looks like a pretty good forecast</p>
 </div>
 
 ```r
@@ -475,29 +474,404 @@ pander::pander(list(aics, bics))
 
 <!-- end of list -->
 
-It looks like we were pretty close! We will go ahead and try out an ARMA(3,1) model as well, for the sake of thoroughness.
+
+It looks like we were pretty close! We will go ahead and try out an ARMA(3,1) model as well, for the sake of thoroughness. The analysis will be less verbose this time, as there is nothing new under the sun.
 
 
 ```r
-#crox <- read.csv("C:/Users/andyh/Google Drive/Education/SMU/Courses/DS_6373_Time_Series/Unit6/crox.csv", header = TRUE) 
-#plotts.wge(crox$Close)
-#plotts.sample.wge(crox$Close)
-#
-##Taking the first difference of the crox data.
-#Dif1 = artrans.wge(crox$Close, 1)
-#plotts.sample.wge(Dif1)
-#aic5.wge(Dif1)
-#acf(Dif1)
-#
-#
-#
-#x=gen.aruma.wge(n=80, s=4, sn = 81) #tswge function to generate ARIMA and Seasonal Models
-#Dif = artrans.wge(x,c(0,0,0,1)) #Take out the (1-B^4)
-#aic5.wge(Dif) #Check the structure of the noise
+est_auto_un <- estimate(crox_train, p=3, q = 1)
 ```
 
-# Grid Search?  
-### I think he wants us to run a grid search of p,d,q.  But we'll use AIC5 for that. 
+```
+#> 
+#> Coefficients of Original polynomial:  
+#> 1.6557 -0.4727 -0.1834 
+#> 
+#> Factor                 Roots                Abs Recip    System Freq 
+#> 1-0.9979B              1.0021               0.9979       0.0000
+#> 1-0.8692B              1.1504               0.8692       0.0000
+#> 1+0.2114B             -4.7306               0.2114       0.5000
+#>   
+#> 
+```
+
+```r
+plot_res(est_auto_un$res)
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-15-1.svg" alt="**Figure 9 :** These residuals do not look much better, at a higher model complexity..."  />
+<p class="caption">**Figure 9 :** These residuals do not look much better, at a higher model complexity...</p>
+</div>
+
+Lets go ahead and check with our Ljung Box too:
 
 
-# Conclusion
+```r
+ljung_box(est_auto_un$res, 3, 1)
+```
+
+```
+#>            [,1]             [,2]            
+#> test       "Ljung-Box test" "Ljung-Box test"
+#> K          24               48              
+#> chi.square 31               57              
+#> df         20               44              
+#> pval       0.05             0.086
+```
+
+This represents a very slight improvement, however at the risk of slightly overfitting. Lets see how much better our backtested forecast got:
+
+
+```r
+ase_auto_un <- assess(crox_train, arma, n.ahead=5, phi = est_auto_un$phi, theta = est_auto_un$theta)
+title(main="5 step back forecast")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-17-1.svg" alt="**Figure 10 :** Auto generated backtesting"  />
+<p class="caption">**Figure 10 :** Auto generated backtesting</p>
+</div>
+
+```r
+ase_auto_un
+```
+
+```
+#> [1] 1.3
+```
+
+Interestingly, this model did slightly worse in backtesting. It is likely that the MA term is not totally appropriate with the series, as we did not see any indicators in the plots or anywhere else in the data that suggested MA, and we are just modeling noise. We will keep it for comparison. Lets move on to the differenced series now.
+
+## Analysis of the differenced series
+
+We will now look at the first order differenced data in more detail. First lets look at the sample plot:
+
+
+
+```r
+# assignment to save the grader from tswge output
+x <- plotts.sample.wge(train_adj)
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-18-1.svg" alt="**Figure 11 :** The differenced series is suggestive of MA or AR with complex conjugate and/or negative roots"  />
+<p class="caption">**Figure 11 :** The differenced series is suggestive of MA or AR with complex conjugate and/or negative roots</p>
+</div>
+
+As the caption states, the oscillitory nature of the ACF, suggests AR with either conjugate or negative roots. What is more interesting is the parzen window on the bottom left. This sharply lumpy state can be indicative of a couple of things: first, it is possible we are left with just white noise and not enough data to flatten out the parzen window, and second: a mixture of AR and MA components. AR with complex conjugate roots would make the peaks, while MA would make the troughs. Since conjugate roots come in pairs, and the oscillations continue for a long time, we can assume both the AR and the MA components have an even number. The autocorrelations continue to extend and oscillate for a long period of time, with a slow sinusoidal damping pattern. This suggests to us that the AR component outweighs the MA component (and in general we prefer more AR than MA, as pure AR models are in general simpler and should generalize better). We will go with ARMA(4,2) because of these reasons (the parzen window is such a clear sign of an ARMA model).
+
+
+```r
+est_hand_diff <- estimate(train_adj, p=4,q=2)
+```
+
+```
+#> 
+#> Coefficients of Original polynomial:  
+#> -0.8924 -0.9981 -0.0707 0.0710 
+#> 
+#> Factor                 Roots                Abs Recip    System Freq 
+#> 1+0.7623B+0.9720B^2   -0.3921+-0.9354i      0.9859       0.3132
+#> 1+0.3431B             -2.9147               0.3431       0.5000
+#> 1-0.2131B              4.6937               0.2131       0.0000
+#>   
+#> 
+```
+
+These roots make a lot of sense. First of all, we have the complex conjugate, which explains the peak in the parzen window at 0.3132. The second root is negative, with a peak near the nyquist frequency in the parzen window. The third root is relatively weak, and shows the remaining wandering component to the series. We can also check the roots of the MA component of the model using the brilliant `factor.wge` function (note this doesnt explain the interaction between the two sets of roots, but it definitely helps)
+
+
+```r
+factor.wge(est_hand_diff$theta)
+```
+
+```
+#> 
+#> Coefficients of Original polynomial:  
+#> -0.7350 -0.9402 
+#> 
+#> Factor                 Roots                Abs Recip    System Freq 
+#> 1+0.7350B+0.9402B^2   -0.3909+-0.9544i      0.9697       0.3119
+#>   
+#> 
+```
+
+We see another complex conjugate root, with a frequencey of 0.3119. This is slightly less than the peak from the AR part, which probably explains the sharpness of the central peak. Again, we cannot model the interplay between the two sets of roots with simple factoring. Lets go ahead and run our tests:
+
+
+```r
+plot_res(est_hand_diff$res)
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-21-1.svg" alt="**Figure 12 :** Not much change..."  />
+<p class="caption">**Figure 12 :** Not much change...</p>
+</div>
+
+```r
+ljung_box(est_hand_diff$res, p=4,q=2)
+```
+
+```
+#>            [,1]             [,2]            
+#> test       "Ljung-Box test" "Ljung-Box test"
+#> K          24               48              
+#> chi.square 25               47              
+#> df         18               42              
+#> pval       0.13             0.29
+```
+
+Our residual plot looks about the same, however finally we can safely accept the null hypothesis and say our residuals are stationary! Lets test the forecast out:
+
+
+```r
+ase_hand_diff <- assess(crox_train, aruma, n.ahead=5, phi = est_hand_diff$phi, theta =est_hand_diff$theta, d=1)
+title(main="Backtesting ARIMA")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-22-1.svg" alt="**Figure 13 :** Worst forecast so far!"  />
+<p class="caption">**Figure 13 :** Worst forecast so far!</p>
+</div>
+
+```r
+ase_hand_diff
+```
+
+```
+#> [1] 1.5
+```
+
+This is not a brilliant forecast, relative to what we have done previously. This is largely in part due to some of the facts regarding ARIMA. The integrated component of ARIMA is more or less a random walk, and the expected value of a random walk is just wherever you started. So, a forecast with d=1 and nothing else is just going to predict the last value over and over and over. When we add in the ARMA components, we are just adding a little wiggle to that same pattern. This means even if it is the most appropriate model, ARIMA is not always the best forecast. We will investigate this further in the conclusion section. Lets now try to automate the choice of model using information criterion again.
+
+### Automated Analysis of differenced series:
+
+
+```r
+aics <- hush(aic5.wge(train_adj))
+bics <- hush(aic5.wge(train_adj, type='bic'))
+pander::pander(list(aics, bics))
+```
+
+
+
+  *
+
+    --------------------------
+     &nbsp;   p   q     aic
+    -------- --- --- ---------
+     **15**   4   2   -0.7054
+
+     **4**    1   0   -0.7002
+
+     **3**    0   2   -0.6984
+
+     **2**    0   1   -0.6974
+
+     **7**    2   0   -0.6972
+    --------------------------
+
+  *
+
+    --------------------------
+     &nbsp;   p   q     bic
+    -------- --- --- ---------
+     **4**    1   0   -0.6832
+
+     **2**    0   1   -0.6804
+
+     **3**    0   2   -0.673
+
+     **7**    2   0   -0.6718
+
+     **5**    1   1   -0.6715
+    --------------------------
+
+
+<!-- end of list -->
+
+It looks like a simple ARMA(1,0) model is most appropriate (other than our 4,2 model, which did not fare so well). I like the idea of this simple model, lets estimate the parameters and check out the residuals
+
+
+
+```r
+est_auto_diff <- estimate(train_adj, p =1)
+```
+
+```
+#> 
+#> Coefficients of Original polynomial:  
+#> -0.1690 
+#> 
+#> Factor                 Roots                Abs Recip    System Freq 
+#> 1+0.1690B             -5.9183               0.1690       0.5000
+#>   
+#> 
+```
+
+```r
+plot_res(est_auto_diff$res)
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-24-1.svg" alt="**Figure 14 :** Final residual plot looks slightly worse than the previous"  />
+<p class="caption">**Figure 14 :** Final residual plot looks slightly worse than the previous</p>
+</div>
+
+```r
+ljung_box(est_auto_diff$res, p=1, q=0)
+```
+
+```
+#>            [,1]             [,2]            
+#> test       "Ljung-Box test" "Ljung-Box test"
+#> K          24               48              
+#> chi.square 34               58              
+#> df         23               47              
+#> pval       0.072            0.12
+```
+
+This got us slightly worse than the previous model as far as modeling the noise, but these portmanteau tests are simply guidelines, as they are pretty weak. We can proceed with assessing the model:
+
+
+```r
+ase_auto_diff <- assess(crox_train, aruma, n.ahead=5, phi = est_auto_diff$phi, d=1)
+title(main="Backtesting ARIMA")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-25-1.svg" alt="Final backtest, looks like a classic d=1 model"  />
+<p class="caption">Final backtest, looks like a classic d=1 model</p>
+</div>
+
+```r
+ase_auto_diff
+```
+
+```
+#> [1] 1.3
+```
+
+This model performed all right. It is simpler than the previous model, and performed better than it, so I am more likely to choose it over the 4,2 model. Lets go ahead and test all the models on the holdout set:
+
+# Conclusions
+
+We will start by testing the first model made, by hand using no seasonal differencing on the test set:
+
+
+```r
+f_un_h <- fcst( arma, crox_train, n.ahead=5, phi = train_hand_est$phi)
+lines(x=(length(train_indices)):nrow(cstock_2years), y=c(crox_train[length(crox_train)],crox_test), col='red')
+title(main="Hand made forecast")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-26-1.svg" alt="**Figure 15 :** An alright forecast"  />
+<p class="caption">**Figure 15 :** An alright forecast</p>
+</div>
+
+```r
+ase(crox_test, f_un_h)
+```
+
+```
+#> [1] 3.3
+```
+
+This is not a brilliant forecast, but it is not horrible, we have to keep in mind that at this point in time there is already worry over a global pandemic. Lets look at the automatically made forecast and then discuss ARMA forecasts in general:
+
+
+```r
+f_a_h <- fcst(arma,crox_train, n.ahead=5, phi = est_auto_un$phi, theta = est_auto_un$theta)
+lines(x=(length(train_indices)):nrow(cstock_2years), y=c(crox_train[length(crox_train)],crox_test), col='red')
+title(main="Grid/Criterion made forecast")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-27-1.svg" alt="**Figure 16 :** A better forecast!"  />
+<p class="caption">**Figure 16 :** A better forecast!</p>
+</div>
+
+```r
+ase(crox_test, f_a_h)
+```
+
+```
+#> [1] 3.1
+```
+
+This did slightly better! We were able to capture more of the downward trend more quickly with the stronger fit by including the MA term. Lets briefly discuss the other advantages of not including the I term. With ARMA models, in general we are suggesting that things are going to trend towards the mean, as they are stationary models. For goods which do not explode in demand, but are still pretty constantly demanded, such as crocs, this is a reasonable assumption. We can display this by making a very long forecast with our ARMA model:
+
+
+```r
+f_l <- fcst(arma,crox_train, n.ahead=1600, phi = est_auto_un$phi, theta = est_auto_un$theta)
+abline(h=mean(crox_train), col='red')
+title(main="Extreme ARMA forecasting")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-28-1.svg" alt="**Figure 17 :** Trending towards the mean(in red)..."  />
+<p class="caption">**Figure 17 :** Trending towards the mean(in red)...</p>
+</div>
+
+As t approaches infinity, we will eventually just start to forecast the mean over and over. So ARMA models are conservating, saying things will stay the same as they have in the past. Lets check out our ARIMA models now.
+
+
+```r
+f_d_h <- fcst(aruma, crox_train, n.ahead=5, phi = est_hand_diff$phi, theta =est_hand_diff$theta, d=1)
+lines(x=(length(train_indices)):nrow(cstock_2years), y=c(crox_train[length(crox_train)],crox_test), col='red')
+title(main="Hand made first order difference forecast")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-29-1.svg" alt="**Figure 18 :** The slope appears way off"  />
+<p class="caption">**Figure 18 :** The slope appears way off</p>
+</div>
+
+```r
+ase(crox_test, f_d_h)
+```
+
+```
+#> [1] 3.5
+```
+
+Our worst forecast so far. We will also go ahead and check out the automated one:
+
+
+```r
+f_a_d <- fcst(aruma, crox_train, n.ahead=5, phi = est_auto_diff$phi, d=1)
+lines(x=(length(train_indices)):nrow(cstock_2years), y=c(crox_train[length(crox_train)],crox_test), col='red')
+title(main="BIC made first order difference forecast")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-30-1.svg" alt="**Figure 19 :** Our dead simple model had an even worse forecast..."  />
+<p class="caption">**Figure 19 :** Our dead simple model had an even worse forecast...</p>
+</div>
+
+```r
+ase(crox_test, f_a_d)
+```
+
+```
+#> [1] 3.8
+```
+
+This is the worst model we made. Why did the differenced models perform so poorly? Isnt ARIMA a powerful tool?? The reason is this: When you make an ARIMA forecast, you are trying to predict a random walk, or an AR process at with a root at 1. When you do this, the math happens to fall in place such that the model just predicts the last value seen repeatedly (with d=2, the slope of the last 2 values, with d=3, you are doing something wrong). We can test this by making another extremely long forecast:
+
+
+```r
+f_l <- fcst(aruma, crox_train, n.ahead=1600, phi = est_auto_diff$phi, d=1)
+abline(h=mean(crox_train), col='red')
+title(main="Extreme ARIMA forecasting")
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-31-1.svg" alt="**Figure 20 :** I predict things will be exactly the same as they are right now for the rest of time"  />
+<p class="caption">**Figure 20 :** I predict things will be exactly the same as they are right now for the rest of time</p>
+</div>
+
+ARIMA is a powerful tool, and incorporating the random walk/integrated component can help us build powerful models (especially with seasonality involved), however when the only thing that seems to be going on is an integrated component (or strong AR), it is often better to underfit that as a strong AR model than overfit it as an ARIMA model. All in all, the toolset given by tswge is a powerful one. For further reference, please refer to the study guide written by the authors of this report ([link](https://josephsdavid.github.io/tstest/)), the tswgewrapped documnetation on [rdrr.io](https://rdrr.io/github/josephsdavid/tswgewrapped/), the Applied Time Series Analysis with R book, and the brilliant book by Rob J Hyndman, the [bible for forecasting, fpp2](https://otexts.com/fpp2/).
+
