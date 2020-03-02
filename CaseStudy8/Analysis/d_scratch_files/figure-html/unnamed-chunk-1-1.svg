@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720pt" height="720pt" viewBox="0 0 720 720" version="1.1">
+<defs>
+<g>
+<symbol overflow="visible" id="glyph0-0">
+<g>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph0-1">
+<g transform="matrix(1,0,0,1,0,-4)">
+<rect x="0" y="1" width="1" height="1"/>
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph0-2">
+<g transform="matrix(1,0,0,1,0,-8)">
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph0-3">
+<g transform="matrix(1,0,0,1,0,-1)">
+<rect x="1" y="0" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph0-4">
+<g transform="matrix(1,0,0,1,0,-8)">
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="4" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="4" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="4" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="4" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="4" y="6" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="3" y="7" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph0-5">
+<g transform="matrix(1,0,0,1,0,-8)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="3" y="3" width="1" height="1"/>
+<rect x="4" y="4" width="1" height="1"/>
+<rect x="4" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="4" y="6" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="3" y="7" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-0">
+<g>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-1">
+<g transform="matrix(1,0,0,1,0,-14)">
+<rect x="0" y="1" width="1" height="1"/>
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="5" y="1" width="1" height="1"/>
+<rect x="6" y="1" width="1" height="1"/>
+<rect x="7" y="1" width="1" height="1"/>
+<rect x="8" y="1" width="1" height="1"/>
+<rect x="9" y="1" width="1" height="1"/>
+<rect x="10" y="1" width="1" height="1"/>
+<rect x="11" y="1" width="1" height="1"/>
+<rect x="4" y="2" width="1" height="1"/>
+<rect x="5" y="2" width="1" height="1"/>
+<rect x="6" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="5" y="3" width="1" height="1"/>
+<rect x="6" y="3" width="1" height="1"/>
+<rect x="5" y="4" width="1" height="1"/>
+<rect x="6" y="4" width="1" height="1"/>
+<rect x="5" y="5" width="1" height="1"/>
+<rect x="6" y="5" width="1" height="1"/>
+<rect x="5" y="6" width="1" height="1"/>
+<rect x="6" y="6" width="1" height="1"/>
+<rect x="5" y="7" width="1" height="1"/>
+<rect x="6" y="7" width="1" height="1"/>
+<rect x="5" y="8" width="1" height="1"/>
+<rect x="6" y="8" width="1" height="1"/>
+<rect x="5" y="9" width="1" height="1"/>
+<rect x="6" y="9" width="1" height="1"/>
+<rect x="5" y="10" width="1" height="1"/>
+<rect x="6" y="10" width="1" height="1"/>
+<rect x="5" y="11" width="1" height="1"/>
+<rect x="6" y="11" width="1" height="1"/>
+<rect x="5" y="12" width="1" height="1"/>
+<rect x="6" y="12" width="1" height="1"/>
+<rect x="5" y="13" width="1" height="1"/>
+<rect x="6" y="13" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-2">
+<g transform="matrix(1,0,0,1,1,-14)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="3" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="3" y="4" width="1" height="1"/>
+<rect x="4" y="4" width="1" height="1"/>
+<rect x="5" y="4" width="1" height="1"/>
+<rect x="6" y="4" width="1" height="1"/>
+<rect x="7" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="3" y="5" width="1" height="1"/>
+<rect x="4" y="5" width="1" height="1"/>
+<rect x="6" y="5" width="1" height="1"/>
+<rect x="7" y="5" width="1" height="1"/>
+<rect x="8" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="3" y="6" width="1" height="1"/>
+<rect x="7" y="6" width="1" height="1"/>
+<rect x="8" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="7" y="7" width="1" height="1"/>
+<rect x="8" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="7" y="8" width="1" height="1"/>
+<rect x="8" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="7" y="9" width="1" height="1"/>
+<rect x="8" y="9" width="1" height="1"/>
+<rect x="1" y="10" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="7" y="10" width="1" height="1"/>
+<rect x="8" y="10" width="1" height="1"/>
+<rect x="1" y="11" width="1" height="1"/>
+<rect x="2" y="11" width="1" height="1"/>
+<rect x="7" y="11" width="1" height="1"/>
+<rect x="8" y="11" width="1" height="1"/>
+<rect x="1" y="12" width="1" height="1"/>
+<rect x="2" y="12" width="1" height="1"/>
+<rect x="7" y="12" width="1" height="1"/>
+<rect x="8" y="12" width="1" height="1"/>
+<rect x="1" y="13" width="1" height="1"/>
+<rect x="2" y="13" width="1" height="1"/>
+<rect x="7" y="13" width="1" height="1"/>
+<rect x="8" y="13" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-3">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="5" y="1" width="1" height="1"/>
+<rect x="6" y="1" width="1" height="1"/>
+<rect x="7" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="6" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="8" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="7" y="3" width="1" height="1"/>
+<rect x="8" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="3" y="4" width="1" height="1"/>
+<rect x="6" y="4" width="1" height="1"/>
+<rect x="7" y="4" width="1" height="1"/>
+<rect x="8" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="3" y="5" width="1" height="1"/>
+<rect x="4" y="5" width="1" height="1"/>
+<rect x="5" y="5" width="1" height="1"/>
+<rect x="6" y="5" width="1" height="1"/>
+<rect x="7" y="5" width="1" height="1"/>
+<rect x="8" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="3" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="7" y="8" width="1" height="1"/>
+<rect x="8" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="3" y="9" width="1" height="1"/>
+<rect x="6" y="9" width="1" height="1"/>
+<rect x="7" y="9" width="1" height="1"/>
+<rect x="8" y="9" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="3" y="10" width="1" height="1"/>
+<rect x="4" y="10" width="1" height="1"/>
+<rect x="5" y="10" width="1" height="1"/>
+<rect x="6" y="10" width="1" height="1"/>
+<rect x="7" y="10" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-4">
+<g>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-5">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="5" y="1" width="1" height="1"/>
+<rect x="6" y="1" width="1" height="1"/>
+<rect x="7" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="6" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="8" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="7" y="3" width="1" height="1"/>
+<rect x="8" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="7" y="8" width="1" height="1"/>
+<rect x="8" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="3" y="9" width="1" height="1"/>
+<rect x="6" y="9" width="1" height="1"/>
+<rect x="7" y="9" width="1" height="1"/>
+<rect x="8" y="9" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="3" y="10" width="1" height="1"/>
+<rect x="4" y="10" width="1" height="1"/>
+<rect x="5" y="10" width="1" height="1"/>
+<rect x="6" y="10" width="1" height="1"/>
+<rect x="7" y="10" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-6">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="5" y="1" width="1" height="1"/>
+<rect x="6" y="1" width="1" height="1"/>
+<rect x="7" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="6" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="8" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="7" y="3" width="1" height="1"/>
+<rect x="8" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="7" y="4" width="1" height="1"/>
+<rect x="8" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="7" y="5" width="1" height="1"/>
+<rect x="8" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="7" y="6" width="1" height="1"/>
+<rect x="8" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="7" y="7" width="1" height="1"/>
+<rect x="8" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="7" y="8" width="1" height="1"/>
+<rect x="8" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="3" y="9" width="1" height="1"/>
+<rect x="6" y="9" width="1" height="1"/>
+<rect x="7" y="9" width="1" height="1"/>
+<rect x="8" y="9" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="3" y="10" width="1" height="1"/>
+<rect x="4" y="10" width="1" height="1"/>
+<rect x="5" y="10" width="1" height="1"/>
+<rect x="6" y="10" width="1" height="1"/>
+<rect x="7" y="10" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-7">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="5" y="1" width="1" height="1"/>
+<rect x="6" y="1" width="1" height="1"/>
+<rect x="8" y="1" width="1" height="1"/>
+<rect x="9" y="1" width="1" height="1"/>
+<rect x="10" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="4" y="2" width="1" height="1"/>
+<rect x="5" y="2" width="1" height="1"/>
+<rect x="6" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="8" y="2" width="1" height="1"/>
+<rect x="9" y="2" width="1" height="1"/>
+<rect x="10" y="2" width="1" height="1"/>
+<rect x="11" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="3" y="3" width="1" height="1"/>
+<rect x="4" y="3" width="1" height="1"/>
+<rect x="5" y="3" width="1" height="1"/>
+<rect x="6" y="3" width="1" height="1"/>
+<rect x="7" y="3" width="1" height="1"/>
+<rect x="8" y="3" width="1" height="1"/>
+<rect x="9" y="3" width="1" height="1"/>
+<rect x="10" y="3" width="1" height="1"/>
+<rect x="11" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="3" y="4" width="1" height="1"/>
+<rect x="5" y="4" width="1" height="1"/>
+<rect x="6" y="4" width="1" height="1"/>
+<rect x="7" y="4" width="1" height="1"/>
+<rect x="10" y="4" width="1" height="1"/>
+<rect x="11" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="3" y="5" width="1" height="1"/>
+<rect x="5" y="5" width="1" height="1"/>
+<rect x="6" y="5" width="1" height="1"/>
+<rect x="7" y="5" width="1" height="1"/>
+<rect x="10" y="5" width="1" height="1"/>
+<rect x="11" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="3" y="6" width="1" height="1"/>
+<rect x="5" y="6" width="1" height="1"/>
+<rect x="6" y="6" width="1" height="1"/>
+<rect x="7" y="6" width="1" height="1"/>
+<rect x="10" y="6" width="1" height="1"/>
+<rect x="11" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="3" y="7" width="1" height="1"/>
+<rect x="5" y="7" width="1" height="1"/>
+<rect x="6" y="7" width="1" height="1"/>
+<rect x="7" y="7" width="1" height="1"/>
+<rect x="10" y="7" width="1" height="1"/>
+<rect x="11" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="3" y="8" width="1" height="1"/>
+<rect x="5" y="8" width="1" height="1"/>
+<rect x="6" y="8" width="1" height="1"/>
+<rect x="7" y="8" width="1" height="1"/>
+<rect x="10" y="8" width="1" height="1"/>
+<rect x="11" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="3" y="9" width="1" height="1"/>
+<rect x="5" y="9" width="1" height="1"/>
+<rect x="6" y="9" width="1" height="1"/>
+<rect x="7" y="9" width="1" height="1"/>
+<rect x="10" y="9" width="1" height="1"/>
+<rect x="11" y="9" width="1" height="1"/>
+<rect x="1" y="10" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="5" y="10" width="1" height="1"/>
+<rect x="6" y="10" width="1" height="1"/>
+<rect x="7" y="10" width="1" height="1"/>
+<rect x="10" y="10" width="1" height="1"/>
+<rect x="11" y="10" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-8">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="5" y="1" width="1" height="1"/>
+<rect x="6" y="1" width="1" height="1"/>
+<rect x="7" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="4" y="2" width="1" height="1"/>
+<rect x="6" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="8" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="3" y="3" width="1" height="1"/>
+<rect x="7" y="3" width="1" height="1"/>
+<rect x="8" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="7" y="4" width="1" height="1"/>
+<rect x="8" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="7" y="5" width="1" height="1"/>
+<rect x="8" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="7" y="6" width="1" height="1"/>
+<rect x="8" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="3" y="7" width="1" height="1"/>
+<rect x="7" y="7" width="1" height="1"/>
+<rect x="8" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="3" y="8" width="1" height="1"/>
+<rect x="4" y="8" width="1" height="1"/>
+<rect x="7" y="8" width="1" height="1"/>
+<rect x="8" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="3" y="9" width="1" height="1"/>
+<rect x="4" y="9" width="1" height="1"/>
+<rect x="5" y="9" width="1" height="1"/>
+<rect x="6" y="9" width="1" height="1"/>
+<rect x="7" y="9" width="1" height="1"/>
+<rect x="8" y="9" width="1" height="1"/>
+<rect x="1" y="10" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="3" y="10" width="1" height="1"/>
+<rect x="4" y="10" width="1" height="1"/>
+<rect x="5" y="10" width="1" height="1"/>
+<rect x="6" y="10" width="1" height="1"/>
+<rect x="7" y="10" width="1" height="1"/>
+<rect x="1" y="11" width="1" height="1"/>
+<rect x="2" y="11" width="1" height="1"/>
+<rect x="3" y="11" width="1" height="1"/>
+<rect x="1" y="12" width="1" height="1"/>
+<rect x="2" y="12" width="1" height="1"/>
+<rect x="1" y="13" width="1" height="1"/>
+<rect x="2" y="13" width="1" height="1"/>
+<rect x="1" y="14" width="1" height="1"/>
+<rect x="2" y="14" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-9">
+<g transform="matrix(1,0,0,1,1,-14)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="1" y="10" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="1" y="11" width="1" height="1"/>
+<rect x="2" y="11" width="1" height="1"/>
+<rect x="1" y="12" width="1" height="1"/>
+<rect x="2" y="12" width="1" height="1"/>
+<rect x="1" y="13" width="1" height="1"/>
+<rect x="2" y="13" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-10">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="8" y="1" width="1" height="1"/>
+<rect x="9" y="1" width="1" height="1"/>
+<rect x="10" y="1" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="4" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="8" y="2" width="1" height="1"/>
+<rect x="9" y="2" width="1" height="1"/>
+<rect x="3" y="3" width="1" height="1"/>
+<rect x="4" y="3" width="1" height="1"/>
+<rect x="5" y="3" width="1" height="1"/>
+<rect x="6" y="3" width="1" height="1"/>
+<rect x="7" y="3" width="1" height="1"/>
+<rect x="8" y="3" width="1" height="1"/>
+<rect x="4" y="4" width="1" height="1"/>
+<rect x="5" y="4" width="1" height="1"/>
+<rect x="6" y="4" width="1" height="1"/>
+<rect x="7" y="4" width="1" height="1"/>
+<rect x="4" y="5" width="1" height="1"/>
+<rect x="5" y="5" width="1" height="1"/>
+<rect x="6" y="5" width="1" height="1"/>
+<rect x="7" y="5" width="1" height="1"/>
+<rect x="3" y="6" width="1" height="1"/>
+<rect x="4" y="6" width="1" height="1"/>
+<rect x="5" y="6" width="1" height="1"/>
+<rect x="6" y="6" width="1" height="1"/>
+<rect x="7" y="6" width="1" height="1"/>
+<rect x="8" y="6" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="3" y="7" width="1" height="1"/>
+<rect x="4" y="7" width="1" height="1"/>
+<rect x="7" y="7" width="1" height="1"/>
+<rect x="8" y="7" width="1" height="1"/>
+<rect x="9" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="3" y="8" width="1" height="1"/>
+<rect x="8" y="8" width="1" height="1"/>
+<rect x="9" y="8" width="1" height="1"/>
+<rect x="10" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="3" y="9" width="1" height="1"/>
+<rect x="8" y="9" width="1" height="1"/>
+<rect x="9" y="9" width="1" height="1"/>
+<rect x="10" y="9" width="1" height="1"/>
+<rect x="1" y="10" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="8" y="10" width="1" height="1"/>
+<rect x="9" y="10" width="1" height="1"/>
+<rect x="10" y="10" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-11">
+<g transform="matrix(1,0,0,1,1,-14)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="1" y="10" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="1" y="11" width="1" height="1"/>
+<rect x="2" y="11" width="1" height="1"/>
+<rect x="1" y="12" width="1" height="1"/>
+<rect x="2" y="12" width="1" height="1"/>
+<rect x="1" y="13" width="1" height="1"/>
+<rect x="2" y="13" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-12">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="5" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="4" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="3" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="1" y="10" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-13">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="5" y="1" width="1" height="1"/>
+<rect x="6" y="1" width="1" height="1"/>
+<rect x="7" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="4" y="2" width="1" height="1"/>
+<rect x="6" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="8" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="3" y="3" width="1" height="1"/>
+<rect x="7" y="3" width="1" height="1"/>
+<rect x="8" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="7" y="4" width="1" height="1"/>
+<rect x="8" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="7" y="5" width="1" height="1"/>
+<rect x="8" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="7" y="6" width="1" height="1"/>
+<rect x="8" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="7" y="7" width="1" height="1"/>
+<rect x="8" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="7" y="8" width="1" height="1"/>
+<rect x="8" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="7" y="9" width="1" height="1"/>
+<rect x="8" y="9" width="1" height="1"/>
+<rect x="1" y="10" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="7" y="10" width="1" height="1"/>
+<rect x="8" y="10" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-14">
+<g transform="matrix(1,0,0,1,0,-14)">
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="3" y="3" width="1" height="1"/>
+<rect x="4" y="3" width="1" height="1"/>
+<rect x="0" y="4" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="3" y="4" width="1" height="1"/>
+<rect x="4" y="4" width="1" height="1"/>
+<rect x="5" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="3" y="5" width="1" height="1"/>
+<rect x="4" y="5" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="3" y="6" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="3" y="7" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="3" y="8" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="3" y="9" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="3" y="10" width="1" height="1"/>
+<rect x="2" y="11" width="1" height="1"/>
+<rect x="3" y="11" width="1" height="1"/>
+<rect x="2" y="12" width="1" height="1"/>
+<rect x="3" y="12" width="1" height="1"/>
+<rect x="4" y="12" width="1" height="1"/>
+<rect x="2" y="13" width="1" height="1"/>
+<rect x="3" y="13" width="1" height="1"/>
+<rect x="4" y="13" width="1" height="1"/>
+<rect x="5" y="13" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-15">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="1" y="1" width="1" height="1"/>
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="7" y="1" width="1" height="1"/>
+<rect x="8" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="8" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="7" y="3" width="1" height="1"/>
+<rect x="8" y="3" width="1" height="1"/>
+<rect x="1" y="4" width="1" height="1"/>
+<rect x="2" y="4" width="1" height="1"/>
+<rect x="7" y="4" width="1" height="1"/>
+<rect x="8" y="4" width="1" height="1"/>
+<rect x="1" y="5" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="7" y="5" width="1" height="1"/>
+<rect x="8" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="7" y="6" width="1" height="1"/>
+<rect x="8" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="6" y="7" width="1" height="1"/>
+<rect x="7" y="7" width="1" height="1"/>
+<rect x="8" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="5" y="8" width="1" height="1"/>
+<rect x="6" y="8" width="1" height="1"/>
+<rect x="7" y="8" width="1" height="1"/>
+<rect x="8" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="3" y="9" width="1" height="1"/>
+<rect x="4" y="9" width="1" height="1"/>
+<rect x="5" y="9" width="1" height="1"/>
+<rect x="6" y="9" width="1" height="1"/>
+<rect x="7" y="9" width="1" height="1"/>
+<rect x="8" y="9" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="3" y="10" width="1" height="1"/>
+<rect x="4" y="10" width="1" height="1"/>
+<rect x="5" y="10" width="1" height="1"/>
+<rect x="6" y="10" width="1" height="1"/>
+<rect x="7" y="10" width="1" height="1"/>
+<rect x="8" y="10" width="1" height="1"/>
+</g>
+</symbol>
+<symbol overflow="visible" id="glyph1-16">
+<g transform="matrix(1,0,0,1,1,-11)">
+<rect x="2" y="1" width="1" height="1"/>
+<rect x="3" y="1" width="1" height="1"/>
+<rect x="4" y="1" width="1" height="1"/>
+<rect x="5" y="1" width="1" height="1"/>
+<rect x="6" y="1" width="1" height="1"/>
+<rect x="7" y="1" width="1" height="1"/>
+<rect x="1" y="2" width="1" height="1"/>
+<rect x="2" y="2" width="1" height="1"/>
+<rect x="3" y="2" width="1" height="1"/>
+<rect x="6" y="2" width="1" height="1"/>
+<rect x="7" y="2" width="1" height="1"/>
+<rect x="8" y="2" width="1" height="1"/>
+<rect x="1" y="3" width="1" height="1"/>
+<rect x="2" y="3" width="1" height="1"/>
+<rect x="7" y="3" width="1" height="1"/>
+<rect x="8" y="3" width="1" height="1"/>
+<rect x="6" y="4" width="1" height="1"/>
+<rect x="7" y="4" width="1" height="1"/>
+<rect x="8" y="4" width="1" height="1"/>
+<rect x="2" y="5" width="1" height="1"/>
+<rect x="3" y="5" width="1" height="1"/>
+<rect x="4" y="5" width="1" height="1"/>
+<rect x="5" y="5" width="1" height="1"/>
+<rect x="6" y="5" width="1" height="1"/>
+<rect x="7" y="5" width="1" height="1"/>
+<rect x="8" y="5" width="1" height="1"/>
+<rect x="1" y="6" width="1" height="1"/>
+<rect x="2" y="6" width="1" height="1"/>
+<rect x="3" y="6" width="1" height="1"/>
+<rect x="6" y="6" width="1" height="1"/>
+<rect x="7" y="6" width="1" height="1"/>
+<rect x="8" y="6" width="1" height="1"/>
+<rect x="1" y="7" width="1" height="1"/>
+<rect x="2" y="7" width="1" height="1"/>
+<rect x="3" y="7" width="1" height="1"/>
+<rect x="7" y="7" width="1" height="1"/>
+<rect x="8" y="7" width="1" height="1"/>
+<rect x="1" y="8" width="1" height="1"/>
+<rect x="2" y="8" width="1" height="1"/>
+<rect x="3" y="8" width="1" height="1"/>
+<rect x="7" y="8" width="1" height="1"/>
+<rect x="8" y="8" width="1" height="1"/>
+<rect x="1" y="9" width="1" height="1"/>
+<rect x="2" y="9" width="1" height="1"/>
+<rect x="3" y="9" width="1" height="1"/>
+<rect x="6" y="9" width="1" height="1"/>
+<rect x="7" y="9" width="1" height="1"/>
+<rect x="8" y="9" width="1" height="1"/>
+<rect x="9" y="9" width="1" height="1"/>
+<rect x="2" y="10" width="1" height="1"/>
+<rect x="3" y="10" width="1" height="1"/>
+<rect x="4" y="10" width="1" height="1"/>
+<rect x="5" y="10" width="1" height="1"/>
+<rect x="6" y="10" width="1" height="1"/>
+<rect x="7" y="10" width="1" height="1"/>
+<rect x="8" y="10" width="1" height="1"/>
+<rect x="9" y="10" width="1" height="1"/>
+<rect x="10" y="10" width="1" height="1"/>
+</g>
+</symbol>
+</g>
+<clipPath id="clip1">
+  <path d="M 37.78125 39.378906 L 705.601562 39.378906 L 705.601562 689.222656 L 37.78125 689.222656 Z M 37.78125 39.378906 "/>
+</clipPath>
+<clipPath id="clip2">
+  <path d="M 37.78125 659 L 705.601562 659 L 705.601562 661 L 37.78125 661 Z M 37.78125 659 "/>
+</clipPath>
+<clipPath id="clip3">
+  <path d="M 37.78125 511 L 705.601562 511 L 705.601562 513 L 37.78125 513 Z M 37.78125 511 "/>
+</clipPath>
+<clipPath id="clip4">
+  <path d="M 37.78125 363 L 705.601562 363 L 705.601562 365 L 37.78125 365 Z M 37.78125 363 "/>
+</clipPath>
+<clipPath id="clip5">
+  <path d="M 37.78125 216 L 705.601562 216 L 705.601562 218 L 37.78125 218 Z M 37.78125 216 "/>
+</clipPath>
+<clipPath id="clip6">
+  <path d="M 37.78125 68 L 705.601562 68 L 705.601562 70 L 37.78125 70 Z M 37.78125 68 "/>
+</clipPath>
+<clipPath id="clip7">
+  <path d="M 67 39.378906 L 69 39.378906 L 69 689.222656 L 67 689.222656 Z M 67 39.378906 "/>
+</clipPath>
+<clipPath id="clip8">
+  <path d="M 219 39.378906 L 221 39.378906 L 221 689.222656 L 219 689.222656 Z M 219 39.378906 "/>
+</clipPath>
+<clipPath id="clip9">
+  <path d="M 371 39.378906 L 373 39.378906 L 373 689.222656 L 371 689.222656 Z M 371 39.378906 "/>
+</clipPath>
+<clipPath id="clip10">
+  <path d="M 522 39.378906 L 525 39.378906 L 525 689.222656 L 522 689.222656 Z M 522 39.378906 "/>
+</clipPath>
+<clipPath id="clip11">
+  <path d="M 674 39.378906 L 676 39.378906 L 676 689.222656 L 674 689.222656 Z M 674 39.378906 "/>
+</clipPath>
+</defs>
+<g id="surface11691">
+<rect x="0" y="0" width="720" height="720" style="fill:rgb(100%,100%,100%);fill-opacity:1;stroke:none;"/>
+<rect x="0" y="0" width="720" height="720" style="fill:rgb(94.117647%,94.117647%,94.117647%);fill-opacity:1;stroke:none;"/>
+<g clip-path="url(#clip1)" clip-rule="nonzero">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(94.117647%,94.117647%,94.117647%);fill-opacity:1;" d="M 37.78125 689.21875 L 705.601562 689.21875 L 705.601562 39.375 L 37.78125 39.375 Z M 37.78125 689.21875 "/>
+</g>
+<g clip-path="url(#clip2)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 37.78125 659.71875 L 705.601562 659.71875 "/>
+</g>
+<g clip-path="url(#clip3)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 37.78125 512.007812 L 705.601562 512.007812 "/>
+</g>
+<g clip-path="url(#clip4)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 37.78125 364.300781 L 705.601562 364.300781 "/>
+</g>
+<g clip-path="url(#clip5)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 37.78125 216.589844 L 705.601562 216.589844 "/>
+</g>
+<g clip-path="url(#clip6)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 37.78125 68.878906 L 705.601562 68.878906 "/>
+</g>
+<g clip-path="url(#clip7)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 67.984375 689.21875 L 67.984375 39.378906 "/>
+</g>
+<g clip-path="url(#clip8)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 219.796875 689.21875 L 219.796875 39.378906 "/>
+</g>
+<g clip-path="url(#clip9)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 371.613281 689.21875 L 371.613281 39.378906 "/>
+</g>
+<g clip-path="url(#clip10)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 523.429688 689.21875 L 523.429688 39.378906 "/>
+</g>
+<g clip-path="url(#clip11)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:1.163976;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(82.352941%,82.352941%,82.352941%);stroke-opacity:1;stroke-miterlimit:10;" d="M 675.246094 689.21875 L 675.246094 39.378906 "/>
+</g>
+<path style="fill:none;stroke-width:1.066978;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 675.246094 364.300781 L 674.632812 345.5625 L 672.800781 326.902344 L 669.757812 308.390625 L 665.511719 290.105469 L 660.085938 272.117188 L 653.496094 254.503906 L 645.769531 237.328125 L 636.941406 220.667969 L 627.042969 204.582031 L 616.117188 189.140625 L 604.207031 174.40625 L 591.363281 160.4375 L 577.628906 147.285156 L 563.070312 135.007812 L 547.738281 123.65625 L 531.695312 113.273438 L 515.007812 103.898438 L 497.746094 95.574219 L 479.976562 88.332031 L 461.769531 82.203125 L 443.195312 77.207031 L 424.339844 73.367188 L 405.265625 70.699219 L 386.0625 69.214844 L 366.796875 68.914062 L 347.550781 69.808594 L 328.402344 71.886719 L 309.429688 75.140625 L 290.703125 79.558594 L 272.304688 85.125 L 254.308594 91.816406 L 236.78125 99.605469 L 219.796875 108.457031 L 203.425781 118.339844 L 187.730469 129.214844 L 172.777344 141.035156 L 158.625 153.753906 L 145.328125 167.320312 L 132.941406 181.683594 L 121.519531 196.777344 L 111.101562 212.546875 L 101.734375 228.929688 L 93.453125 245.855469 L 86.292969 263.257812 L 80.28125 281.070312 L 75.441406 299.214844 L 71.796875 317.621094 L 69.355469 336.21875 L 68.136719 354.925781 L 68.136719 373.671875 L 69.355469 392.378906 L 71.796875 410.976562 L 75.441406 429.382812 L 80.28125 447.527344 L 86.292969 465.339844 L 93.453125 482.742188 L 101.734375 499.667969 L 111.101562 516.050781 L 121.519531 531.820312 L 132.941406 546.914062 L 145.328125 561.277344 L 158.625 574.84375 L 172.777344 587.5625 L 187.730469 599.382812 L 203.425781 610.257812 L 219.796875 620.140625 L 236.78125 628.992188 L 254.308594 636.78125 L 272.304688 643.472656 L 290.703125 649.039062 L 309.429688 653.457031 L 328.402344 656.710938 L 347.550781 658.789062 L 366.796875 659.683594 L 386.0625 659.382812 L 405.265625 657.898438 L 424.339844 655.230469 L 443.195312 651.390625 L 461.769531 646.394531 L 479.976562 640.265625 L 497.746094 633.023438 L 515.007812 624.699219 L 531.695312 615.324219 L 547.738281 604.941406 L 563.070312 593.589844 L 577.628906 581.3125 L 591.363281 568.164062 L 604.207031 554.191406 L 616.117188 539.457031 L 627.042969 524.015625 L 636.941406 507.929688 L 645.769531 491.269531 L 653.496094 474.09375 L 660.085938 456.480469 L 665.511719 438.492188 L 669.757812 420.207031 L 672.800781 401.695312 L 674.632812 383.035156 L 675.246094 364.300781 "/>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-1" x="14.398438" y="663.317383"/>
+  <use xlink:href="#glyph0-2" x="18.397461" y="663.317383"/>
+  <use xlink:href="#glyph0-3" x="23.99707" y="663.317383"/>
+  <use xlink:href="#glyph0-4" x="26.396484" y="663.317383"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-1" x="14.398438" y="515.606445"/>
+  <use xlink:href="#glyph0-4" x="18.397461" y="515.606445"/>
+  <use xlink:href="#glyph0-3" x="23.99707" y="515.606445"/>
+  <use xlink:href="#glyph0-5" x="26.396484" y="515.606445"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-4" x="18.398438" y="367.899414"/>
+  <use xlink:href="#glyph0-3" x="23.998047" y="367.899414"/>
+  <use xlink:href="#glyph0-4" x="26.397461" y="367.899414"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-4" x="18.398438" y="220.188477"/>
+  <use xlink:href="#glyph0-3" x="23.998047" y="220.188477"/>
+  <use xlink:href="#glyph0-5" x="26.397461" y="220.188477"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-2" x="18.398438" y="72.477539"/>
+  <use xlink:href="#glyph0-3" x="23.998047" y="72.477539"/>
+  <use xlink:href="#glyph0-4" x="26.397461" y="72.477539"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-1" x="58.984375" y="702.200195"/>
+  <use xlink:href="#glyph0-2" x="62.983398" y="702.200195"/>
+  <use xlink:href="#glyph0-3" x="68.583008" y="702.200195"/>
+  <use xlink:href="#glyph0-4" x="70.982422" y="702.200195"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-1" x="210.796875" y="702.200195"/>
+  <use xlink:href="#glyph0-4" x="214.795898" y="702.200195"/>
+  <use xlink:href="#glyph0-3" x="220.395508" y="702.200195"/>
+  <use xlink:href="#glyph0-5" x="222.794922" y="702.200195"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-4" x="364.613281" y="702.200195"/>
+  <use xlink:href="#glyph0-3" x="370.212891" y="702.200195"/>
+  <use xlink:href="#glyph0-4" x="372.612305" y="702.200195"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-4" x="516.429688" y="702.200195"/>
+  <use xlink:href="#glyph0-3" x="522.029297" y="702.200195"/>
+  <use xlink:href="#glyph0-5" x="524.428711" y="702.200195"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph0-2" x="668.246094" y="702.200195"/>
+  <use xlink:href="#glyph0-3" x="673.845703" y="702.200195"/>
+  <use xlink:href="#glyph0-4" x="676.245117" y="702.200195"/>
+</g>
+<g style="fill:rgb(23.529412%,23.529412%,23.529412%);fill-opacity:1;">
+  <use xlink:href="#glyph1-1" x="37.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-2" x="49.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-3" x="61.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-4" x="73.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-5" x="79.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-6" x="91.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-7" x="103.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-8" x="118.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-9" x="130.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-3" x="136.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-10" x="148.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-4" x="162.28125" y="28.398438"/>
+  <use xlink:href="#glyph1-5" x="168.28125" y="28.398438"/>
+  <use xlink:href="#glyph1-11" x="180.28125" y="28.398438"/>
+  <use xlink:href="#glyph1-12" x="186.28125" y="28.398438"/>
+  <use xlink:href="#glyph1-5" x="193.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-9" x="205.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-3" x="211.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-4" x="223.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-11" x="229.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-13" x="235.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-4" x="247.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-14" x="253.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-2" x="259.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-3" x="271.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-4" x="283.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-15" x="289.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-13" x="301.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-11" x="313.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-14" x="319.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-4" x="325.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-8" x="331.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-9" x="343.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-16" x="349.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-13" x="361.78125" y="28.398438"/>
+  <use xlink:href="#glyph1-3" x="373.78125" y="28.398438"/>
+</g>
+</g>
+</svg>

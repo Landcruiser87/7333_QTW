@@ -1,0 +1,346 @@
+---
+title: 'Team CCAD Case Study 8: Crox stock ARIMA analysis'
+author: "David Josephs, Andy Heroy, Carson Drake, Che' Cobb"
+date: '2020-03-02'
+output:
+  html_document:
+    df_print: paged
+    fig_caption: true
+    fig_height: 10
+    fig_retina: yes
+    fig_width: 10
+    highlight: haddock
+    keep_md: yes
+    number_sections: yes
+    theme: readable
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+
+
+
+
+```r
+library(quantmod)
+library(tswge)
+library(tswgewrapped)
+library(dplyr)
+library(magrittr)
+library(tidyverse)
+set.seed(666)
+
+
+# this set of functions allows us to autoincrement our figures
+counter <- function() {
+  x <- 0
+  return (
+          function() {
+            # Assigning outside of scope! The real purpose of <-
+            x <<- x+1
+            return(x)
+          }
+
+  )
+}
+
+# initialize a new counter
+cnt <- counter()
+
+# call the counter with a bolded figure caption
+cap <- function(str) {
+  paste("**Figure", cnt(), ":**",str)
+}
+```
+
+# Introduction
+The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products avaiable on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
+
+
+# Background
+To begin, we'll explain what an ARIMA model is comprised of, and how they are useful in time series forecasting techniques. An ARIMA model is comprised of two main components, one consisting of the autoregressive (AR) component, and one consisting of the moving average (MA) component. As we will see shortly, the integrated (I in ARIMA) as well as the seasonal portion are just special cases of the autoregressive model. 
+
+## AR Models
+
+The basic form of the AR part of ARIMA (with order $1$) is written as: 
+
+$$
+X_t\sum_{j=0}^p\phi_jB^j = \epsilon_t
+$$
+
+Where $\mathrm{B}$ is the backshift operator such that $\mathrm{B}^nX_t = X_{t-n}$, $\phi_0 = 1$, and $\epsilon_t \sim N(0, v)$. For our analysis, we can define the **charactersitic polynomial** of an AR model in the following manner:
+
+$$
+\sum_{j=0}^p\phi_jZ^j = 0
+$$
+
+We can constrain this equation with the assumption that our AR processes are stationary. **An AR process is stationary if and only if all the roots of its characteristic equation lie within the unit circle on the complex plane**. That is to say for all roots of a charactarestic AR polynomial, the AR process is stationary if for every root $r$, $\| \mathbf{r} \| < 1$. Visually this can be explained by viewing the unit circle on the complex plane:
+
+
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-1-1.svg" alt="**Figure 1 :** Unit circle in the complex plane, all complex roots must be WITHIN this circle"  />
+<p class="caption">**Figure 1 :** Unit circle in the complex plane, all complex roots must be WITHIN this circle</p>
+</div>
+
+
+There is interesting behavior when the roots of the characteristic equation lie exactly on the unit circle. This is how autoregressive models capture integrated/wandering components and seasonal components.
+
+### The I in ARIMA
+
+The Integrated (I) component of ARIMA occurs when the AR portion of the model has a linear root at exactly 1. This means that, using ARIMA(p,d,q) form, we can write a $\left(0,1,0\right)$ model ($d=1$) as:
+$$
+\left(1 - B\right)X_t = \epsilon_t
+$$
+
+or more generally as 
+
+$$
+\left(1-B\right)^dX_t = \epsilon_t
+$$
+
+Where $d$ is the integrated order of the model. It is important to note that in general, if you have $d=2$, you are pushing it, while $d \geq 3$ processes rarely occur on this earth. If you have $d$ at a high value it is likely better to look to other models, for example high order AR models.
+
+### Seasonal ARIMA
+
+Seasonal components also appear when the roots to the AR characterstic equations are at one, however instead of linear unit roots, Seasonal components have polynomial roots at one. That is, giving a seasonality $s$:
+
+$$
+(1-B^s)X_t = \epsilon_t
+$$
+
+## MA models
+
+While AR models are focused on the relationship between a realization $X$ at time $t$ and at time $t-n$, MA models are focused on the noise portion of the equation. In general, MA models alone are not used for modeling real data, as they have some strange properties and are not quite as useful, but in conjunction with with AR, integrated, and seasonal models you can build more powerful models of time series. An MA model is expressed just the same as an arima model, using polynomials:
+
+$$
+X_t = \epsilon_t\sum_{k=0}^q\theta_kB^k
+$$
+
+Unlike the AR component, an MA model is a model of noise, which we will refer to as a General Linear Process (GLP). GLPs have a special property in that they are always stationary (in comparison to, for example, autoregressive processes, which are only stationary when their roots are bounded by the unit circle). However, MA processes  have an undesirable characteristic: multiple processes (different sets of $\theta$) can have the same autocorrelation structure, that is they exhibit model multiplicity. That means we can have different models producing the same effects, which is not ideal. To get around this, we constrain the possible MA models, we must only use models with unique solutions. This characteristic is known as **invertibility**, and we can define the criteria for invertibility as having characteristic roots *outside* the unit circle.
+
+## General ARIMA models
+
+To introduce the most general form of the ARIMA model, we will introduce some new notation for brevity:
+
+\begin{align}
+\Phi_p(B) = \sum_{j=0}^p\phi_pB^p \\
+\Theta_q(B) = \sum_{k=0}^q \theta_qB^q
+\end{align}
+
+This allows us to write seasonal ARIMA with order $(p,d,q)$ and seasonality $s$ as:
+
+$$
+\Phi_p(B)(1-B)^d
+$$
+
+
+# TSWGE
+
+In this study we will be using the `tswge` library, which is paired with the book `Applied Time Series Analysis with R`, mentioned in the above paragraphs. The library contains a few main utilities. First, it has a series of functions for generating time series, `gen.TYPEOFSERIES.wge`. These allow for practice and developing intuition. Second, it has utilities for forecasting time series, `fore.TYPEOFSERIES.wge`. Finally, it has two irrepreplacable sets of utilities, those for estimating the order of a time series as well as exploring them(model identification), and those for estimating the coefficients once the model has been identified (parameter estimation). This library, while brilliant, is sometimes syntactically painful, so it is extended by the student made (and in active development!) `tswgewrapped` package (maintained by one of the authors of this report). We will use a mix of both libraries, and share source code for the functions used when appropriate, in order to explain exactly what we are doing.
+
+
+# Stock Analysis
+
+## Data Setup
+
+As mentioned in our Introduction section, we are chiefly interested in the stock ticker CROX, for the company that makes crocs, everyone's favorite footwear. Please note, due to the ongoing financial turmoil, we will be ignoring the last two weeks with coronavirus, as that is outside the scope of ARIMA. Lets first load in the data, and take a brief look at a candle chart.
+
+
+```r
+crox <- getSymbols("CROX",src = "yahoo")
+cstock <- CROX
+cstock_2years <-cstock['2018-02-01::2020-02-01']
+candleChart(cstock_2years, theme = "white")
+# assign to a data frame!
+cstock_2years %<>% data.frame
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/getStockData-1.svg" alt="**Figure 2 :** Candle stock of Croc's stock over the last two years"  />
+<p class="caption">**Figure 2 :** Candle stock of Croc's stock over the last two years</p>
+</div>
+
+The first thing we must do is pick a **forecast horizon**. As we are forecasting stocks, it is unlikely and inappropriate to forecast stocks 15-20 days ahead. Therefore we will focus on just one business week (5 days). To assess our model, we will use the following cross validation structure:
+
+
+  * cut the data at one forecast horizon (5 days), using the last 5 days as a holdout set
+  * Validate by using *backcasting* and getting the ASE. It can be shown that forecasts hold both forwards and backwords (see applied time series with R), and so a good trick to assess model validity without dirtying your test set is to make your forecasts backwards
+  * Assess models on the holdout set
+
+<!-- end of list -->
+
+Lets go ahead and split our data, and isolate the closing price.
+
+
+```r
+train_indices <- 1:(nrow(cstock_2years) - 5)
+crox_train <- cstock_2years[train_indices,]$CROX.Close
+crox_test <- cstock_2years[-train_indices,]$CROX.Close
+```
+
+## Exploratory Analysis
+
+The first key part of doing any time series analysis is to look at the series, its ACF, and a periodigram (parzen window), which measures the frequency density of the series in decibels from 0 to the nyquist frequency (0.5):
+
+
+
+```r
+x <- plotts.sample.wge(crox_train)
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-3-1.svg" alt="**Figure 3 :** Raw Data, ACF, on top, frequency periodigrams on bottom"  />
+<p class="caption">**Figure 3 :** Raw Data, ACF, on top, frequency periodigrams on bottom</p>
+</div>
+
+What can we tell from this? We will work right to left. First, we do not see any clear seasonality in the line plot. This is expected. Crocs are a commodity which is in demand year round, so we do not expect any seasonalities. It is unclear as to whether or not there is an integrated or wandering trend, it could either have a low order integrated trend or a higher order AR term. The ACF tells the same story. These barely damping lines are highly indicative of integrated trends, but also of strong autoregressions (which if you recall, an integrated term can be viewed as an exceptionally strong autoregression). The parzen window on the bottom left tells the same story as the periodigram, but is in the authors' opinion more digestible. This inverse curve shape is indicative of a wandering (integrated component), or of a higher order AR component (but more likely wandering trend).
+
+We will continue our analysis as follows. We will consider two cases, the first that CROX stock is stationary, or that it stays the same over time. We will also consider the case that CROX is wandering ($d>0$). With these two setups, we will evaluate two techniques: visual identification of the model, and automated using an AIC and BIC based grid search technique, as favored by Woodward, Gray, and Elliot. First lets go ahead and difference the series, to see if that helps. We will use the `artrans.wge` function to difference it away
+
+
+```r
+# define a function for a single order difference
+diff1  <- . %>% artrans.wge(phi.tr = 1)
+train_adj <- diff1(crox_train)
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-4-1.svg" alt="**Figure 4 :** First order ARIMA difference of CROX stock"  />
+<p class="caption">**Figure 4 :** First order ARIMA difference of CROX stock</p>
+</div>
+
+```r
+par(mfrow=c(1,1))
+```
+
+Here we see the series before and after the  transformation. Lets talk about the ACF before the transformation first. This slowly damping ACF implies an AR model with real, positive roots, so we will look for that in our by hand analysis. The transformed ACF implies either an AR model or a simple ARMA model, or even simply noise, which would imply that CROX stock is simply performing a random walk. We will keep this in mind for our analysis.
+
+
+## Analysis of untransformed series
+
+First, we will attempt to perform our analysis by hand. We said we wanted a high order AR model with positive, real roots. To confirm this, lets make a sample time series with a strong value of phi (a strongly autoregressive model). We will use the tswgewrapped `generate` function, which is a thin wrapper for the tswge version:
+
+
+```r
+generate
+```
+
+```
+#> function (type, ...) 
+#> {
+#>     phrase <- paste0("tswge::gen.", rlang::enexpr(type), ".wge")
+#>     func <- rlang::parse_expr(phrase)
+#>     eval(rlang::call2(func, ...))
+#> }
+#> <bytecode: 0x4b749c8>
+#> <environment: namespace:tswgewrapped>
+```
+
+
+```r
+acf(generate(arma, n=100, phi=(0.99), plot=FALSE))  # 
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-6-1.svg" alt="**Figure 5 :** A strong autoregressive model looks fairly appropriate. In the wild, it would be a higher order AR model, but this is difficult to generate."  />
+<p class="caption">**Figure 5 :** A strong autoregressive model looks fairly appropriate. In the wild, it would be a higher order AR model, but this is difficult to generate.</p>
+</div>
+
+### By hand analysis of the untransformed series
+
+The first thing, looking at the ACF, which never goes negative, is we can definitely tell the AR process generating the data has strong, positive roots. This is apparent due to the lack of sign change and overall high value of ACF. Let us go ahead and try our first guess of model, and see if the roots match our assumptions. We will start with $p = 3$. This is our choice because our generation of a random series with $phi_1=0.99$ looked very similar to the autocorrelation of the original series. However, we would much prefer if the roots were a bit further away from the unit circle, while also exhibiting a stronger autoregressive effect. Therefore 3 is a good, simple start. We will first estimate the AR coeffecients using the `estimate` function from tswgewrapped. The source code for the function is below:
+
+
+```r
+estimate
+```
+
+```
+#> function (xs, p, q = 0, type = "mle", ...) 
+#> {
+#>     if (q > 0) {
+#>         return(tswge::est.arma.wge(xs, p, q, ...))
+#>     }
+#>     else {
+#>         return(tswge::est.ar.wge(xs, p, type, ...))
+#>     }
+#> }
+#> <bytecode: 0x4bc4918>
+#> <environment: namespace:tswgewrapped>
+```
+
+Again, it is a thin wrapper for tswge, where it uses maximum likelihood estimation to quickly determine the ideal values for phi and theta.
+
+
+```r
+train_hand_est <- estimate(crox_train, p=3)
+```
+
+```
+#> 
+#> Coefficients of Original polynomial:  
+#> 0.8452 0.1966 -0.0434 
+#> 
+#> Factor                 Roots                Abs Recip    System Freq 
+#> 1-0.9985B              1.0015               0.9985       0.0000
+#> 1+0.2988B             -3.3466               0.2988       0.5000
+#> 1-0.1455B              6.8740               0.1455       0.0000
+#>   
+#> 
+```
+
+This also conveniently prints out the roots of the polynomial. We see we have real roots, with two positive and one negative. The first root is rather close to the unit circle, which may not be desirable. Differencing is likely more appropriate, but we will continue for the sake of knowledge! We can also plot the ACF of this estimate, and see how it compares to our original data:
+
+
+```r
+acf(generate(arma, n=length(crox_train), phi = train_hand_est$phi, plot=FALSE))
+```
+
+<div class="figure" style="text-align: center">
+<img src="d_scratch_files/figure-html/unnamed-chunk-9-1.svg" alt="**Figure 6 :** ACF of a sample series"  />
+<p class="caption">**Figure 6 :** ACF of a sample series</p>
+</div>
+
+This looks pretty good! We can check goodness of fit with two methods: first using residual plotting, and second using the `ljung_box` function, which performs the ljung_box test. The ljung box test has a null hypothesis which the residuals are white noise, and an alternative that the residuals are correlated in some way. It is a portmanteau test. first we will look at the residuals visually:
+
+
+```r
+plot_res <-  function (res) {
+     par(mfrow = c(1, 2))
+     plot(res, type = "b")
+     acf(res)
+     par(mfrow = c(1, 1))
+ }
+
+tswgewrapped::plot_res(train_hand_est$res)
+```
+
+<img src="d_scratch_files/figure-html/unnamed-chunk-10-1.svg" style="display: block; margin: auto;" />
+
+
+
+```r
+#crox <- read.csv("C:/Users/andyh/Google Drive/Education/SMU/Courses/DS_6373_Time_Series/Unit6/crox.csv", header = TRUE) 
+#plotts.wge(crox$Close)
+#plotts.sample.wge(crox$Close)
+#
+##Taking the first difference of the crox data.
+#Dif1 = artrans.wge(crox$Close, 1)
+#plotts.sample.wge(Dif1)
+#aic5.wge(Dif1)
+#acf(Dif1)
+#
+#
+#
+#x=gen.aruma.wge(n=80, s=4, sn = 81) #tswge function to generate ARIMA and Seasonal Models
+#Dif = artrans.wge(x,c(0,0,0,1)) #Take out the (1-B^4)
+#aic5.wge(Dif) #Check the structure of the noise
+```
+
+# Grid Search?  
+### I think he wants us to run a grid search of p,d,q.  But we'll use AIC5 for that. 
+
+
+# Conclusion
