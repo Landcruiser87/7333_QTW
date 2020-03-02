@@ -13,9 +13,11 @@ library(forecast)
 
 
 getStonk <- function(ticker) {
-  data <- getSymbols(ticker, auto.assign = F, )
+  fromDate = '2019-01-02'
+  toData = '2020-01-02'
+  data <- getSymbols(ticker, auto.assign = F, from= fromDate, to=toData, env = NULL)
   headers = c('open', 'high', 'low', 'close', 'volume', 'adjusted')
-  data = data.frame(xts(data))
+  data = xts(data)
   names(data) = headers
   resp = list(
     ticker = ticker,
@@ -60,7 +62,7 @@ getDiff <- function(stonk){
 
 
 
-stonks = lapply(c('AMD','AAPL','NVDA'), getStonk)
+stonks = lapply(c('CROX'), getStonk)
 
 # plot stonks -------------------------------------------------------------
 
