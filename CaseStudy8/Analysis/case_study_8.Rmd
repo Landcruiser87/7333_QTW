@@ -108,9 +108,10 @@ P48 = ljung.wge(croxd1.est.AR1$res, K=48)
 P24$pval
 P48$pval
 
+#BivinClassic
+#ARIMA110_ASE = mean((cstock_2years$CROX.Close[(length(cstock_2years$CROX.Close)-4):length(cstock_2years$CROX.Close)] - croxd1.fore.AR1$f)^2)
 
-ARIMA110_ASE = mean((cstock_2years$CROX.Close[(length(cstock_2years$CROX.Close)-4):length(cstock_2years$CROX.Close)] - croxd1.fore.AR1$f)^2)
-
+ARIMA110_ASE = mean((crox_test$CROX.Close - croxd1.fore.AR1$f)^2)
 
 ARIMA110_ASE
 ```
@@ -138,8 +139,9 @@ P24$pval
 P48$pval
 
 
-ARIMA112_ASE = mean((cstock_2years$CROX.Close[(length(cstock_2years$CROX.Close)-4):length(cstock_2years$CROX.Close)] - croxd1.for.ARIMA.112$f)^2)
+#ARIMA112_ASE = mean((cstock_2years$CROX.Close[(length(cstock_2years$CROX.Close)-4):length(cstock_2years$CROX.Close)] - croxd1.for.ARIMA.112$f)^2)
 
+ARIMA112_ASE = mean((crox_test$CROX.Close - croxd1.for.ARIMA.112$f)^2)
 
 ARIMA112_ASE
 ```
