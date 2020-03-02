@@ -86,8 +86,12 @@ diff1  <- . %>% artrans.wge(phi.tr = 1)
 cadj_diff <- diff1(cadj)
 aic5.wge(cadj_diff, type="bic")
 
+```
+
+
+```{r Anaki_ARIMA_110}
 croxd1.est.AR1 <- est.arma.wge(cadj_diff, p = 1, q = 0)
-croxd1.fore.AR1 <- fore.aruma.wge(cstock_2years$CROX.Close, 
+croxd1.fore.AR1 <- fore.aruma.wge(crox_train$CROX.Close, 
                               d = 1,
                               phi= croxd1.est.AR1$phi,
                               n.ahead = 5,
@@ -111,6 +115,33 @@ ARIMA110_ASE = mean((cstock_2years$CROX.Close[(length(cstock_2years$CROX.Close)-
 ARIMA110_ASE
 ```
 
+```{r Anaki_ARIMA_012}
+
+#Tried fitting with an ARIMA_012.  Keep getting an error though.
+croxd1.est.ARIMA.012 <- est.arma.wge(cadj_diff, p = 0, q = 2)
+croxd1.for.ARIMA.012 <- fore.aruma.wge(crox_train$CROX.Close, 
+                              d = 1,
+                              theta = croxd1.est.ARIMA.012$theta,
+                              n.ahead = 5,
+                              limits = T,
+                              lastn = F)
+
+plotts.sample.wge(croxd1.est.ARIMA.012$res, arlimits = T)
+acf(croxd1.est.ARIMA.012$res, lag.max = 50)
+pacf(croxd1.est.ARIMA.012$res)
+
+P24 = ljung.wge(croxd1.est.ARIMA.012$res)
+P48 = ljung.wge(croxd1.est.ARIMA.012$res, K=48)
+
+P24$pval
+P48$pval
+
+
+ARIMA012_ASE = mean((cstock_2years$CROX.Close[(length(cstock_2years$CROX.Close)-4):length(cstock_2years$CROX.Close)] - croxd1.for.ARIMA.012$f)^2)
+
+
+ARIMA012_ASE
+```
 
 
 ```{r}
