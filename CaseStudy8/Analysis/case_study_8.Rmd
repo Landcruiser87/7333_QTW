@@ -54,8 +54,11 @@ cap <- function(str) {
 ```
 
 # Introduction
+The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products avaiable on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
+
 
 # Background
+To begin, we'll explain what an ARIMA model is comprised of, and how they are useful in time series forecasting techniques.  
 
 # TSWGE
 
