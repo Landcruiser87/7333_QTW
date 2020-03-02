@@ -71,11 +71,12 @@ To begin, we'll explain what an ARIMA model is comprised of, and how they are us
 
 crox <- getSymbols("CROX",src = "yahoo")
 cstock <- CROX
-candleChart(cstock, theme = "white")
-str(cstock)
-cstock %<>% data.frame
-cadj  <- cstock$CROX.Close
+cstock_2years <-cstock['2018-02-01::2020-02-01']
 
+candleChart(cstock_2years, theme = "white")
+str(cstock_2years)
+cstock_2years %<>% data.frame
+cadj  <- cstock_2years$CROX.Close
 diff1  <- . %>% artrans.wge(phi.tr = 1)
 cadj_diff <- diff1(cadj)
 aic5.wge(cadj_diff)
