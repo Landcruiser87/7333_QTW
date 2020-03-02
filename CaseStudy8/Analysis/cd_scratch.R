@@ -13,8 +13,8 @@ library(forecast)
 
 
 getStonk <- function(ticker) {
-  fromDate = '2019-01-02'
-  toData = '2020-01-02'
+  fromDate = '2018-02-01'
+  toData = '2020-02-01'
   data <- getSymbols(ticker, auto.assign = F, from= fromDate, to=toData, env = NULL)
   headers = c('open', 'high', 'low', 'close', 'volume', 'adjusted')
   data = xts(data)
@@ -58,6 +58,16 @@ getDiff <- function(stonk){
 
 
 
+
+# Fit Model ---------------------------------------------------------------
+modelStonk <- function(stonk){
+  stonk$est = est.arma.wge(stonk$diff,p = stonk$aic5[[1]][[1]], q = stonk$aic5[[2]][[1]])
+  stonk$mod = fore.aruma.wge(stonk$data$close, phi = stonk$est$phi, theta = stonk$est$theta,n.ahead = 5, lastn = T)
+  stonk$lbox = ljung.wge(stonk$est$res, p = stonk$aic5[[1]][[1]], q = stonk$aic5[[2]][[1]])
+  return(stonk)
+}
+
+
 # Test Functions ----------------------------------------------------------
 
 
@@ -66,9 +76,10 @@ stonks = lapply(c('CROX'), getStonk)
 
 # plot stonks -------------------------------------------------------------
 
-lapply(stonks, plotBasic)
+# lapply(stonks, plotBasic)
 
 stonks = lapply(stonks, getDiff)
 
 lapply(stonks, function(x) auto.arima(x$data$close, ic = "bic", num.cores = NULL))
-
+stonks = lapply(stonks, modelStonk)
+stonk = stonks[[1]]
