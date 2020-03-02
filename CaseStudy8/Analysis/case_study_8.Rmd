@@ -100,21 +100,6 @@ ARIMA110_ASE
 
 ```{r}
 
-crox <- read.csv("C:/Users/andyh/Google Drive/Education/SMU/Courses/DS_6373_Time_Series/Unit6/crox.csv", header = TRUE) 
-plotts.wge(crox$Close)
-plotts.sample.wge(crox$Close)
-
-#Taking the first difference of the crox data.
-Dif1 = artrans.wge(crox$Close, 1)
-plotts.sample.wge(Dif1)
-aic5.wge(Dif1)
-acf(Dif1)
-
-
-
-x=gen.aruma.wge(n=80, s=4, sn = 81) #tswge function to generate ARIMA and Seasonal Models
-Dif = artrans.wge(x,c(0,0,0,1)) #Take out the (1-B^4)
-aic5.wge(Dif) #Check the structure of the noise
 
 ```
 
