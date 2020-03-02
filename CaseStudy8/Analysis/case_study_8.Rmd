@@ -102,8 +102,8 @@ plotts.sample.wge(croxd1.est.AR1$res, arlimits = T)
 acf(croxd1.est.AR1$res, lag.max = 50)
 pacf(croxd1.est.AR1$res)
 
-P24 = ljung.wge(croxd1.est.AR1$res)
-P48 = ljung.wge(croxd1.est.AR1$res, K=48)
+P24 = ljung.wge(croxd1.est.AR1$res, p=1)
+P48 = ljung.wge(croxd1.est.AR1$res, p=1, K=48)
 
 P24$pval
 P48$pval
@@ -122,8 +122,8 @@ ARIMA110_ASE
 croxd1.est.ARIMA.112 <- est.arma.wge(cadj_diff, p = 1, q = 2)
 croxd1.for.ARIMA.112 <- fore.aruma.wge(crox_train$CROX.Close, 
                               d = 1,
-                              phi = croxd1.est.ARIMA.012$phi,
-                              theta = croxd1.est.ARIMA.012$theta,
+                              phi = croxd1.est.ARIMA.112$phi,
+                              theta = croxd1.est.ARIMA.112$theta,
                               n.ahead = 5,
                               limits = T,
                               lastn = F)
@@ -132,8 +132,8 @@ plotts.sample.wge(croxd1.est.ARIMA.112$res, arlimits = T)
 acf(croxd1.est.ARIMA.112$res, lag.max = 50)
 pacf(croxd1.est.ARIMA.112$res)
 
-P24 = ljung.wge(croxd1.est.ARIMA.112$res)
-P48 = ljung.wge(croxd1.est.ARIMA.112$res, K=48)
+P24 = ljung.wge(croxd1.est.ARIMA.112$res,p=1,q=2)
+P48 = ljung.wge(croxd1.est.ARIMA.112$res, p=1,q=2, K=48)
 
 P24$pval
 P48$pval
