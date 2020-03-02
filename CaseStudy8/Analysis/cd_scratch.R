@@ -62,8 +62,16 @@ getDiff <- function(stonk){
 # Fit Model ---------------------------------------------------------------
 modelStonk <- function(stonk){
   stonk$est = est.arma.wge(stonk$diff,p = stonk$aic5[[1]][[1]], q = stonk$aic5[[2]][[1]])
-  stonk$mod = fore.aruma.wge(stonk$data$close, phi = stonk$est$phi, theta = stonk$est$theta,n.ahead = 5, lastn = T)
-  stonk$lbox = ljung.wge(stonk$est$res, p = stonk$aic5[[1]][[1]], q = stonk$aic5[[2]][[1]])
+  stonk$mod = fore.aruma.wge(stonk$data$close, 
+                             phi = stonk$est$phi,
+                             d = 1,
+                             theta = stonk$est$theta,
+                             n.ahead = 5, 
+                             lastn = T)
+  stonk$lbox = ljung.wge(stonk$est$res, 
+                         p = stonk$aic5[[1]][[1]], 
+                         q = stonk$aic5[[2]][[1]]
+                         )
   return(stonk)
 }
 
