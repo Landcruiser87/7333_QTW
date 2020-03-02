@@ -72,11 +72,16 @@ To begin, we'll explain what an ARIMA model is comprised of, and how they are us
 crox <- getSymbols("CROX",src = "yahoo")
 cstock <- CROX
 cstock_2years <-cstock['2018-02-01::2020-02-01']
-
 candleChart(cstock_2years, theme = "white")
 str(cstock_2years)
 cstock_2years %<>% data.frame
-cadj  <- cstock_2years$CROX.Close
+
+train_indices <- 1:(length(cstock_2years) - 5)
+crox_train <- cstock_2years[train_indices]
+crox_test <- cstock_2years[-train_indices]
+
+
+cadj  <- crox_train$CROX.Close
 diff1  <- . %>% artrans.wge(phi.tr = 1)
 cadj_diff <- diff1(cadj)
 aic5.wge(cadj_diff, type="bic")
@@ -88,6 +93,16 @@ croxd1.fore.AR1 <- fore.aruma.wge(cstock_2years$CROX.Close,
                               n.ahead = 5,
                               limits = T,
                               lastn = F)
+
+plotts.sample.wge(croxd1.est.AR1$res, arlimits = T)
+acf(croxd1.est.AR1$res, lag.max = 50)
+pacf(croxd1.est.AR1$res)
+
+P24 = ljung.wge(croxd1.est.AR1$res)
+P48 = ljung.wge(croxd1.est.AR1$res, K=48)
+
+P24$pval
+P48$pval
 
 
 ARIMA110_ASE = mean((cstock_2years$CROX.Close[(length(cstock_2years$CROX.Close)-4):length(cstock_2years$CROX.Close)] - croxd1.fore.AR1$f)^2)
