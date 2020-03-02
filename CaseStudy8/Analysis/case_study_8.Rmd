@@ -76,9 +76,9 @@ candleChart(cstock_2years, theme = "white")
 str(cstock_2years)
 cstock_2years %<>% data.frame
 
-train_indices <- 1:(length(cstock_2years) - 5)
-crox_train <- cstock_2years[train_indices]
-crox_test <- cstock_2years[-train_indices]
+train_indices <- 1:(nrow(cstock_2years) - 5)
+crox_train <- cstock_2years[train_indices,]
+crox_test <- cstock_2years[-train_indices,]
 
 
 cadj  <- crox_train$CROX.Close
