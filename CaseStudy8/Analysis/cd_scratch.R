@@ -15,10 +15,19 @@ library(forecast)
 getStonk <- function(ticker) {
   fromDate = '2018-02-01'
   toData = '2020-02-01'
-  data <- getSymbols(ticker, auto.assign = F, from= fromDate, to=toData, env = NULL)
+  data <- getSymbols(ticker, 
+                     auto.assign = F, 
+                     from= fromDate, 
+                     to=toData, 
+                     env = NULL)
+  
+  ## Rename Columns to be stonk agnostic
   headers = c('open', 'high', 'low', 'close', 'volume', 'adjusted')
   data = xts(data)
   names(data) = headers
+  
+  ## Split last 5 into test to use for later
+  ## Remove last 5 from main data
   test = data[(nrow(data)-4):nrow(data),]
   data = data[1:(nrow(data)-5),]
   resp = list(
@@ -42,7 +51,6 @@ plotCandle <- function(stonk){
 plotBasic <- function(stonk){
   plotts.wge(stonk$data$close)
   plotts.sample.wge(stonk$data$close)
-  
 }
 
 
@@ -50,9 +58,13 @@ plotBasic <- function(stonk){
 # Diffs -------------------------------------------------------------------
 
 getDiff <- function(stonk){
+  ## Get diff, just doing dif=1 for now
   stonk$diff = artrans.wge(stonk$data$close, 1)
-  plotts.sample.wge(stonk$diff)
-  stonk$aic5 = aic5.wge(stonk$diff,type = 'bic')
+  # plotts.sample.wge(stonk$diff)
+  
+  ## Get top 5 pq combos using "bic"
+  stonk$aic5 = aic5.wge(stonk$diff,p=0:8, q=0:5,type = 'bic')
+  # Get acf data for diff data
   stonk$acf = acf(stonk$diff)
   return(stonk)
 }
@@ -64,17 +76,25 @@ getDiff <- function(stonk){
 
 # Fit Model ---------------------------------------------------------------
 modelStonk <- function(stonk){
-  stonk$est = est.arma.wge(stonk$diff,p = stonk$aic5[[1]][[1]], q = stonk$aic5[[2]][[1]])
+  # Estimate phi and theta model using best p q values from aic5 and diff
+  stonk$est = est.arma.wge(stonk$diff,p = stonk$aic5[1,1], q = stonk$aic5[1,2])
+  
+  # Fit arima model with estimated phis and thetas from est
   stonk$mod = fore.aruma.wge(stonk$data$close, 
                              phi = stonk$est$phi,
                              d = 1,
                              theta = stonk$est$theta,
                              n.ahead = 5, 
                              lastn = F)
+  
+  # Test residuals of estimated model residuals (might need to be resid from mod)
   stonk$lbox = ljung.wge(stonk$est$res, 
-                         p = stonk$aic5[[1]][[1]], 
-                         q = stonk$aic5[[2]][[1]]
+                         p = stonk$aic5[1,1], 
+                         q = stonk$aic5[1,2]
                          )
+  
+  # Lastly calculate ASE from test data and forcasted values
+  stonk$ASE =  mean((stonk$test$close - stonk$mod$f)^2)
   return(stonk)
 }
 
@@ -83,14 +103,13 @@ modelStonk <- function(stonk){
 
 
 
-stonks = lapply(c('CROX'), getStonk)
+stonks = lapply(c('CROX', 'AMD','MSFT'), getStonk)
 
 # plot stonks -------------------------------------------------------------
 
 # lapply(stonks, plotBasic)
 
 stonks = lapply(stonks, getDiff)
+stonks = lapply(stonks, modelStonk)
 
 lapply(stonks, function(x) auto.arima(x$data$close, ic = "bic", num.cores = NULL))
-stonks = lapply(stonks, modelStonk)
-stonk = stonks[[1]]
