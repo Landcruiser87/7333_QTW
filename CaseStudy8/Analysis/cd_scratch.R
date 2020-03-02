@@ -19,9 +19,12 @@ getStonk <- function(ticker) {
   headers = c('open', 'high', 'low', 'close', 'volume', 'adjusted')
   data = xts(data)
   names(data) = headers
+  test = data[(nrow(data)-4):nrow(data),]
+  data = data[1:(nrow(data)-5),]
   resp = list(
     ticker = ticker,
-    data=data
+    data=data,
+    test=test
   )
   return(resp)
 }
@@ -67,7 +70,7 @@ modelStonk <- function(stonk){
                              d = 1,
                              theta = stonk$est$theta,
                              n.ahead = 5, 
-                             lastn = T)
+                             lastn = F)
   stonk$lbox = ljung.wge(stonk$est$res, 
                          p = stonk$aic5[[1]][[1]], 
                          q = stonk$aic5[[2]][[1]]
