@@ -237,7 +237,7 @@ generate
 ```
 
 ```{r, fig.cap=cap("A strong autoregressive model looks fairly appropriate. In the wild, it would be a higher order AR model, but this is difficult to generate.")}
-acf(generate(arma, n=100, phi=(0.99), plot=FALSE))  # 
+acf(generate(arma, n=100, phi=(0.99), plot=FALSE), main="Untransformed ACF plot")  
 ```
 
 ### By hand analysis of the untransformed series
@@ -257,7 +257,7 @@ train_hand_est <- estimate(crox_train, p=3)
 This also conveniently prints out the roots of the polynomial. We see we have real roots, with two positive and one negative. The first root is rather close to the unit circle, which may not be desirable. Differencing is likely more appropriate, but we will continue for the sake of knowledge! We can also plot the ACF of this estimate, and see how it compares to our original data:
 
 ```{r, fig.cap = cap("ACF of a sample series")}
-acf(generate(arma, n=length(crox_train), phi = train_hand_est$phi, plot=FALSE))
+acf(generate(arma, n=length(crox_train), phi = train_hand_est$phi, plot=FALSE), main="ACF of sample plot")
 ```
 
 This looks pretty good! We can check goodness of fit with two methods: first using residual plotting, and second using the `ljung_box` function, which performs the ljung box test. The ljung box test has a null hypothesis which the residuals are white noise, and an alternative that the residuals are correlated in some way. It is a portmanteau test. First we will look at the residuals visually. It is important to do this because the ljung box test, while the best of statistical tests for autocorrelation, has low statistical power.
@@ -268,7 +268,7 @@ plot_res <-  function (res) {
      par(mfrow = c(1, 2))
      plot(res, type = "b")
      title(main="Residual plot")
-     acf(res)
+     acf(res, main="ACF of Residuals")
      par(mfrow = c(1, 1))
  }
 
@@ -393,7 +393,7 @@ ljung_box(est_auto_diff$res, p=1, q=0)
 
 This got us slightly worse than the previous model as far as modeling the noise, but these portmanteau tests are simply guidelines, as they are pretty weak. We can proceed with assessing the model:
 
-```{r, fig.cap="Final backtest, looks like a classic d=1 model"}
+```{r, fig.cap=cap("Final backtest, looks like a classic d=1 model")}
 ase_auto_diff <- assess(crox_train, aruma, n.ahead=5, phi = est_auto_diff$phi, d=1)
 title(main="Backtesting ARIMA")
 ase_auto_diff
