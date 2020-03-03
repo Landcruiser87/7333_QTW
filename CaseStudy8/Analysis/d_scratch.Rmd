@@ -283,7 +283,7 @@ ljung_box
 ljung_box(train_hand_est$res, 3,0)
 ```
 
-So this is in agreement with our plot. Our fit is pretty close, however it is probably not a perfect fit. We did not model all the autocorrelation out of the data, thus this is not the best model. For a baseline, we will backcast and get the ASE of our model. For the sake of transparency, we will show the tswgewrapped source code below:
+So this is in agreement with our plot. Our fit is pretty close, however it is probably not a perfect fit. We did not model all the autocorrelation out of the data, thus this is not the best model. For a baseline, we will backtest and get the ASE of our model. For the sake of transparency, we will show the tswgewrapped source code below:
 
 ```{r}
 assess
@@ -291,7 +291,7 @@ fcst
 ase
 ```
 
-Again, it is just a thin wrapper for tswge, we forecast the series backwards and get the ASE. Lets test it out:
+Again, it is just a thin wrapper for tswge, we forecast the series other than the last `n.ahead` points and get the ASE. Lets test it out:
 
 ```{r, fig.cap=cap("Looks like a pretty good forecast")}
 ase_hand_un <- assess(crox_train, arma, n.ahead=5, phi = train_hand_est$phi)
