@@ -80,11 +80,8 @@ $$
 X_t\sum_{j=0}^p\phi_jB^j = \epsilon_t
 $$
 
-<<<<<<< HEAD
 Where $\mathrm{B}$ is the backshift operator such that $\mathrm{B}^nX_t = X_{t-n}$, $\phi_0 = 1$, and $\epsilon_t \sim N(0, v)$. For our analysis, we can define the **characteristic  polynomial** of an AR model in the following manner:
-=======
-Where $\mathrm{B}$ is the backshift operator such that $\mathrm{B}^nX_t = X_{t-n}$, $\phi_0 = 1$, and $\epsilon_t \sim N(0, v)$. For our analysis, we can define the **characteristic polynomial** of an AR model in the following manner:
->>>>>>> 0723c00297cd5c9ac33cff6cd836bf7bad6e77ea
+
 
 $$
 \sum_{j=0}^p\phi_jZ^j = 0
