@@ -60,7 +60,13 @@ cap <- function(str) {
 ```
 
 # Introduction
-The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products available on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
+The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products available on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  
+
+```{r, echo = FALSE, fig.cap = cap("Crocs: utility and fashion for the business savvy")}
+knitr::include_graphics("https://i.pinimg.com/474x/88/7a/db/887adbf486d98c4ac81fe102809d0b60.jpg")
+```
+
+To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
 
 
 # Background
@@ -165,7 +171,7 @@ In this study we will be using the `tswge` library, which is paired with the boo
 
 ## Data Setup
 
-As mentioned in our Introduction section, we are chiefly interested in the stock ticker CROX, for the company that makes crocs, everyone's favorite footwear. Please note, due to the ongoing financial turmoil, we will be ignoring the last two weeks with coronavirus, as that is outside the scope of ARIMA. Let's first load in the data and take a brief look at a candle chart.
+As mentioned in our Introduction section, we are chiefly interested in the stock ticker CROX, for the company that makes crocs, everyone's favorite footwear. Please note, due to the ongoing financial turmoil, we will be ignoring the last two weeks with coronavirus, as that is outside the scope of ARIMA. Lets first load in the data, and take a brief look at a candle chart. If you are actually considering investing in crocs, please note that they are going to be hit hard by the effects of the ongoing breakout, and read [this news article](https://www.bizjournals.com/denver/news/2020/02/27/crocs-2020-coronavirus-outlook.html)
 
 ```{r getStockData, fig.cap =cap( "Candle stock of Croc's stock over the last two years"), fig.show='hold'}
 crox <- getSymbols("CROX",src = "yahoo")
