@@ -60,7 +60,7 @@ cap <- function(str) {
 ```
 
 # Introduction
-The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products avaiable on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
+The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products available on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
 
 
 # Background
@@ -74,13 +74,13 @@ $$
 X_t\sum_{j=0}^p\phi_jB^j = \epsilon_t
 $$
 
-Where $\mathrm{B}$ is the backshift operator such that $\mathrm{B}^nX_t = X_{t-n}$, $\phi_0 = 1$, and $\epsilon_t \sim N(0, v)$. For our analysis, we can define the **charactersitic polynomial** of an AR model in the following manner:
+Where $\mathrm{B}$ is the backshift operator such that $\mathrm{B}^nX_t = X_{t-n}$, $\phi_0 = 1$, and $\epsilon_t \sim N(0, v)$. For our analysis, we can define the **characteristic polynomial** of an AR model in the following manner:
 
 $$
 \sum_{j=0}^p\phi_jZ^j = 0
 $$
 
-We can constrain this equation with the assumption that our AR processes are stationary. **An AR process is stationary if and only if all the roots of its characteristic equation lie within the unit circle on the complex plane**. That is to say for all roots of a charactarestic AR polynomial, the AR process is stationary if for every root $r$, $\| \mathbf{r} \| < 1$. Visually this can be explained by viewing the unit circle on the complex plane:
+We can constrain this equation with the assumption that our AR processes are stationary. **An AR process is stationary if and only if all the roots of its characteristic equation lie within the unit circle on the complex plane**. That is to say for all roots of a characteristic AR polynomial, the AR process is stationary if for every root $r$, $\| \mathbf{r} \| < 1$. Visually this can be explained by viewing the unit circle on the complex plane:
 
 
 
@@ -120,7 +120,7 @@ Where $d$ is the integrated order of the model. It is important to note that in 
 
 ### Seasonal ARIMA
 
-Seasonal components also appear when the roots to the AR characterstic equations are at one, however instead of linear unit roots, Seasonal components have polynomial roots at one. That is, giving a seasonality $s$:
+Seasonal components also appear when the roots to the AR characteristic equations are at one, however instead of linear unit roots, Seasonal components have polynomial roots at one. That is, giving a seasonality $s$:
 
 $$
 (1-B^s)X_t = \epsilon_t
@@ -228,7 +228,7 @@ acf(generate(arma, n=100, phi=(0.99), plot=FALSE))  #
 
 ### By hand analysis of the untransformed series
 
-The first thing, looking at the ACF, which never goes negative, is we can definitely tell the AR process generating the data has strong, positive roots. This is apparent due to the lack of sign change and overall high value of ACF. Let us go ahead and try our first guess of model, and see if the roots match our assumptions. We will start with $p = 3$. This is our choice because our generation of a random series with $phi_1=0.99$ looked very similar to the autocorrelation of the original series. However, we would much prefer if the roots were a bit further away from the unit circle, while also exhibiting a stronger autoregressive effect. Therefore 3 is a good, simple start. We will first estimate the AR coeffecients using the `estimate` function from tswgewrapped. The source code for the function is below:
+The first thing, looking at the ACF, which never goes negative, is we can definitely tell the AR process generating the data has strong, positive roots. This is apparent due to the lack of sign change and overall high value of ACF. Let us go ahead and try our first guess of model, and see if the roots match our assumptions. We will start with $p = 3$. This is our choice because our generation of a random series with $phi_1=0.99$ looked very similar to the autocorrelation of the original series. However, we would much prefer if the roots were a bit further away from the unit circle, while also exhibiting a stronger autoregressive effect. Therefore 3 is a good, simple start. We will first estimate the AR coefficients using the `estimate` function from tswgewrapped. The source code for the function is below:
 
 ```{r}
 estimate
@@ -246,7 +246,7 @@ This also conveniently prints out the roots of the polynomial. We see we have re
 acf(generate(arma, n=length(crox_train), phi = train_hand_est$phi, plot=FALSE))
 ```
 
-This looks pretty good! We can check goodness of fit with two methods: first using residual plotting, and second using the `ljung_box` function, which performs the ljung_box test. The ljung box test has a null hypothesis which the residuals are white noise, and an alternative that the residuals are correlated in some way. It is a portmanteau test. First we will look at the residuals visually. It is important to do this because the ljung box test, while the best of statistical tests for autocorrelation, has low statistical power.
+This looks pretty good! We can check goodness of fit with two methods: first using residual plotting, and second using the `ljung_box` function, which performs the ljung box test. The ljung box test has a null hypothesis which the residuals are white noise, and an alternative that the residuals are correlated in some way. It is a portmanteau test. First we will look at the residuals visually. It is important to do this because the ljung box test, while the best of statistical tests for autocorrelation, has low statistical power.
 
 ```{r, fig.cap=cap("The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values.")}
 
@@ -261,7 +261,7 @@ plot_res <-  function (res) {
 plot_res(train_hand_est$res)
 ```
 
-This looks like an *alright* fit, however to double check we will go ahead with the portmanteau test. It is advisible to conduct this test at multiple lags, particularly 24 and 48 (suggested by box). Luckily, tswgewrapped has this all covered for us (source code included, no smoke and mirrors).
+This looks like an *alright* fit, however to double check we will go ahead with the portmanteau test. It is advisable to conduct this test at multiple lags, particularly 24 and 48 (suggested by box). Luckily, tswgewrapped has this all covered for us (source code included, no smoke and mirrors).
 
 ```{r}
 ljung_box
@@ -331,19 +331,19 @@ We will now look at the first order differenced data in more detail. First lets 
 x <- plotts.sample.wge(train_adj)
 ```
 
-As the caption states, the oscillitory nature of the ACF, suggests AR with either conjugate or negative roots. What is more interesting is the parzen window on the bottom left. This sharply lumpy state can be indicative of a couple of things: first, it is possible we are left with just white noise and not enough data to flatten out the parzen window, and second: a mixture of AR and MA components. AR with complex conjugate roots would make the peaks, while MA would make the troughs. Since conjugate roots come in pairs, and the oscillations continue for a long time, we can assume both the AR and the MA components have an even number. The autocorrelations continue to extend and oscillate for a long period of time, with a slow sinusoidal damping pattern. This suggests to us that the AR component outweighs the MA component (and in general we prefer more AR than MA, as pure AR models are in general simpler and should generalize better). We will go with ARMA(4,2) because of these reasons (the parzen window is such a clear sign of an ARMA model).
+As the caption states, the oscillatory nature of the ACF, suggests AR with either conjugate or negative roots. What is more interesting is the parzen window on the bottom left. This sharply lumpy state can be indicative of a couple of things: first, it is possible we are left with just white noise and not enough data to flatten out the parzen window, and second: a mixture of AR and MA components. AR with complex conjugate roots would make the peaks, while MA would make the troughs. Since conjugate roots come in pairs, and the oscillations continue for a long time, we can assume both the AR and the MA components have an even number. The autocorrelations continue to extend and oscillate for a long period of time, with a slow sinusoidal damping pattern. This suggests to us that the AR component outweighs the MA component (and in general we prefer more AR than MA, as pure AR models are in general simpler and should generalize better). We will go with ARMA(4,2) because of these reasons (the parzen window is such a clear sign of an ARMA model).
 
 ```{r}
 est_hand_diff <- estimate(train_adj, p=4,q=2)
 ```
 
-These roots make a lot of sense. First of all, we have the complex conjugate, which explains the peak in the parzen window at 0.3132. The second root is negative, with a peak near the nyquist frequency in the parzen window. The third root is relatively weak, and shows the remaining wandering component to the series. We can also check the roots of the MA component of the model using the brilliant `factor.wge` function (note this doesnt explain the interaction between the two sets of roots, but it definitely helps)
+These roots make a lot of sense. First of all, we have the complex conjugate, which explains the peak in the parzen window at 0.3132. The second root is negative, with a peak near the nyquist frequency in the parzen window. The third root is relatively weak, and shows the remaining wandering component to the series. We can also check the roots of the MA component of the model using the brilliant `factor.wge` function (note this doesn't explain the interaction between the two sets of roots, but it definitely helps)
 
 ```{r}
 factor.wge(est_hand_diff$theta)
 ```
 
-We see another complex conjugate root, with a frequencey of 0.3119. This is slightly less than the peak from the AR part, which probably explains the sharpness of the central peak. Again, we cannot model the interplay between the two sets of roots with simple factoring. Lets go ahead and run our tests:
+We see another complex conjugate root, with a frequency of 0.3119. This is slightly less than the peak from the AR part, which probably explains the sharpness of the central peak. Again, we cannot model the interplay between the two sets of roots with simple factoring. Lets go ahead and run our tests:
 
 ```{r, fig.cap=cap("Not much change...")}
 plot_res(est_hand_diff$res)
@@ -416,7 +416,7 @@ abline(h=mean(crox_train), col='red')
 title(main="Extreme ARMA forecasting")
 ```
 
-As t approaches infinity, we will eventually just start to forecast the mean over and over. So ARMA models are conservating, saying things will stay the same as they have in the past. Lets check out our ARIMA models now.
+As t approaches infinity, we will eventually just start to forecast the mean over and over. So ARMA models are conservative, saying things will stay the same as they have in the past. Lets check out our ARIMA models now.
 
 ```{r, fig.cap=cap("The slope appears way off")}
 f_d_h <- fcst(aruma, crox_train, n.ahead=5, phi = est_hand_diff$phi, theta =est_hand_diff$theta, d=1)
@@ -434,7 +434,7 @@ title(main="BIC made first order difference forecast")
 ase(crox_test, f_a_d)
 ```
 
-This is the worst model we made. Why did the differenced models perform so poorly? Isnt ARIMA a powerful tool?? The reason is this: When you make an ARIMA forecast, you are trying to predict a random walk, or an AR process at with a root at 1. When you do this, the math happens to fall in place such that the model just predicts the last value seen repeatedly (with d=2, the slope of the last 2 values, with d=3, you are doing something wrong). We can test this by making another extremely long forecast:
+This is the worst model we made. Why did the differenced models perform so poorly? Isn't ARIMA a powerful tool?? The reason is this: When you make an ARIMA forecast, you are trying to predict a random walk, or an AR process at with a root at 1. When you do this, the math happens to fall in place such that the model just predicts the last value seen repeatedly (with d=2, the slope of the last 2 values, with d=3, you are doing something wrong). We can test this by making another extremely long forecast:
 
 ```{r, fig.cap=cap("I predict things will be exactly the same as they are right now for the rest of time")}
 f_l <- fcst(aruma, crox_train, n.ahead=1600, phi = est_auto_diff$phi, d=1)
