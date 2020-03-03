@@ -182,6 +182,10 @@ candleChart(cstock_2years, theme = "white")
 cstock_2years %<>% data.frame
 ```
 
+```{r, echo = FALSE, fig.cap = cap("A meme for readers enjoyment")}
+knitr::include_graphics("https://www.mememaker.net/api/bucket?path=static/img/memes/full/2014/May/8/21/i-actually-love-crocs.jpg")
+```
+
 The first thing we must do is pick a **forecast horizon**. As we are forecasting stocks, it is unlikely and inappropriate to forecast stocks 15-20 days ahead. Therefore, we will focus on just one business week (5 days). To assess our model, we will use the following cross validation structure:
 
 ```{r, echo = FALSE}
