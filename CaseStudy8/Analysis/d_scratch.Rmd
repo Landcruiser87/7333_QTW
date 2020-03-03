@@ -191,8 +191,8 @@ The first thing we must do is pick a **forecast horizon**. As we are forecasting
 ```{r, echo = FALSE}
 l <- list(
           "cut the data at one forecast horizon (5 days), using the last 5 days as a holdout set",
-          "Validate by using *backcasting* and getting the ASE. It can be shown that forecasts hold both forwards and backwords (see applied time series with R), and so a good trick to assess model validity without dirtying your test set is to make your forecasts backwards",
-          "Assess models on the holdout set"
+          "Validate by using *backtesting* and getting the average square error(ASE). This technique is used extensively in Applied Time Series with R, and basically involves creating an ad hoc validation set. For more complex validation schemes, you could also use rolling windows, as discussed in Forecasting Principles and Practice (link in conclusion), but that is really unneccessary for the purposes of this study",
+          "Assess models on the holdout set, using ASE"
 )
 pander::pander(l)
 ```
