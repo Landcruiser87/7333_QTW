@@ -60,7 +60,7 @@ cap <- function(str) {
 ```
 
 # Introduction
-The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products avaiable on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
+The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products available on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
 
 
 # Background
@@ -74,13 +74,13 @@ $$
 X_t\sum_{j=0}^p\phi_jB^j = \epsilon_t
 $$
 
-Where $\mathrm{B}$ is the backshift operator such that $\mathrm{B}^nX_t = X_{t-n}$, $\phi_0 = 1$, and $\epsilon_t \sim N(0, v)$. For our analysis, we can define the **charactersitic polynomial** of an AR model in the following manner:
+Where $\mathrm{B}$ is the backshift operator such that $\mathrm{B}^nX_t = X_{t-n}$, $\phi_0 = 1$, and $\epsilon_t \sim N(0, v)$. For our analysis, we can define the **characteristic  polynomial** of an AR model in the following manner:
 
 $$
 \sum_{j=0}^p\phi_jZ^j = 0
 $$
 
-We can constrain this equation with the assumption that our AR processes are stationary. **An AR process is stationary if and only if all the roots of its characteristic equation lie within the unit circle on the complex plane**. That is to say for all roots of a charactarestic AR polynomial, the AR process is stationary if for every root $r$, $\| \mathbf{r} \| < 1$. Visually this can be explained by viewing the unit circle on the complex plane:
+We can constrain this equation with the assumption that our AR processes are stationary. **An AR process is stationary if and only if all the roots of its characteristic equation lie within the unit circle on the complex plane**. That is to say for all roots of a characteristic AR polynomial, the AR process is stationary if for every root $r$, $\| \mathbf{r} \| < 1$. Visually this can be explained by viewing the unit circle on the complex plane:
 
 
 
@@ -120,7 +120,7 @@ Where $d$ is the integrated order of the model. It is important to note that in 
 
 ### Seasonal ARIMA
 
-Seasonal components also appear when the roots to the AR characterstic equations are at one, however instead of linear unit roots, Seasonal components have polynomial roots at one. That is, giving a seasonality $s$:
+Seasonal components also appear when the roots to the AR characteristic equations are at one, however instead of linear unit roots, Seasonal components have polynomial roots at one. That is, giving a seasonality $s$:
 
 $$
 (1-B^s)X_t = \epsilon_t
@@ -128,7 +128,7 @@ $$
 
 ## MA models
 
-While AR models are focused on the relationship between a realization $X$ at time $t$ and at time $t-n$, MA models are focused on the noise portion of the equation. In general, MA models alone are not used for modeling real data, as they have some strange properties and are not quite as useful, but in conjunction with with AR, integrated, and seasonal models you can build more powerful models of time series. An MA model is expressed just the same as an arima model, using polynomials:
+While AR models are focused on the relationship between a realization $X$ at time $t$ and at time $t-n$, MA models are focused on the noise portion of the equation. In general, MA models alone are not used for modeling real data, as they have some strange properties and are not quite as useful, but in conjunction with AR, integrated, and seasonal models you can build more powerful models of time series. An MA model is expressed just the same as an arima model, using polynomials:
 
 $$
 X_t = \epsilon_t\sum_{k=0}^q\theta_kB^k
@@ -154,14 +154,14 @@ $$
 
 # TSWGE
 
-In this study we will be using the `tswge` library, which is paired with the book `Applied Time Series Analysis with R`[1], mentioned in the above paragraphs. The library contains a few main utilities. First, it has a series of functions for generating time series, `gen.TYPEOFSERIES.wge`. These allow for practice and developing intuition. Second, it has utilities for forecasting time series, `fore.TYPEOFSERIES.wge`. Finally, it has two irrepreplacable sets of utilities, those for estimating the order of a time series as well as exploring them(model identification), and those for estimating the coefficients once the model has been identified (parameter estimation). This library, while brilliant, is sometimes syntactically painful, so it is extended by the student made (and in active development!) `tswgewrapped` package (maintained by one of the authors of this report). We will use a mix of both libraries, and share source code for the functions used when appropriate, in order to explain exactly what we are doing.
+In this study we will be using the `tswge` library, which is paired with the book `Applied Time Series Analysis with R`[1], mentioned in the above paragraphs. The library contains a few main utilities. First, it has a series of functions for generating time series, `gen.TYPEOFSERIES.wge`. These allow for practice and developing intuition. Second, it has utilities for forecasting time series, `fore.TYPEOFSERIES.wge`. Finally, it has two irreplacable  sets of utilities, those for estimating the order of a time series as well as exploring them(model identification), and those for estimating the coefficients once the model has been identified (parameter estimation). This library, while brilliant, is sometimes syntactically painful, so it is extended by the student made (and in active development!) `tswgewrapped` package (maintained by one of the authors of this report). We will use a mix of both libraries, and share source code for the functions used when appropriate, in order to explain exactly what we are doing.
 
 
 # Stock Analysis
 
 ## Data Setup
 
-As mentioned in our Introduction section, we are chiefly interested in the stock ticker CROX, for the company that makes crocs, everyone's favorite footwear. Please note, due to the ongoing financial turmoil, we will be ignoring the last two weeks with coronavirus, as that is outside the scope of ARIMA. Lets first load in the data, and take a brief look at a candle chart.
+As mentioned in our Introduction section, we are chiefly interested in the stock ticker CROX, for the company that makes crocs, everyone's favorite footwear. Please note, due to the ongoing financial turmoil, we will be ignoring the last two weeks with coronavirus, as that is outside the scope of ARIMA. Let's first load in the data and take a brief look at a candle chart.
 
 ```{r getStockData, fig.cap =cap( "Candle stock of Croc's stock over the last two years"), fig.show='hold'}
 crox <- getSymbols("CROX",src = "yahoo")
@@ -172,7 +172,7 @@ candleChart(cstock_2years, theme = "white")
 cstock_2years %<>% data.frame
 ```
 
-The first thing we must do is pick a **forecast horizon**. As we are forecasting stocks, it is unlikely and inappropriate to forecast stocks 15-20 days ahead. Therefore we will focus on just one business week (5 days). To assess our model, we will use the following cross validation structure:
+The first thing we must do is pick a **forecast horizon**. As we are forecasting stocks, it is unlikely and inappropriate to forecast stocks 15-20 days ahead. Therefore, we will focus on just one business week (5 days). To assess our model, we will use the following cross validation structure:
 
 ```{r, echo = FALSE}
 l <- list(
