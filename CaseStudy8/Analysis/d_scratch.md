@@ -55,7 +55,14 @@ cap <- function(str) {
 ```
 
 # Introduction
-The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products avaiable on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
+The purpose of this case study is to fit an ARIMA time series model to a stock of our choosing.   Since we enjoy the finer consumer products available on the market, we chose to write our case study about CROX stock.  Yes, that long forgotten footwear loved by all those who spend too much time on their feet in a given day.  
+
+<div class="figure" style="text-align: center">
+<img src="https://i.pinimg.com/474x/88/7a/db/887adbf486d98c4ac81fe102809d0b60.jpg" alt="**Figure 1 :** Crocs: utility and fashion for the business savvy"  />
+<p class="caption">**Figure 1 :** Crocs: utility and fashion for the business savvy</p>
+</div>
+
+To accomplish this task, we've chosen to utilize the library (TSWGE) which was written and composed by Dr. Woodward, Gray, and Elliot, along the whamo brilliance of Dr. Bivin Sadler.  This library contains many useful functions for time series analysis which we describe and explore in the analysis below.
 
 
 # Background
@@ -69,19 +76,20 @@ $$
 X_t\sum_{j=0}^p\phi_jB^j = \epsilon_t
 $$
 
-Where $\mathrm{B}$ is the backshift operator such that $\mathrm{B}^nX_t = X_{t-n}$, $\phi_0 = 1$, and $\epsilon_t \sim N(0, v)$. For our analysis, we can define the **charactersitic polynomial** of an AR model in the following manner:
+Where $\mathrm{B}$ is the backshift operator such that $\mathrm{B}^nX_t = X_{t-n}$, $\phi_0 = 1$, and $\epsilon_t \sim N(0, v)$. For our analysis, we can define the **characteristic  polynomial** of an AR model in the following manner:
+
 
 $$
 \sum_{j=0}^p\phi_jZ^j = 0
 $$
 
-We can constrain this equation with the assumption that our AR processes are stationary. **An AR process is stationary if and only if all the roots of its characteristic equation lie within the unit circle on the complex plane**. That is to say for all roots of a charactarestic AR polynomial, the AR process is stationary if for every root $r$, $\| \mathbf{r} \| < 1$. Visually this can be explained by viewing the unit circle on the complex plane:
+We can constrain this equation with the assumption that our AR processes are stationary. **An AR process is stationary if and only if all the roots of its characteristic equation lie within the unit circle on the complex plane**. That is to say for all roots of a characteristic AR polynomial, the AR process is stationary if for every root $r$, $\| \mathbf{r} \| < 1$. Visually this can be explained by viewing the unit circle on the complex plane:
 
 
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-1-1.svg" alt="**Figure 1 :** Unit circle in the complex plane, all complex roots must be WITHIN this circle"  />
-<p class="caption">**Figure 1 :** Unit circle in the complex plane, all complex roots must be WITHIN this circle</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-2-1.svg" alt="**Figure 2 :** Unit circle in the complex plane, all complex roots must be WITHIN this circle"  />
+<p class="caption">**Figure 2 :** Unit circle in the complex plane, all complex roots must be WITHIN this circle</p>
 </div>
 
 
@@ -104,7 +112,7 @@ Where $d$ is the integrated order of the model. It is important to note that in 
 
 ### Seasonal ARIMA
 
-Seasonal components also appear when the roots to the AR characterstic equations are at one, however instead of linear unit roots, Seasonal components have polynomial roots at one. That is, giving a seasonality $s$:
+Seasonal components also appear when the roots to the AR characteristic equations are at one, however instead of linear unit roots, Seasonal components have polynomial roots at one. That is, giving a seasonality $s$:
 
 $$
 (1-B^s)X_t = \epsilon_t
@@ -112,7 +120,7 @@ $$
 
 ## MA models
 
-While AR models are focused on the relationship between a realization $X$ at time $t$ and at time $t-n$, MA models are focused on the noise portion of the equation. In general, MA models alone are not used for modeling real data, as they have some strange properties and are not quite as useful, but in conjunction with with AR, integrated, and seasonal models you can build more powerful models of time series. An MA model is expressed just the same as an arima model, using polynomials:
+While AR models are focused on the relationship between a realization $X$ at time $t$ and at time $t-n$, MA models are focused on the noise portion of the equation. In general, MA models alone are not used for modeling real data, as they have some strange properties and are not quite as useful, but in conjunction with AR, integrated, and seasonal models you can build more powerful models of time series. An MA model is expressed just the same as an arima model, using polynomials:
 
 $$
 X_t = \epsilon_t\sum_{k=0}^q\theta_kB^k
@@ -138,14 +146,14 @@ $$
 
 # TSWGE
 
-In this study we will be using the `tswge` library, which is paired with the book `Applied Time Series Analysis with R`, mentioned in the above paragraphs. The library contains a few main utilities. First, it has a series of functions for generating time series, `gen.TYPEOFSERIES.wge`. These allow for practice and developing intuition. Second, it has utilities for forecasting time series, `fore.TYPEOFSERIES.wge`. Finally, it has two irrepreplacable sets of utilities, those for estimating the order of a time series as well as exploring them(model identification), and those for estimating the coefficients once the model has been identified (parameter estimation). This library, while brilliant, is sometimes syntactically painful, so it is extended by the student made (and in active development!) `tswgewrapped` package (maintained by one of the authors of this report). We will use a mix of both libraries, and share source code for the functions used when appropriate, in order to explain exactly what we are doing.
+In this study we will be using the `tswge` library, which is paired with the book `Applied Time Series Analysis with R`[1], mentioned in the above paragraphs. The library contains a few main utilities. First, it has a series of functions for generating time series, `gen.TYPEOFSERIES.wge`. These allow for practice and developing intuition. Second, it has utilities for forecasting time series, `fore.TYPEOFSERIES.wge`. Finally, it has two irreplacable  sets of utilities, those for estimating the order of a time series as well as exploring them(model identification), and those for estimating the coefficients once the model has been identified (parameter estimation). This library, while brilliant, is sometimes syntactically painful, so it is extended by the student made (and in active development!) `tswgewrapped` package (maintained by one of the authors of this report). We will use a mix of both libraries, and share source code for the functions used when appropriate, in order to explain exactly what we are doing.
 
 
 # Stock Analysis
 
 ## Data Setup
 
-As mentioned in our Introduction section, we are chiefly interested in the stock ticker CROX, for the company that makes crocs, everyone's favorite footwear. Please note, due to the ongoing financial turmoil, we will be ignoring the last two weeks with coronavirus, as that is outside the scope of ARIMA. Lets first load in the data, and take a brief look at a candle chart.
+As mentioned in our Introduction section, we are chiefly interested in the stock ticker CROX, for the company that makes crocs, everyone's favorite footwear. Please note, due to the ongoing financial turmoil, we will be ignoring the last two weeks with coronavirus, as that is outside the scope of ARIMA. Lets first load in the data, and take a brief look at a candle chart. If you are actually considering investing in crocs, please note that they are going to be hit hard by the effects of the ongoing breakout, and read [this news article](https://www.bizjournals.com/denver/news/2020/02/27/crocs-2020-coronavirus-outlook.html)
 
 
 ```r
@@ -158,16 +166,21 @@ cstock_2years %<>% data.frame
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/getStockData-1.svg" alt="**Figure 2 :** Candle stock of Croc's stock over the last two years"  />
-<p class="caption">**Figure 2 :** Candle stock of Croc's stock over the last two years</p>
+<img src="d_scratch_files/figure-html/getStockData-1.svg" alt="**Figure 3 :** Candle stock of Croc's stock over the last two years"  />
+<p class="caption">**Figure 3 :** Candle stock of Croc's stock over the last two years</p>
 </div>
 
-The first thing we must do is pick a **forecast horizon**. As we are forecasting stocks, it is unlikely and inappropriate to forecast stocks 15-20 days ahead. Therefore we will focus on just one business week (5 days). To assess our model, we will use the following cross validation structure:
+<div class="figure" style="text-align: center">
+<img src="https://www.mememaker.net/api/bucket?path=static/img/memes/full/2014/May/8/21/i-actually-love-crocs.jpg" alt="**Figure 4 :** A meme for readers enjoyment"  />
+<p class="caption">**Figure 4 :** A meme for readers enjoyment</p>
+</div>
+
+The first thing we must do is pick a **forecast horizon**. As we are forecasting stocks, it is unlikely and inappropriate to forecast stocks 15-20 days ahead. Therefore, we will focus on just one business week (5 days). To assess our model, we will use the following cross validation structure:
 
 
   * cut the data at one forecast horizon (5 days), using the last 5 days as a holdout set
-  * Validate by using *backcasting* and getting the ASE. It can be shown that forecasts hold both forwards and backwords (see applied time series with R), and so a good trick to assess model validity without dirtying your test set is to make your forecasts backwards
-  * Assess models on the holdout set
+  * Validate by using *backtesting* and getting the average square error(ASE). This technique is used extensively in Applied Time Series with R, and basically involves creating an ad hoc validation set. For more complex validation schemes, you could also use rolling windows, as discussed in Forecasting Principles and Practice (link in conclusion), but that is really unneccessary for the purposes of this study
+  * Assess models on the holdout set, using ASE
 
 <!-- end of list -->
 
@@ -191,8 +204,8 @@ x <- plotts.sample.wge(crox_train)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-3-1.svg" alt="**Figure 3 :** Raw Data, ACF, on top, frequency periodigrams on bottom"  />
-<p class="caption">**Figure 3 :** Raw Data, ACF, on top, frequency periodigrams on bottom</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-5-1.svg" alt="**Figure 5 :** Raw Data, ACF, on top, frequency periodigrams on bottom"  />
+<p class="caption">**Figure 5 :** Raw Data, ACF, on top, frequency periodigrams on bottom</p>
 </div>
 
 What can we tell from this? We will work right to left. First, we do not see any clear seasonality in the line plot. This is expected. Crocs are a commodity which is in demand year round, so we do not expect any seasonalities. It is unclear as to whether or not there is an integrated or wandering trend, it could either have a low order integrated trend or a higher order AR term. The ACF tells the same story. These barely damping lines are highly indicative of integrated trends, but also of strong autoregressions (which if you recall, an integrated term can be viewed as an exceptionally strong autoregression). The parzen window on the bottom left tells the same story as the periodigram, but is in the authors' opinion more digestible. This inverse curve shape is indicative of a wandering (integrated component), or of a higher order AR component (but more likely wandering trend).
@@ -207,8 +220,8 @@ train_adj <- diff1(crox_train)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-4-1.svg" alt="**Figure 4 :** First order ARIMA difference of CROX stock"  />
-<p class="caption">**Figure 4 :** First order ARIMA difference of CROX stock</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-6-1.svg" alt="**Figure 6 :** First order ARIMA difference of CROX stock"  />
+<p class="caption">**Figure 6 :** First order ARIMA difference of CROX stock</p>
 </div>
 
 ```r
@@ -234,23 +247,23 @@ generate
 #>     func <- rlang::parse_expr(phrase)
 #>     eval(rlang::call2(func, ...))
 #> }
-#> <bytecode: 0xbe3ba58>
+#> <bytecode: 0x000000001474e2a8>
 #> <environment: namespace:tswgewrapped>
 ```
 
 
 ```r
-acf(generate(arma, n=100, phi=(0.99), plot=FALSE))  # 
+acf(generate(arma, n=100, phi=(0.99), plot=FALSE), main="Untransformed ACF plot")  
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-6-1.svg" alt="**Figure 5 :** A strong autoregressive model looks fairly appropriate. In the wild, it would be a higher order AR model, but this is difficult to generate."  />
-<p class="caption">**Figure 5 :** A strong autoregressive model looks fairly appropriate. In the wild, it would be a higher order AR model, but this is difficult to generate.</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-8-1.svg" alt="**Figure 7 :** A strong autoregressive model looks fairly appropriate. In the wild, it would be a higher order AR model, but this is difficult to generate."  />
+<p class="caption">**Figure 7 :** A strong autoregressive model looks fairly appropriate. In the wild, it would be a higher order AR model, but this is difficult to generate.</p>
 </div>
 
 ### By hand analysis of the untransformed series
 
-The first thing, looking at the ACF, which never goes negative, is we can definitely tell the AR process generating the data has strong, positive roots. This is apparent due to the lack of sign change and overall high value of ACF. Let us go ahead and try our first guess of model, and see if the roots match our assumptions. We will start with $p = 3$. This is our choice because our generation of a random series with $phi_1=0.99$ looked very similar to the autocorrelation of the original series. However, we would much prefer if the roots were a bit further away from the unit circle, while also exhibiting a stronger autoregressive effect. Therefore 3 is a good, simple start. We will first estimate the AR coeffecients using the `estimate` function from tswgewrapped. The source code for the function is below:
+The first thing, looking at the ACF, which never goes negative, is we can definitely tell the AR process generating the data has strong, positive roots. This is apparent due to the lack of sign change and overall high value of ACF. Let us go ahead and try our first guess of model, and see if the roots match our assumptions. We will start with $p = 3$. This is our choice because our generation of a random series with $phi_1=0.99$ looked very similar to the autocorrelation of the original series. However, we would much prefer if the roots were a bit further away from the unit circle, while also exhibiting a stronger autoregressive effect. Therefore 3 is a good, simple start. We will first estimate the AR coefficients using the `estimate` function from tswgewrapped. The source code for the function is below:
 
 
 ```r
@@ -258,8 +271,11 @@ estimate
 ```
 
 ```
-#> function (xs, p, q = 0, type = "mle", ...) 
+#> function (xs, p = NA, q = 0, type = "mle", ...) 
 #> {
+#>     if (all(is.na(p))) {
+#>         stop("You need to specify the AR order for the model.")
+#>     }
 #>     if (q > 0) {
 #>         return(tswge::est.arma.wge(xs, p, q, ...))
 #>     }
@@ -267,7 +283,7 @@ estimate
 #>         return(tswge::est.ar.wge(xs, p, type, ...))
 #>     }
 #> }
-#> <bytecode: 0xc6a7cf0>
+#> <bytecode: 0x0000000013a66e80>
 #> <environment: namespace:tswgewrapped>
 ```
 
@@ -295,15 +311,15 @@ This also conveniently prints out the roots of the polynomial. We see we have re
 
 
 ```r
-acf(generate(arma, n=length(crox_train), phi = train_hand_est$phi, plot=FALSE))
+acf(generate(arma, n=length(crox_train), phi = train_hand_est$phi, plot=FALSE), main="ACF of sample plot")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-9-1.svg" alt="**Figure 6 :** ACF of a sample series"  />
-<p class="caption">**Figure 6 :** ACF of a sample series</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-11-1.svg" alt="**Figure 8 :** ACF of a sample series"  />
+<p class="caption">**Figure 8 :** ACF of a sample series</p>
 </div>
 
-This looks pretty good! We can check goodness of fit with two methods: first using residual plotting, and second using the `ljung_box` function, which performs the ljung_box test. The ljung box test has a null hypothesis which the residuals are white noise, and an alternative that the residuals are correlated in some way. It is a portmanteau test. First we will look at the residuals visually. It is important to do this because the ljung box test, while the best of statistical tests for autocorrelation, has low statistical power.
+This looks pretty good! We can check goodness of fit with two methods: first using residual plotting, and second using the `ljung_box` function, which performs the ljung box test. The ljung box test has a null hypothesis which the residuals are white noise, and an alternative that the residuals are correlated in some way. It is a portmanteau test. First we will look at the residuals visually. It is important to do this because the ljung box test, while the best of statistical tests for autocorrelation, has low statistical power.
 
 
 ```r
@@ -311,7 +327,7 @@ plot_res <-  function (res) {
      par(mfrow = c(1, 2))
      plot(res, type = "b")
      title(main="Residual plot")
-     acf(res)
+     acf(res, main="ACF of Residuals")
      par(mfrow = c(1, 1))
  }
 
@@ -319,11 +335,11 @@ plot_res(train_hand_est$res)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-10-1.svg" alt="**Figure 7 :** The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values."  />
-<p class="caption">**Figure 7 :** The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values.</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-12-1.svg" alt="**Figure 9 :** The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values."  />
+<p class="caption">**Figure 9 :** The residuals of the estimate. If it looks like noise, it is better. In this case, we still have those two extreme values.</p>
 </div>
 
-This looks like an *alright* fit, however to double check we will go ahead with the portmanteau test. It is advisible to conduct this test at multiple lags, particularly 24 and 48 (suggested by box). Luckily, tswgewrapped has this all covered for us (source code included, no smoke and mirrors).
+This looks like an *alright* fit, however to double check we will go ahead with the portmanteau test. It is advisable to conduct this test at multiple lags, particularly 24 and 48 (suggested by box). Luckily, tswgewrapped has this all covered for us (source code included, no smoke and mirrors).
 
 
 ```r
@@ -338,7 +354,7 @@ ljung_box
 #>     }
 #>     sapply(k_val, ljung)
 #> }
-#> <bytecode: 0x4bfbc18>
+#> <bytecode: 0x000000001fb9c278>
 #> <environment: namespace:tswgewrapped>
 ```
 
@@ -355,7 +371,7 @@ ljung_box(train_hand_est$res, 3,0)
 #> pval       0.033            0.06
 ```
 
-So this is in agreement with our plot. Our fit is pretty close, however it is probably not a perfect fit. We did not model all the autocorrelation out of the data, thus this is not the best model. For a baseline, we will backcast and get the ASE of our model. For the sake of transparency, we will show the tswgewrapped source code below:
+So this is in agreement with our plot. Our fit is pretty close, however it is probably not a perfect fit. We did not model all the autocorrelation out of the data, thus this is not the best model. For a baseline, we will backtest and get the ASE of our model. For the sake of transparency, we will show the tswgewrapped source code below:
 
 
 ```r
@@ -369,7 +385,7 @@ assess
 #>     ASE <- ase(x, bcast)
 #>     return(ASE)
 #> }
-#> <bytecode: 0x29217d8>
+#> <bytecode: 0x00000000200a3b88>
 #> <environment: namespace:tswgewrapped>
 ```
 
@@ -384,7 +400,7 @@ fcst
 #>     func <- rlang::parse_expr(phrase)
 #>     eval(rlang::expr((!!func)(...)))
 #> }
-#> <bytecode: 0x2b3c8c8>
+#> <bytecode: 0x0000000020156630>
 #> <environment: namespace:tswgewrapped>
 ```
 
@@ -399,11 +415,11 @@ ase
 #>     n <- length(x)
 #>     mean((xhat$f - x[s:n])^2)
 #> }
-#> <bytecode: 0x8e638b0>
+#> <bytecode: 0x000000002022e4e0>
 #> <environment: namespace:tswgewrapped>
 ```
 
-Again, it is just a thin wrapper for tswge, we forecast the series backwards and get the ASE. Lets test it out:
+Again, it is just a thin wrapper for tswge, we forecast the series other than the last `n.ahead` points and get the ASE. Lets test it out:
 
 
 ```r
@@ -412,8 +428,8 @@ title(main="5 step back forecast")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-13-1.svg" alt="**Figure 8 :** Looks like a pretty good forecast"  />
-<p class="caption">**Figure 8 :** Looks like a pretty good forecast</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-15-1.svg" alt="**Figure 10 :** Looks like a pretty good forecast"  />
+<p class="caption">**Figure 10 :** Looks like a pretty good forecast</p>
 </div>
 
 ```r
@@ -500,8 +516,8 @@ plot_res(est_auto_un$res)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-15-1.svg" alt="**Figure 9 :** These residuals do not look much better, at a higher model complexity..."  />
-<p class="caption">**Figure 9 :** These residuals do not look much better, at a higher model complexity...</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-17-1.svg" alt="**Figure 11 :** These residuals do not look much better, at a higher model complexity..."  />
+<p class="caption">**Figure 11 :** These residuals do not look much better, at a higher model complexity...</p>
 </div>
 
 Lets go ahead and check with our Ljung Box too:
@@ -529,8 +545,8 @@ title(main="5 step back forecast")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-17-1.svg" alt="**Figure 10 :** Auto generated backtesting"  />
-<p class="caption">**Figure 10 :** Auto generated backtesting</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-19-1.svg" alt="**Figure 12 :** Auto generated backtesting"  />
+<p class="caption">**Figure 12 :** Auto generated backtesting</p>
 </div>
 
 ```r
@@ -555,11 +571,11 @@ x <- plotts.sample.wge(train_adj)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-18-1.svg" alt="**Figure 11 :** The differenced series is suggestive of MA or AR with complex conjugate and/or negative roots"  />
-<p class="caption">**Figure 11 :** The differenced series is suggestive of MA or AR with complex conjugate and/or negative roots</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-20-1.svg" alt="**Figure 13 :** The differenced series is suggestive of MA or AR with complex conjugate and/or negative roots"  />
+<p class="caption">**Figure 13 :** The differenced series is suggestive of MA or AR with complex conjugate and/or negative roots</p>
 </div>
 
-As the caption states, the oscillitory nature of the ACF, suggests AR with either conjugate or negative roots. What is more interesting is the parzen window on the bottom left. This sharply lumpy state can be indicative of a couple of things: first, it is possible we are left with just white noise and not enough data to flatten out the parzen window, and second: a mixture of AR and MA components. AR with complex conjugate roots would make the peaks, while MA would make the troughs. Since conjugate roots come in pairs, and the oscillations continue for a long time, we can assume both the AR and the MA components have an even number. The autocorrelations continue to extend and oscillate for a long period of time, with a slow sinusoidal damping pattern. This suggests to us that the AR component outweighs the MA component (and in general we prefer more AR than MA, as pure AR models are in general simpler and should generalize better). We will go with ARMA(4,2) because of these reasons (the parzen window is such a clear sign of an ARMA model).
+As the caption states, the oscillatory nature of the ACF, suggests AR with either conjugate or negative roots. What is more interesting is the parzen window on the bottom left. This sharply lumpy state can be indicative of a couple of things: first, it is possible we are left with just white noise and not enough data to flatten out the parzen window, and second: a mixture of AR and MA components. AR with complex conjugate roots would make the peaks, while MA would make the troughs. Since conjugate roots come in pairs, and the oscillations continue for a long time, we can assume both the AR and the MA components have an even number. The autocorrelations continue to extend and oscillate for a long period of time, with a slow sinusoidal damping pattern. This suggests to us that the AR component outweighs the MA component (and in general we prefer more AR than MA, as pure AR models are in general simpler and should generalize better). We will go with ARMA(4,2) because of these reasons (the parzen window is such a clear sign of an ARMA model).
 
 
 ```r
@@ -579,7 +595,7 @@ est_hand_diff <- estimate(train_adj, p=4,q=2)
 #> 
 ```
 
-These roots make a lot of sense. First of all, we have the complex conjugate, which explains the peak in the parzen window at 0.3132. The second root is negative, with a peak near the nyquist frequency in the parzen window. The third root is relatively weak, and shows the remaining wandering component to the series. We can also check the roots of the MA component of the model using the brilliant `factor.wge` function (note this doesnt explain the interaction between the two sets of roots, but it definitely helps)
+These roots make a lot of sense. First of all, we have the complex conjugate, which explains the peak in the parzen window at 0.3132. The second root is negative, with a peak near the nyquist frequency in the parzen window. The third root is relatively weak, and shows the remaining wandering component to the series. We can also check the roots of the MA component of the model using the brilliant `factor.wge` function (note this doesn't explain the interaction between the two sets of roots, but it definitely helps)
 
 
 ```r
@@ -597,7 +613,7 @@ factor.wge(est_hand_diff$theta)
 #> 
 ```
 
-We see another complex conjugate root, with a frequencey of 0.3119. This is slightly less than the peak from the AR part, which probably explains the sharpness of the central peak. Again, we cannot model the interplay between the two sets of roots with simple factoring. Lets go ahead and run our tests:
+We see another complex conjugate root, with a frequency of 0.3119. This is slightly less than the peak from the AR part, which probably explains the sharpness of the central peak. Again, we cannot model the interplay between the two sets of roots with simple factoring. Lets go ahead and run our tests:
 
 
 ```r
@@ -605,8 +621,8 @@ plot_res(est_hand_diff$res)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-21-1.svg" alt="**Figure 12 :** Not much change..."  />
-<p class="caption">**Figure 12 :** Not much change...</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-23-1.svg" alt="**Figure 14 :** Not much change..."  />
+<p class="caption">**Figure 14 :** Not much change...</p>
 </div>
 
 ```r
@@ -631,8 +647,8 @@ title(main="Backtesting ARIMA")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-22-1.svg" alt="**Figure 13 :** Worst forecast so far!"  />
-<p class="caption">**Figure 13 :** Worst forecast so far!</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-24-1.svg" alt="**Figure 15 :** Worst forecast so far!"  />
+<p class="caption">**Figure 15 :** Worst forecast so far!</p>
 </div>
 
 ```r
@@ -715,8 +731,8 @@ plot_res(est_auto_diff$res)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-24-1.svg" alt="**Figure 14 :** Final residual plot looks slightly worse than the previous"  />
-<p class="caption">**Figure 14 :** Final residual plot looks slightly worse than the previous</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-26-1.svg" alt="**Figure 16 :** Final residual plot looks slightly worse than the previous"  />
+<p class="caption">**Figure 16 :** Final residual plot looks slightly worse than the previous</p>
 </div>
 
 ```r
@@ -741,8 +757,8 @@ title(main="Backtesting ARIMA")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-25-1.svg" alt="Final backtest, looks like a classic d=1 model"  />
-<p class="caption">Final backtest, looks like a classic d=1 model</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-27-1.svg" alt="**Figure 17 :** Final backtest, looks like a classic d=1 model"  />
+<p class="caption">**Figure 17 :** Final backtest, looks like a classic d=1 model</p>
 </div>
 
 ```r
@@ -767,8 +783,8 @@ title(main="Hand made forecast")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-26-1.svg" alt="**Figure 15 :** An alright forecast"  />
-<p class="caption">**Figure 15 :** An alright forecast</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-28-1.svg" alt="**Figure 18 :** An alright forecast"  />
+<p class="caption">**Figure 18 :** An alright forecast</p>
 </div>
 
 ```r
@@ -789,8 +805,8 @@ title(main="Grid/Criterion made forecast")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-27-1.svg" alt="**Figure 16 :** A better forecast!"  />
-<p class="caption">**Figure 16 :** A better forecast!</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-29-1.svg" alt="**Figure 19 :** A better forecast!"  />
+<p class="caption">**Figure 19 :** A better forecast!</p>
 </div>
 
 ```r
@@ -811,11 +827,11 @@ title(main="Extreme ARMA forecasting")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-28-1.svg" alt="**Figure 17 :** Trending towards the mean(in red)..."  />
-<p class="caption">**Figure 17 :** Trending towards the mean(in red)...</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-30-1.svg" alt="**Figure 20 :** Trending towards the mean(in red)..."  />
+<p class="caption">**Figure 20 :** Trending towards the mean(in red)...</p>
 </div>
 
-As t approaches infinity, we will eventually just start to forecast the mean over and over. So ARMA models are conservating, saying things will stay the same as they have in the past. Lets check out our ARIMA models now.
+As t approaches infinity, we will eventually just start to forecast the mean over and over. So ARMA models are conservative, saying things will stay the same as they have in the past. Lets check out our ARIMA models now.
 
 
 ```r
@@ -825,8 +841,8 @@ title(main="Hand made first order difference forecast")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-29-1.svg" alt="**Figure 18 :** The slope appears way off"  />
-<p class="caption">**Figure 18 :** The slope appears way off</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-31-1.svg" alt="**Figure 21 :** The slope appears way off"  />
+<p class="caption">**Figure 21 :** The slope appears way off</p>
 </div>
 
 ```r
@@ -847,8 +863,8 @@ title(main="BIC made first order difference forecast")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-30-1.svg" alt="**Figure 19 :** Our dead simple model had an even worse forecast..."  />
-<p class="caption">**Figure 19 :** Our dead simple model had an even worse forecast...</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-32-1.svg" alt="**Figure 22 :** Our dead simple model had an even worse forecast..."  />
+<p class="caption">**Figure 22 :** Our dead simple model had an even worse forecast...</p>
 </div>
 
 ```r
@@ -859,7 +875,7 @@ ase(crox_test, f_a_d)
 #> [1] 3.8
 ```
 
-This is the worst model we made. Why did the differenced models perform so poorly? Isnt ARIMA a powerful tool?? The reason is this: When you make an ARIMA forecast, you are trying to predict a random walk, or an AR process at with a root at 1. When you do this, the math happens to fall in place such that the model just predicts the last value seen repeatedly (with d=2, the slope of the last 2 values, with d=3, you are doing something wrong). We can test this by making another extremely long forecast:
+This is the worst model we made. Why did the differenced models perform so poorly? Isn't ARIMA a powerful tool?? The reason is this: When you make an ARIMA forecast, you are trying to predict a random walk, or an AR process at with a root at 1. When you do this, the math happens to fall in place such that the model just predicts the last value seen repeatedly (with d=2, the slope of the last 2 values, with d=3, you are doing something wrong). We can test this by making another extremely long forecast:
 
 
 ```r
@@ -869,9 +885,11 @@ title(main="Extreme ARIMA forecasting")
 ```
 
 <div class="figure" style="text-align: center">
-<img src="d_scratch_files/figure-html/unnamed-chunk-31-1.svg" alt="**Figure 20 :** I predict things will be exactly the same as they are right now for the rest of time"  />
-<p class="caption">**Figure 20 :** I predict things will be exactly the same as they are right now for the rest of time</p>
+<img src="d_scratch_files/figure-html/unnamed-chunk-33-1.svg" alt="**Figure 23 :** I predict things will be exactly the same as they are right now for the rest of time"  />
+<p class="caption">**Figure 23 :** I predict things will be exactly the same as they are right now for the rest of time</p>
 </div>
 
 ARIMA is a powerful tool, and incorporating the random walk/integrated component can help us build powerful models (especially with seasonality involved), however when the only thing that seems to be going on is an integrated component (or strong AR), it is often better to underfit that as a strong AR model than overfit it as an ARIMA model. All in all, the toolset given by tswge is a powerful one. For further reference, please refer to the study guide written by the authors of this report ([link](https://josephsdavid.github.io/tstest/)), the tswgewrapped documnetation on [rdrr.io](https://rdrr.io/github/josephsdavid/tswgewrapped/), the Applied Time Series Analysis with R book, and the brilliant book by Rob J Hyndman, the [bible for forecasting, fpp2](https://otexts.com/fpp2/).
 
+## References
+[1] Wayne A. Woodward, Henry L. Gray, Alan C. Elliott, Applied Time Series Analysis in R. Boca Raton: CRC Press. 
