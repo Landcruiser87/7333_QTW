@@ -53,18 +53,17 @@ print("Baseline RSME is:", baseline_RSME)
 #Split that data like Paul Bunyan
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state = 42)
 
-#Check its shape
+#Check shape of test/train
 print(X_train.shape)
 print(X_test.shape)
 print(y_train.shape)
 print(y_test.shape)
 
 #Define Function for SKlearn Imputer
-def impute_nation(imputedata)
-	impute = Imputer(missing_values=np.nan, strategy="mean",axis=1))
+def impute_nation(imputedata):
+	impute = Imputer(missing_values=np.nan, strategy="mean", axis=1)
 	impute.fit(imputedata)
 	impute.transform(imputedata)
 	return
-
 
 
