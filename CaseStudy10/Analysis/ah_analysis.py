@@ -41,14 +41,16 @@ for k, v in bos.items():
 	irq = q3 - q1
 	v_col = v[(v <= q1 - 1.5 * irq) | (v >= q3 + 1.5 * irq)]
 	perc = np.shape(v_col)[0] * 100.0 / np.shape(bos)[0]
-	print("Column %s outliers = %.2f%%" % (k, perc))
+	print("%s outliers = %8.2f%%" % (k, perc))
 
 
-#Looking at a baseline RSME
+#Looking at a baseline RSME 
 linreg = LinearRegression().fit(X,y)
 y_pred = linreg.predict(X)
-baseline_RSME = np.sqrt(mean_squared_error(y,y_pred))
-print("Baseline RSME is:", baseline_RSME)
+baseline_MSE = mean_squared_error(y,y_pred)
+print("Baseline MSE is = %.2f" % baseline_MSE)
+linreg.coef_
+
 
 #Split that data like Paul Bunyan
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state = 42)
