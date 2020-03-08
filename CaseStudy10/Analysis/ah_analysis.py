@@ -32,7 +32,7 @@ bos.hist(bins=50, figsize = (20,15))
 
 #Looking at correlation
 plt.figure(figsize=(20,10))
-sns.heatmap(bos.corr(),vmax=1, annot=True, cmap = 'YlGnBu',annot_kws={"fontsize":8})
+sns.heatmap(bos.corr(),vmax=1, annot=True, cmap = 'YlGnBu',annot_kws={"fontsize":14})
 
 #Looking at outlier percentages outside 1st and 3rd Quantiles
 for k, v in bos.items():
@@ -48,9 +48,13 @@ for k, v in bos.items():
 linreg = LinearRegression().fit(X,y)
 y_pred = linreg.predict(X)
 baseline_MSE = mean_squared_error(y,y_pred)
-print("Baseline MSE is = %.2f" % baseline_MSE)
-linreg.coef_
 
+#Coefficients and intercept
+# linreg.coef_
+# linreg.intercept_
+#Looking at Coefficients. 
+print(pd.DataFrame(zip(bos.columns, linreg.coef_), columns = ['features', 'BaselineCoefficients']))
+print("Baseline MSE is = %.2f" % baseline_MSE)
 
 #Split that data like Paul Bunyan
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state = 42)
@@ -67,5 +71,26 @@ def impute_nation(imputedata):
 	impute.fit(imputedata)
 	impute.transform(imputedata)
 	return
+
+#MACR Analysis. 
+def loss_test(data, target, perc, imp_col, strategy)
+	np.random.seed(42)
+	rand_index = np.random.randint(
+		low = 0,
+		high = data.shape[0],
+		size = int(len(data)*perc))
+	)
+	bos_imp = data.copy()
+	bos_imp[imp_col][rand_index]=np.nan
+	bos_imp_model = impute_nation(bos_imp)
+	return bos_imp_model
+
+#Define percentage data removal
+perc_list = [0.10,0.20,0.50]
+imp_col = ['NOX']
+strategy = "mean"
+
+
+for i in range(len(perc_list)):
 
 
