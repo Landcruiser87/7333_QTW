@@ -72,25 +72,26 @@ def impute_nation(imputedata):
 	impute.transform(imputedata)
 	return
 
-#MACR Analysis. 
-def loss_test(data, target, perc, imp_col, strategy)
+#Function for data removal. 
+def loss_test(data, target, perc, imp_col, strategy):
 	np.random.seed(42)
 	rand_index = np.random.randint(
 		low = 0,
 		high = data.shape[0],
 		size = int(len(data)*perc))
-	)
+	
 	bos_imp = data.copy()
 	bos_imp[imp_col][rand_index]=np.nan
 	bos_imp_model = impute_nation(bos_imp)
-	return bos_imp_model
+	return 
 
 #Define percentage data removal
+bos_imp_output = pd.DataFrame([])
 perc_list = [0.10,0.20,0.50]
 imp_col = ['NOX']
 strategy = "mean"
 
 
-for i in range(len(perc_list)):
-
+# for i in range(len(perc_list)):
+# 	bos_imp_output[i] = np.array(loss_test(X, y,perc[i],imp_col,strategy))
 
