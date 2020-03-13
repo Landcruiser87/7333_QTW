@@ -89,7 +89,7 @@ print(X_test.shape)
 print(y_train.shape)
 print(y_test.shape)
 
-#Define Function for SKlearn Imputer
+#Define function for SKlearn Imputer
 def impute_nation(imputedata):
 	impute = Imputer(missing_values=np.nan, strategy="mean", axis=1)
 	impute.fit(imputedata)
@@ -97,19 +97,8 @@ def impute_nation(imputedata):
 	return
 
 
-#Setup Linear regressor function
-def LinearMadness(X, y, perc = 0, imp_col = [], strategy =[]):
-	np.random.seed(42)
-	rand_index = np.random.randint(
-		low = 0,
-		high = X.shape[0],
-		size = int(len(X)*perc))
-	
-	bos_imp = data.copy()
-	bos_imp.imp_col.iloc[rand_index]=np.nan
-	nan_sum = sum(np.isnan(bos_imp.imp_col))
-	bos_imp_data = impute_nation(bos_imp)
-
+#Setup linear regressor function
+def LinearMadness(X, y, perc = 1, imp_col = []):
 
 	linreg = LinearRegression().fit(X,y)
 	y_pred = linreg.predict(X)
@@ -119,18 +108,26 @@ def LinearMadness(X, y, perc = 0, imp_col = [], strategy =[]):
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
 	print('===============================')
-
-
 #%%
-
-#Define percentage data removal and choose column to impute.  Nox for now
-
-bos_imp_output = pd.DataFrame([])
-perc_list = [0.01,0.05,0.10,0.20,0.33,0.50]
+bos_imp = pd.DataFrame([])
+perc_list = [0.10,0.20,0.33,0.50]
 imp_col = ['NOX']
-strategy = "mean"
 
-LinearMadness(X_train, y_train, perc=0,imp_col=imp_col,strategy=strategy)
+
+for x in perc_list:
+	np.random.seed(42)
+	rand_index = np.random.randint(
+		low = 0,
+		high = X_train.shape[0],
+		size = int(len(X_train)*perc))
+	
+	bos_imp = X_train.copy()
+	b = np.nan
+
+	nan_sum = sum(np.isnan(bos_imp[imp_col]))
+	impute_nation(bos_imp[imp_col])
+
+	LinearMadness(bos_imp, y_train, perc=x,imp_col=imp_col)
 
 
 
