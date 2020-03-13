@@ -68,6 +68,8 @@ r2 = r2_score(y, y_pred)
 print(pd.DataFrame(zip(bos.columns, linreg.coef_), columns = ['features', 'BaselineCoefficients']))
 print("Baseline MSE is = %.2f" % baseline_MSE)
 print("Goodness of fit (R_squared) is = %.2f" % r2)
+
+
 # ======================================================================================
 # Problem 2: (repeated)
 # For select between 1, 5 10, 20, 33, and 50% of your data on a single column (Completely at random), replace the present value with a NAN and then perform an imputation of that value.   
@@ -94,8 +96,21 @@ def impute_nation(imputedata):
 	impute.transform(imputedata)
 	return
 
+
 #Setup Linear regressor function
 def LinearMadness(X, y, perc = 0, imp_col = [], strategy =[])
+	np.random.seed(42)
+	rand_index = np.random.randint(
+		low = 0,
+		high = X.shape[0],
+		size = int(len(X)*perc))
+	
+	bos_imp = data.copy()
+	bos_imp.imp_col.iloc[rand_index]=np.nan
+	nan_sum = sum(np.isnan(bos_imp.imp_col))
+	bos_imp_data = impute_nation(bos_imp)
+
+
 	linreg = LinearRegression().fit(X,y)
 	y_pred = linreg.predict(X)
 	return_MSE = mean_squared_error(y,y_pred)
@@ -107,20 +122,6 @@ def LinearMadness(X, y, perc = 0, imp_col = [], strategy =[])
 
 
 
-#Function for data removal. 
-def data_removal(data, target, perc, imp_col, strategy):
-	np.random.seed(42)
-	rand_index = np.random.randint(
-		low = 0,
-		high = data.shape[0],
-		size = int(len(data)*perc))
-	
-	bos_imp = data.copy()
-	bos_imp.imp_col.iloc[rand_index]=np.nan
-	nan_sum = sum(np.isnan(bos_imp.imp_col))
-	bos_imp_data = impute_nation(bos_imp)
-
-	return bos_imp_data
 
 #Define percentage data removal and choose column to impute.  Nox for now
 bos_imp_output = pd.DataFrame([])
