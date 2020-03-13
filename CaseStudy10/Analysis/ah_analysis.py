@@ -1,3 +1,4 @@
+#%%
 from sklearn.datasets import load_boston
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
@@ -26,8 +27,11 @@ print(bos.head(5))
 bos.info()
 bos.describe()
 
-#Check histograms 
+#CheckMissingValues. 
+bos.isnull().sum()
 
+
+#Check histograms of data
 bos.hist(bins=50, figsize = (20,15))
 
 #Looking at correlation
@@ -73,7 +77,7 @@ def impute_nation(imputedata):
 	return
 
 #Function for data removal. 
-def loss_test(data, target, perc, imp_col, strategy):
+def data_removal(data, target, perc, imp_col, strategy):
 	np.random.seed(42)
 	rand_index = np.random.randint(
 		low = 0,
@@ -81,7 +85,8 @@ def loss_test(data, target, perc, imp_col, strategy):
 		size = int(len(data)*perc))
 	
 	bos_imp = data.copy()
-	bos_imp[imp_col][rand_index]=np.nan
+	for x in rand_index:
+		bos_imp[imp_col][x]=np.nan
 	bos_imp_model = impute_nation(bos_imp)
 	return 
 
@@ -91,7 +96,8 @@ perc_list = [0.10,0.20,0.50]
 imp_col = ['NOX']
 strategy = "mean"
 
+#%%
 
-# for i in range(len(perc_list)):
-# 	bos_imp_output[i] = np.array(loss_test(X, y,perc[i],imp_col,strategy))
+for i in range(len(perc_list)):
+	bos_imp_output[i] = np.array(data_removal(X, y, perc_list[i], imp_col, strategy))
 
