@@ -98,7 +98,7 @@ def impute_nation(imputedata):
 
 
 #Setup Linear regressor function
-def LinearMadness(X, y, perc = 0, imp_col = [], strategy =[])
+def LinearMadness(X, y, perc = 0, imp_col = [], strategy =[]):
 	np.random.seed(42)
 	rand_index = np.random.randint(
 		low = 0,
@@ -121,17 +121,18 @@ def LinearMadness(X, y, perc = 0, imp_col = [], strategy =[])
 	print('===============================')
 
 
-
+#%%
 
 #Define percentage data removal and choose column to impute.  Nox for now
+
 bos_imp_output = pd.DataFrame([])
 perc_list = [0.01,0.05,0.10,0.20,0.33,0.50]
 imp_col = ['NOX']
 strategy = "mean"
 
+LinearMadness(X_train, y_train, perc=0,imp_col=imp_col,strategy=strategy)
 
-#%%
-for x in perc_list:
+
 
 
 
