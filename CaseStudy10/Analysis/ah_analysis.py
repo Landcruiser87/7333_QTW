@@ -1,7 +1,7 @@
 #%%
 from sklearn.datasets import load_boston
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import Imputer
 
@@ -30,7 +30,6 @@ bos.describe()
 #CheckMissingValues. 
 bos.isnull().sum()
 
-
 #Check histograms of data
 bos.hist(bins=50, figsize = (20,15))
 
@@ -47,11 +46,20 @@ for k, v in bos.items():
 	perc = np.shape(v_col)[0] * 100.0 / np.shape(bos)[0]
 	print("%s outliers = %8.2f%%" % (k, perc))
 
+# ======================================================================================
+# Problem 1:
+# Using Sklearn get the Boston Housing dataset.
+# Fit a linear regressor to the data as a baeline.  
+# There is no need to do Cross-Validation.  We are exploring the change in results
+
+# What is the loss and what are the goodness of fit parameters?  This will be our baseline for comparison
+# ======================================================================================
 
 #Looking at a baseline RSME 
 linreg = LinearRegression().fit(X,y)
 y_pred = linreg.predict(X)
 baseline_MSE = mean_squared_error(y,y_pred)
+r2 = r2_score(y, y_pred)
 
 #Coefficients and intercept
 # linreg.coef_
@@ -59,8 +67,18 @@ baseline_MSE = mean_squared_error(y,y_pred)
 #Looking at Coefficients. 
 print(pd.DataFrame(zip(bos.columns, linreg.coef_), columns = ['features', 'BaselineCoefficients']))
 print("Baseline MSE is = %.2f" % baseline_MSE)
+print("Goodness of fit (R_squared) is = %.2f" % r2)
+# ======================================================================================
+# Problem 2: (repeated)
+# For select between 1, 5 10, 20, 33, and 50% of your data on a single column (Completely at random), replace the present value with a NAN and then perform an imputation of that value.   
+
+# In. each case perform a fit with the imputed data and compare the loss and goodness of fit to your baseline.
+# ======================================================================================
+
 
 #Split that data like Paul Bunyan
+# X = Housing Price target
+# y = All other housing data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state = 42)
 
 #Check shape of test/train
@@ -76,6 +94,19 @@ def impute_nation(imputedata):
 	impute.transform(imputedata)
 	return
 
+#Setup Linear regressor function
+def LinearMadness(X, y, perc = 0, imp_col = [], strategy =[])
+	linreg = LinearRegression().fit(X,y)
+	y_pred = linreg.predict(X)
+	return_MSE = mean_squared_error(y,y_pred)
+	r2 = r2_score(y, y_pred)
+
+	print("The MSE is = %.2f" % return_MSE)
+	print("Goodness of fit (R_squared) is = %.2f" % r2)
+	print('===============================')
+
+
+
 #Function for data removal. 
 def data_removal(data, target, perc, imp_col, strategy):
 	np.random.seed(42)
@@ -85,19 +116,25 @@ def data_removal(data, target, perc, imp_col, strategy):
 		size = int(len(data)*perc))
 	
 	bos_imp = data.copy()
-	for x in rand_index:
-		bos_imp[imp_col][x]=np.nan
-	bos_imp_model = impute_nation(bos_imp)
-	return 
+	bos_imp.imp_col.iloc[rand_index]=np.nan
+	nan_sum = sum(np.isnan(bos_imp.imp_col))
+	bos_imp_data = impute_nation(bos_imp)
 
-#Define percentage data removal
+	return bos_imp_data
+
+#Define percentage data removal and choose column to impute.  Nox for now
 bos_imp_output = pd.DataFrame([])
-perc_list = [0.10,0.20,0.50]
+perc_list = [0.01,0.05,0.10,0.20,0.33,0.50]
 imp_col = ['NOX']
 strategy = "mean"
 
-#%%
 
-for i in range(len(perc_list)):
-	bos_imp_output[i] = np.array(data_removal(X, y, perc_list[i], imp_col, strategy))
+#%%
+for x in perc_list:
+
+
+
+
+
+
 
