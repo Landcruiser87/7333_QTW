@@ -7,6 +7,7 @@ from sklearn.base import BaseEstimator
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from typing import Callable
 from sklearn.impute import SimpleImputer
 plt.style.use('bmh')
 
@@ -68,10 +69,47 @@ def iterate_stats(features: np.ndarray,
 results_dict['baseline'] = iterate_stats(X,y)
 impute_types = ['mean','median']
 miss_props = [1, 5, 10, 20, 33, 50]
-n_rounds = X.shape[-1]*5
+n_rounds = X.shape[-1]*100
 
 for imp in impute_types:
     results_dict[imp] = {p: iterate_stats(X, y, prop=p, iters=n_rounds, impute_method=imp) for p in miss_props}
 
-from pprint import pprint
-pprint(results_dict)
+
+def results_to_series(res: dict, f_type: str) -> dict:
+    upper = []
+    lower = []
+    avg = []
+    x = list(res.keys())
+    avg = [res[k][f_type]['avg'] for k in x]
+    std = [res[k][f_type]['std'] for k in x]
+    # for plotting
+    upper = [avg[i] + std[i] for i in range(len(avg))]
+    lower = [avg[i] - std[i] for i in range(len(avg))]
+    return {'x':x, 'y':avg, 'upper': upper, 'lower':lower}
+
+
+
+def make_plotter(f_type: str) -> Callable:
+    def plot_generic_stats(results: dict=results_dict)-> None:
+        ax = plt.subplot()
+        base = results_dict['baseline'][f_type]
+        ax.axhline(base['avg'], color='r', xmin=0, xmax=50, label='Baseline')
+        keys = [k for k in results.keys() if k != 'baseline']
+        for k in keys:
+            tmp = results_to_series(results[k], f_type)
+            ax.plot(tmp['x'], tmp['y'], label=k.title())
+            ax.fill_between(tmp['x'], tmp['lower'], tmp['upper'], alpha=0.1, label=f"{k} error".title())
+        ax.legend()
+        ax.set_title(f"{f_type} vs Percentage of Missing Data, by Imputation Method".title().replace("_"," "))
+        ax.set_xlabel('Percentage of Missing Data')
+        ax.set_ylabel(f_type.title().replace("_"," "))
+        plt.show()
+    return plot_generic_stats
+
+plot_goodness = make_plotter('goodness_of_fit')
+plot_loss = make_plotter('loss')
+
+plot_loss()
+
+plot_goodness()
+
