@@ -15,7 +15,7 @@ plt.style.use('bmh')
 X, y = load_boston(return_X_y=True)
 
 # default parameters to use
-parameter_dict = {'normalize':True, 'n_jobs':-1}
+parameter_dict = {'n_jobs':-1}
 # dictionary for results
 results_dict = {}
 
