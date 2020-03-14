@@ -105,15 +105,15 @@ def impute_nation(imputedata):
 
 
 #Setup linear regressor function
-def LinearMadness(X, y): 
+def LinearMadness(X, y, bos_imp_nan): 
 
 	linreg = LinearRegression().fit(X,y)
 	y_pred = linreg.predict(X)
 	return_MSE = mean_squared_error(y,y_pred)
 	r2 = r2_score(y, y_pred)
 
-
-	print("\nThe MSE is = %.2f" % return_MSE)
+	print("\nWith %i values imputed on the housing dataset" % bos_imp_nan)
+	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
 	print('===============================')
 #%%
@@ -130,7 +130,7 @@ for x in perc_list:
 
 	impute_nation(bos_imp)
 
-	LinearMadness(bos_imp, y_train) 
+	LinearMadness(bos_imp, y_train, bos_imp_nan) 
 
 
 
