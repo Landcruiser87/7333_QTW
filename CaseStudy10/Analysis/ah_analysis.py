@@ -112,7 +112,7 @@ def linear_madness(X, y, bos_imp_nan):
 	return_MSE = mean_squared_error(y,y_pred)
 	r2 = r2_score(y, y_pred)
 
-	print("\nWith %i values imputed by mean on the housing dataset" % bos_imp_nan)
+	print("\nWith %i values imputed by mean on the NOX column of the housing dataset" % bos_imp_nan)
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
 	print('==============================================')
@@ -175,6 +175,40 @@ for x in perc_list:
 	impute_nation(bos_imp)
 	linear_madness(bos_imp, y_train, bos_imp_nan, x) 
 
+
+
+#%%
+
+# ======================================================================================
+# Problem 4: Step 4:  Create a Missing Not at Random pattern in which 25% of the data 
+# is missing for a single column.    Impute your data, fit the results and compare 
+# to a baseline.
+# ======================================================================================
+#Setup linear regressor function
+def linear_madness(X, y, bos_imp_nan, perc): 
+
+	linreg = LinearRegression().fit(X,y)
+	y_pred = linreg.predict(X)
+	return_MSE = mean_squared_error(y,y_pred)
+	r2 = r2_score(y, y_pred)
+	#print("%s outliers = %8.2f%%" % (k, perc))
+	
+	print("\nAfter imputing %i%% of the data" % perc)
+	print("After filtering the ZN column with values > 11.0")
+	print("With %i values imputed from ZN column " % bos_imp_nan)
+	print("The MSE is = %.2f" % return_MSE)
+	print("Goodness of fit (R_squared) is = %.2f" % r2)
+	print('==============================================')
+#%%
+x = 25
+cols_na = ['ZN']
+control = X_train.ZN > 11.0
+
+bos_imp = X_train.copy()
+bos_imp.loc[bos_imp.loc[control].sample(frac=(x/100)).index, cols_na] = np.nan
+bos_imp_nan = sum(np.isnan(bos_imp.ZN))
+impute_nation(bos_imp)
+linear_madness(bos_imp, y_train, bos_imp_nan, x) 
 
 
 # %%
