@@ -3,7 +3,7 @@ from sklearn.datasets import load_boston
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import Imputer
+from sklearn.impute import SimpleImputer
 
 
 import numpy as np
@@ -98,7 +98,7 @@ print(y_test.shape)
 
 #Define function for SKlearn Imputer
 def impute_nation(imputedata):
-	impute = Imputer(missing_values=np.nan, strategy="mean", copy=False)
+	impute = SimpleImputer(missing_values=np.nan, strategy="mean", copy=False)
 	impute.fit(imputedata)
 	impute.transform(imputedata)
 	return
@@ -115,7 +115,7 @@ def LinearMadness(X, y, bos_imp_nan):
 	print("\nWith %i values imputed on the housing dataset" % bos_imp_nan)
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
-	print('===============================')
+	print('==============================================')
 #%%
 
 perc_list = [1,5,10,20,33,50]
@@ -131,10 +131,6 @@ for x in perc_list:
 	impute_nation(bos_imp)
 
 	LinearMadness(bos_imp, y_train, bos_imp_nan) 
-
-
-
-
 
 
 
