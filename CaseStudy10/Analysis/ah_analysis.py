@@ -98,14 +98,14 @@ print(y_test.shape)
 
 #Define function for SKlearn Imputer
 def impute_nation(imputedata):
-	impute = Imputer(missing_values=np.nan, strategy="mean")
+	impute = Imputer(missing_values=np.nan, strategy="mean", copy=False)
 	impute.fit(imputedata)
 	impute.transform(imputedata)
 	return
 
 
 #Setup linear regressor function
-def LinearMadness(X, y, perc = "", imp_col = []): 
+def LinearMadness(X, y): 
 
 	linreg = LinearRegression().fit(X,y)
 	y_pred = linreg.predict(X)
@@ -130,7 +130,7 @@ for x in perc_list:
 
 	impute_nation(bos_imp)
 
-	LinearMadness(bos_imp, y_train)  # perc=x,imp_col=imp_col
+	LinearMadness(bos_imp, y_train) 
 
 
 
