@@ -90,7 +90,7 @@ print("Goodness of fit (R_squared) is = %.2f" % r2)
 # y = All other housing data
 X_train, X_test, y_train, y_test = train_test_split(bos, bos_target, test_size=0.20, random_state = 42)
 
-#Check shape of test/train
+print("\nChecking shape of test/train data")
 print(X_train.shape)
 print(X_test.shape)
 print(y_train.shape)
@@ -112,11 +112,10 @@ def LinearMadness(X, y, bos_imp_nan):
 	return_MSE = mean_squared_error(y,y_pred)
 	r2 = r2_score(y, y_pred)
 
-	print("\nWith %i values imputed on the housing dataset" % bos_imp_nan)
+	print("\nWith %i values imputed by mean on the housing dataset" % bos_imp_nan)
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
 	print('==============================================')
-#%%
 
 perc_list = [1,5,10,20,33,50]
 imp_col = 4 #NOX Column
@@ -129,10 +128,52 @@ for x in perc_list:
 	bos_imp_nan = sum(np.isnan(bos_imp.NOX))
 
 	impute_nation(bos_imp)
-
 	LinearMadness(bos_imp, y_train, bos_imp_nan) 
 
 
+#%%
+
+# ======================================================================================
+# Problem 3: (repeated)
+# Take 2 different columns and create data “Missing at Random” when controlled for a third variable 
+# (i.e if Variable Z is > 30, than Variables X, Y are randomly missing).  
+# Make runs with 10%, 20% and 30% missing data imputed via your best guess.  
+# Repeat your fit and comparisons to the baseline.
+# ======================================================================================
+
+#Setup linear regressor function
+def LinearMadness(X, y, bos_imp_nan, perc): 
+
+	linreg = LinearRegression().fit(X,y)
+	y_pred = linreg.predict(X)
+	return_MSE = mean_squared_error(y,y_pred)
+	r2 = r2_score(y, y_pred)
+	#print("%s outliers = %8.2f%%" % (k, perc))
+	
+	print("\nAfter imputing %.2f%% of the data" % perc)
+	print("With %i and %i values imputed from the AGE and ZN columns" % (bos_imp_nan[0], bos_imp_nan[1]))
+	print("The MSE is = %.2f" % return_MSE)
+	print("Goodness of fit (R_squared) is = %.2f" % r2)
+	print('==============================================')
+
+#%%
+#For this section we choose AGE and ZN for our two columns selected.  
+#We'll control by saying anything in the NOX column over .40
+perc_list = [10,20,30]
+cols_na = ['AGE','ZN']
+control = X_train.NOX > 0.40
+
+
+for x in perc_list:
+	np.random.seed(42)	
+	bos_imp = X_train.copy()
+
+	bos_imp.loc[bos_imp.loc[control].sample(frac=(x/100)).index, cols_na] = np.nan
+	bos_imp_nan = [sum(np.isnan(bos_imp.AGE)),sum(np.isnan(bos_imp.ZN))]
+	
+	impute_nation(bos_imp)
+	LinearMadness(bos_imp, y_train, bos_imp_nan, x) 
 
 
 
+# %%
