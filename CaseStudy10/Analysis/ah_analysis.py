@@ -105,7 +105,7 @@ def impute_nation(imputedata):
 
 
 #Setup linear regressor function
-def LinearMadness(X, y, bos_imp_nan): 
+def linear_madness(X, y, bos_imp_nan): 
 
 	linreg = LinearRegression().fit(X,y)
 	y_pred = linreg.predict(X)
@@ -128,7 +128,7 @@ for x in perc_list:
 	bos_imp_nan = sum(np.isnan(bos_imp.NOX))
 
 	impute_nation(bos_imp)
-	LinearMadness(bos_imp, y_train, bos_imp_nan) 
+	linear_madness(bos_imp, y_train, bos_imp_nan) 
 
 
 #%%
@@ -142,7 +142,7 @@ for x in perc_list:
 # ======================================================================================
 
 #Setup linear regressor function
-def LinearMadness(X, y, bos_imp_nan, perc): 
+def linear_madness(X, y, bos_imp_nan, perc): 
 
 	linreg = LinearRegression().fit(X,y)
 	y_pred = linreg.predict(X)
@@ -150,8 +150,9 @@ def LinearMadness(X, y, bos_imp_nan, perc):
 	r2 = r2_score(y, y_pred)
 	#print("%s outliers = %8.2f%%" % (k, perc))
 	
-	print("\nAfter imputing %.2f%% of the data" % perc)
+	print("\nAfter imputing %i%% of the data" % perc)
 	print("With %i and %i values imputed from the AGE and ZN columns" % (bos_imp_nan[0], bos_imp_nan[1]))
+	print("After filtering the NOX column with values > 0.40")
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
 	print('==============================================')
@@ -172,7 +173,7 @@ for x in perc_list:
 	bos_imp_nan = [sum(np.isnan(bos_imp.AGE)),sum(np.isnan(bos_imp.ZN))]
 	
 	impute_nation(bos_imp)
-	LinearMadness(bos_imp, y_train, bos_imp_nan, x) 
+	linear_madness(bos_imp, y_train, bos_imp_nan, x) 
 
 
 
