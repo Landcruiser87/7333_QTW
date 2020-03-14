@@ -193,9 +193,8 @@ def linear_madness(X, y, bos_imp_nan, perc):
 	r2 = r2_score(y, y_pred)
 	#print("%s outliers = %8.2f%%" % (k, perc))
 	
-	print("\nAfter imputing %i%% of the data" % perc)
-	print("After filtering the ZN column with values > 11.0")
-	print("With %i values imputed from ZN column " % bos_imp_nan)
+	print("\nAfter imputing %i%% of the ZN column (%i values)" % (perc, bos_imp_nan))
+	print("Filtering the ZN column with values > 11.0")
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
 	print('==============================================')
