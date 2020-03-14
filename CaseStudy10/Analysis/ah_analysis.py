@@ -24,7 +24,8 @@ X, y = load_boston(return_X_y=True)
 
 #pandas
 bos = pd.DataFrame(data = boston['data'], columns = boston['feature_names'])
-bos_target = pd.DataFrame(data=boston['target'], columns = ['PRICE'])
+bos_target = boston['target']
+
 print(bos.head(5))
 
 #Summary and statistics of the dataset
@@ -50,6 +51,8 @@ for k, v in bos.items():
 	perc = np.shape(v_col)[0] * 100.0 / np.shape(bos)[0]
 	print("%s outliers = %8.2f%%" % (k, perc))
 
+
+#%%
 # ======================================================================================
 # Problem 1:
 # Using Sklearn get the Boston Housing dataset.
@@ -60,10 +63,10 @@ for k, v in bos.items():
 # ======================================================================================
 
 #Looking at a baseline RSME 
-linreg = LinearRegression().fit(X,y)
-y_pred = linreg.predict(X)
-baseline_MSE = mean_squared_error(y,y_pred)
-r2 = r2_score(y, y_pred)
+linreg = LinearRegression().fit(bos,bos_target)
+y_pred = linreg.predict(bos)
+baseline_MSE = mean_squared_error(bos_target,y_pred)
+r2 = r2_score(bos_target, y_pred)
 
 #Coefficients and intercept
 # linreg.coef_
@@ -73,7 +76,7 @@ print(pd.DataFrame(zip(bos.columns, linreg.coef_), columns = ['features', 'Basel
 print("\nBaseline MSE is = %.2f" % baseline_MSE)
 print("Goodness of fit (R_squared) is = %.2f" % r2)
 
-
+#%%
 # ======================================================================================
 # Problem 2: (repeated)
 # For select between 1, 5 10, 20, 33, and 50% of your data on a single column (Completely at random), replace the present value with a NAN and then perform an imputation of that value.   
@@ -85,7 +88,7 @@ print("Goodness of fit (R_squared) is = %.2f" % r2)
 #Split that data like Paul Bunyan
 # X = Housing Price target
 # y = All other housing data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state = 42)
+X_train, X_test, y_train, y_test = train_test_split(bos, bos_target, test_size=0.20, random_state = 42)
 
 #Check shape of test/train
 print(X_train.shape)
@@ -95,14 +98,14 @@ print(y_test.shape)
 
 #Define function for SKlearn Imputer
 def impute_nation(imputedata):
-	impute = Imputer(missing_values=np.nan, strategy="mean", axis=1)
+	impute = Imputer(missing_values=np.nan, strategy="mean")
 	impute.fit(imputedata)
 	impute.transform(imputedata)
 	return
 
 
 #Setup linear regressor function
-def LinearMadness(X, y, perc = 1, imp_col = []):
+def LinearMadness(X, y, perc = "", imp_col = []): 
 
 	linreg = LinearRegression().fit(X,y)
 	y_pred = linreg.predict(X)
@@ -115,24 +118,19 @@ def LinearMadness(X, y, perc = 1, imp_col = []):
 	print('===============================')
 #%%
 
-perc_list = [0.10,0.20,0.33,0.50]
+perc_list = [1,5,10,20,33,50]
 imp_col = 4 #NOX Column
 
 
 for x in perc_list:
-	np.random.seed(42)
-	rand_index = np.random.randint(
-		low = 0,
-		high = X_train.shape[0],
-		size = int(len(X_train)*perc))
-	
+	np.random.seed(42)	
 	bos_imp = X_train.copy()
-	bos_imp[rand_index][imp_col] = np.nan
+	bos_imp.NOX[bos_imp.NOX.sample(frac=(x/100)).index] = np.nan
+	bos_imp_nan = sum(np.isnan(bos_imp.NOX))
 
-	nan_sum = sum(np.isnan(bos_imp[:][imp_col]))
-	impute_nation(bos_imp[imp_col])
+	impute_nation(bos_imp)
 
-	LinearMadness(bos_imp, y_train, perc=x,imp_col=imp_col)
+	LinearMadness(bos_imp, y_train)  # perc=x,imp_col=imp_col
 
 
 
