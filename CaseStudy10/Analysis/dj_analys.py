@@ -31,7 +31,7 @@ def get_scores(features: np.ndarray,
 
 results_dict['baseline'] = get_scores(X,y)
 
-def random_missing_col(data: np.ndarray, prop: int) -> np.nan:
+def random_missing_col(data: np.ndarray, prop: int) -> np.ndarray:
     if type(prop) is not int or prop <= 0 or prop >=100:
         raise ValueError('needs to be an int less than 100 and greater than zero!')
     nrows = data.shape[0]
