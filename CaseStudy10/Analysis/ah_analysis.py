@@ -14,20 +14,24 @@ import seaborn as sns
 
 boston = load_boston()
 #print(boston['DESCR'])
-
+col_names = boston['feature_names']
 #Setting up data
-X = boston.data
-y = boston.target
+#Numpy way
+# X = np.array(boston.data, dtype=[(n,'float64') for n in col_names])
+# y = np.array(boston.target, dtype=[('PRICE','float64')])
+X, y = load_boston(return_X_y=True) 
 
-bos = pd.DataFrame(boston.data)
-bos.columns = boston.feature_names
+
+#pandas
+bos = pd.DataFrame(data = boston['data'], columns = boston['feature_names'])
+bos_target = pd.DataFrame(data=boston['target'], columns = ['PRICE'])
 print(bos.head(5))
 
+#Summary and statistics of the dataset
+# bos.info()
+# bos.describe()
 
-bos.info()
-bos.describe()
-
-#CheckMissingValues. 
+#Check missing values. 
 bos.isnull().sum()
 
 #Check histograms of data
@@ -35,7 +39,7 @@ bos.hist(bins=50, figsize = (20,15))
 
 #Looking at correlation
 plt.figure(figsize=(20,10))
-sns.heatmap(bos.corr(),vmax=1, annot=True, cmap = 'YlGnBu',annot_kws={"fontsize":14})
+sns.heatmap(bos.corr().round(2),vmax=1, annot=True, cmap = 'YlGnBu',annot_kws={"fontsize":14})
 
 #Looking at outlier percentages outside 1st and 3rd Quantiles
 for k, v in bos.items():
@@ -66,7 +70,7 @@ r2 = r2_score(y, y_pred)
 # linreg.intercept_
 #Looking at Coefficients. 
 print(pd.DataFrame(zip(bos.columns, linreg.coef_), columns = ['features', 'BaselineCoefficients']))
-print("Baseline MSE is = %.2f" % baseline_MSE)
+print("\nBaseline MSE is = %.2f" % baseline_MSE)
 print("Goodness of fit (R_squared) is = %.2f" % r2)
 
 
@@ -105,13 +109,14 @@ def LinearMadness(X, y, perc = 1, imp_col = []):
 	return_MSE = mean_squared_error(y,y_pred)
 	r2 = r2_score(y, y_pred)
 
-	print("The MSE is = %.2f" % return_MSE)
+
+	print("\nThe MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
 	print('===============================')
 #%%
-bos_imp = pd.DataFrame([])
+
 perc_list = [0.10,0.20,0.33,0.50]
-imp_col = ['NOX']
+imp_col = 4 #NOX Column
 
 
 for x in perc_list:
@@ -122,9 +127,9 @@ for x in perc_list:
 		size = int(len(X_train)*perc))
 	
 	bos_imp = X_train.copy()
-	b = np.nan
+	bos_imp[rand_index][imp_col] = np.nan
 
-	nan_sum = sum(np.isnan(bos_imp[imp_col]))
+	nan_sum = sum(np.isnan(bos_imp[:][imp_col]))
 	impute_nation(bos_imp[imp_col])
 
 	LinearMadness(bos_imp, y_train, perc=x,imp_col=imp_col)
