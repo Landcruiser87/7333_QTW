@@ -1,1 +1,0 @@
-SPAM SPAM SPAM
