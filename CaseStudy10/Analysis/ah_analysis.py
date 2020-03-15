@@ -22,7 +22,7 @@ col_names = boston['feature_names']
 X, y = load_boston(return_X_y=True) 
 
 
-#pandas
+#pandas way
 bos = pd.DataFrame(data = boston['data'], columns = boston['feature_names'])
 bos_target = boston['target']
 
@@ -72,9 +72,10 @@ r2 = r2_score(bos_target, y_pred)
 # linreg.coef_
 # linreg.intercept_
 #Looking at Coefficients. 
-print(pd.DataFrame(zip(bos.columns, linreg.coef_), columns = ['features', 'BaselineCoefficients']))
 print("\nBaseline MSE is = %.2f" % baseline_MSE)
 print("Goodness of fit (R_squared) is = %.2f" % r2)
+print(pd.DataFrame(zip(bos.columns, linreg.coef_), columns = ['features', 'BaselineCoefficients']))
+print('==============================================')
 
 #%%
 # ======================================================================================
@@ -115,6 +116,7 @@ def linear_madness(X, y, bos_imp_nan):
 	print("\nWith %i values imputed by mean on the NOX column of the housing dataset" % bos_imp_nan)
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
+	print(pd.DataFrame(zip(X.columns, linreg.coef_), columns = ['features', 'LinRegCoefficients']))
 	print('==============================================')
 
 perc_list = [1,5,10,20,33,50]
@@ -154,6 +156,7 @@ def linear_madness(X, y, bos_imp_nan, perc):
 	print("After filtering the NOX column with values > 0.40")
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
+	print(pd.DataFrame(zip(X.columns, linreg.coef_), columns = ['features', 'LinRegCoefficients']))
 	print('==============================================')
 
 #%%
@@ -190,11 +193,12 @@ def linear_madness(X, y, bos_imp_nan, perc):
 	y_pred = linreg.predict(X)
 	return_MSE = mean_squared_error(y,y_pred)
 	r2 = r2_score(y, y_pred)
-	
+
 	print("\nAfter imputing %i%% of the ZN column (%i values)" % (perc, bos_imp_nan))
 	print("Filtering the ZN column with values > 11.0")
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
+	print(pd.DataFrame(zip(X.columns, linreg.coef_), columns = ['features', 'LinRegCoefficients']))	
 	print('==============================================')
 
 x = 25
