@@ -1,0 +1,1044 @@
+---
+title: "Team CCAD Case Study 1: RTLS Analysis"
+author: "David Josephs, Andy Heroy, Carson Drake, Che' Cobb"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: united
+    highlight: haddock
+    code_folding: hide
+    df_print: paged
+    keep_md: TRUE
+    fig_width: 10
+    fig_height: 10
+    fig_retina: true
+---
+
+```{r setup, include = F}
+knitr::opts_chunk$set(warning = F, message = F, dev = "svg", fig.align = "center", cache = F)
+knitr::opts_chunk$set(tidy = T)
+knitr::opts_chunk$set(comment = '#>')
+options(digits = 2)
+
+```
+
+# Introduction
+
+Businesses today often need to know where items of interest (such as people or machinery) are at any given point in time, within a specified area.
+Tracking items indoors provides an interesting challenge as conventional methods (GPS) for establishing location don’t work well indoors.
+Nolan and Lang propose an innovative solution to this problem by combining machine learning techniques (K-Nearest Neighbors), and wifi signals in order to create an indoor map that can locate and estimate where a given item of interest is by assessing its signal strength at various access points (wifi routers) placed throughout the area.  This information proves vital to optimizing workflows for how objects move throughout a space, and how improve upon their future handling to best accommodate the business’s needs.
+
+The experimental setup is shown in detail in the figure below:
+
+```{r, fig.cap = "**Floor plan of the test environment:** *Access Points Denoted by black squares. training data selected at grey dots, online test data selected at black dots. Gray dots are approximately one meter apart*"}
+knitr::include_graphics("CleverZonkedElk.png")
+```
+
+Researchers mapped the static signal strengths of the various access points throughout the space. These routers communicate with a scanning device, which was placed methodically at known intervals throughout the area. This collection makes up the offline (training) data, while later online training data was collected by more or less walking around with the sensor. The raw data is arranged by router, and described below:
+
+## Data Description
+
+```{r tableguy, fig.cap = "variable description"}
+pander::pander(
+ list(
+      t = "Time stamp (Milliseconds) since 12:00am, January 1, 1970",
+      Id = "router MAC address",
+      Pos = "Router location",
+      Degree = "Direction scanning device was carried by the researcher, measured in Degrees",
+      MAC = "MAC address of either the accessrouter, or scanning device combined with corresponding values for signal strength (dBm), the mode in which it was operating(adhoc scanner = 1, access router = 3), and its corresponding channel frequency."
+ ,
+ Signal = "Received Signal Strength in DbM")
+)
+```
+
+## Data Formatting
+
+The data is initially read in as raw text. Several measures were taken in order to get the data into a tabular format which an algorithm such as KNN can operate on. First, the raw text was split into tokens by separating markers. These tokens were then stripped of all comments and extraneous information. Then, to make the problem computationally simpler, the angles were rounded into discrete intervals of 45 degrees. Finally, the data was stripped of variables which were not pertinent to the analysis.
+
+```{r util_chonk}
+knitr::read_chunk("utils.R")
+knitr::read_chunk("analysis_plots.R")
+knitr::read_chunk("excl_b.R")
+```
+
+```{r ok}
+<<processline>>
+<<roundO>>
+<<readData>>
+<<offline_read>>
+```
+
+We can view the basic structure of the formatted data in the table below:
+
+```{r}
+offline
+```
+
+Nolan and Lang collected data from a total of 7 access points: five Linksys routers and two Alpha routers. However, their analysis only contained information from the Linksys routers and a single Alpha router (6 routers in total). They chose to keep information from the router at MAC address `00:0f:a3:39:e1:c0`, which we will refer to as ***Router A***, and discard information from the router at MAC address `00:0f:a3:39:dd:cd`, referred to as ***Router B***. In this study, we will determine whether or not Nolan and Lang were justified in their choice to discard router B, and attempt to understand why that choice was made.
+
+# Analysis
+
+We performed a two-fold analysis of the data and the two routers. First, a visual and numerical analysis of the signal quality at all routers, with a focus on routers A and B. Second, we performed an analysis of the predictive power of the signal from the routers. This analysis was conducted using the K-nearest neighbors algorithm. First, a KNN analysis using all the data except that from router B, just as Nolan and Lang conducted. Second, a KNN analysis excluding router A. Third, a KNN analysis including all routers, and finally, an attempt to improve on Nolan and Lang was made, performing a weighted KNN analysis of the data. The results of these four trials were compared in order to determine A) whether or not router B should have been excluded and B) if an improvement could be made on Nolan and Lang's analysis.
+
+## Exploratory Analysis
+
+```{r plotutil}
+```
+
+### Signal Strength vs Angle
+
+As we are determining the position of the item in question from what comes down to a signal strength and an angle, it is important first to look at the relationship between signal strength and angle. In the figure below, we  examine the general relationship between signal strength and angle by holding the position fixed:
+
+```{r all_box, fig.cap = "**Signal Strength vs Angle**: *We see that in general the signal strength follows a sinusoidal pattern as the angles are rotated through. This is not surprising*"}
+```
+
+This plot does not tell us anything that common sense would not: as we rotate through angles, the signal strength varies sinusoidally. This is because the sensor will either be pointed towards or away from the router. If we examine router B (top left), we get some sense of why Nolan and Lang preferred router A (top right). Router B has one of the weakest signals of all the routers, and contains the most outliers, which would likely make KNN analysis tricky (KNN is severely affected by outliers). Let us examine the differences between routers A and B more closely:
+
+```{r box2, fig.cap = "*Router B has much weaker signal than Router A*"}
+```
+
+This shows the previously made point with greater detail: the signal from router B is weak and contains many outliers. Lets affirm this by examining a table of average signal strenghth across angles and standard deviation of signal across all angles:
+
+```{r pivot0}
+```
+
+Again we see that router B has the weakest signal, however it is not clear that it is significantly weak, given all of the router's relatively wide standard deviations. Although the plots tell one story, this raises question to Nolan and Lang's choice of ignoring router B, it does not seem **too** different from the other routers.
+
+### Signal Strength Distribution
+
+Next, we decided to closely examine the distribution of the signal at each angle at each router. This will show us how easily separable, or identifiable, each angle is at the router, which could be related to how easy it is to determine the position of the router from the underlying signal (triangles and cosines tell us angles are related to signals). Let us first examine the signal distribution at all MAC addresses:
+
+```{r all_dens, fig.cap = "**Signal Density Plots**: *We see that for most routers, the angle creates clearly separate distributions, which should lead to easy position determination, however for router B this is not the case.*"}
+```
+
+From this, we again see the weakness of the signal at router B. We can also note that the distributions of signal at each angle cover each other up almost completely at router B (except at 90 degrees). This does not bode well for being able to extract the position or angle from the signal data, and makes another point towards Nolan and Lang's exclusion of the router. Let us now compare the signal distributions for just routers A and B:
+
+```{r two_dens, fig.cap = "*Our previous observations hold true, the signal is significantly weaker at router B (*top*) than router A (*bottom*). It is also not apparent that the signals from router B come from separate distributions*"}
+```
+
+Router B (top) has a much weaker overall signal than router A, and the distributions of the signal do not appear to change too much with angle, in contrast to the clear change with angle at router A. The authors of this report believe that this was sufficient reason for Nolan and Lang to excluder router B. It is now time to test the correctness of Nolan and Lang's choice through practical analysis. For more detailed, but less pertinent visualizations of the data, please refer to Nolan and Lang's chapter on the subject.
+
+## Practical Analysis
+
+### K Nearest Neighbours Excluding Router B
+
+First, we will conduct a KNN analysis following Nolan and Lang, by excluding router B. This will serve as a baseline for us to test against. First, we will run a grid search to determine the best value of K. Below, we show the plot of the sum of squares error versus K in our search:
+
+```{r search}
+offline <- readData("offline.final.trace.txt")
+# fix up the xypos
+offline$posXY <-  paste(offline$posX, offline$posY, sep = "-")
+byLocAngleAP = with(offline, 
+                    by(offline, list(posXY, angle, mac), 
+                       function(x) x))
+
+signalSummary = 
+  lapply(byLocAngleAP,            
+         function(oneLoc) {
+           ans = oneLoc[1, ]
+           ans$medSignal = median(oneLoc$signal)
+           ans$avgSignal = mean(oneLoc$signal)
+           ans$num = length(oneLoc$signal)
+           ans$sdSignal = sd(oneLoc$signal)
+           ans$iqrSignal = IQR(oneLoc$signal)
+           ans
+           })
+offlineSummary_original = do.call("rbind", signalSummary)     
+offlineSummary <- offlineSummary_original %>% filter(mac != router_b)
+
+online <-  readData("online.final.trace.txt", subMacs = unique(offlineSummary$mac))
+online$posXY <-  paste(online$posX, online$posY, sep = "-")
+
+keepVars = c("posXY", "posX","posY", "orientation", "angle")
+byLoc = with(online, 
+             by(online, list(posXY), 
+                function(x) {
+                  ans = x[1, keepVars]
+                  avgSS = tapply(x$signal, x$mac, mean)
+                  y = matrix(avgSS, nrow = 1, ncol = 6,
+                        dimnames = list(ans$posXY, names(avgSS)))
+                  cbind(ans, y)
+                }))
+
+onlineSummary = do.call("rbind", byLoc)
+calcError <- function(estXY, actualXY) sum( rowSums( (estXY - actualXY)^2) )
+
+reshapeSS1 <-  function(data, varSignal = "signal", 
+                        keepVars = c("posXY", "posX","posY")) {
+  byLocation <- with(data, by(data, list(posXY), 
+                              function(x) {
+                                ans <-  x[1, keepVars]
+                                avgSS <-  tapply(x[ , varSignal ], x$mac, mean)
+                                y <-  matrix(avgSS, nrow = 1, ncol = 6,
+                                             dimnames = list(ans$posXY,
+                                                             names(avgSS)))
+                                cbind(ans, y)
+                              }))
+
+  newDataSS <- do.call("rbind", byLocation)
+  return(newDataSS)
+}
+
+
+selectTrain1 <-  function(angleNewObs, signals = NULL, m = 1){
+  # m is the number of angles to keep between 1 and 5
+  refs <-  seq(0, by = 45, length  = 8)
+  nearestAngle <-  roundOrientation(angleNewObs)
+
+  if (m %% 2 == 1) 
+    angles <-  seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
+  else {
+    m = m + 1
+    angles <-  seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
+    if (sign(angleNewObs - nearestAngle) > -1) 
+      angles <-  angles[ -1 ]
+    else 
+      angles <-  angles[ -m ]
+  }
+  # round angles
+  angles <-  angles + nearestAngle
+  angles[angles < 0] <-  angles[ angles < 0 ] + 360
+  angles[angles > 360] <-  angles[ angles > 360 ] - 360
+  angles <-  sort(angles) 
+
+  offlineSubset <-  signals[ signals$angle %in% angles, ]
+  reshapeSS1(offlineSubset, varSignal = "avgSignal")
+}
+
+
+findNN1 <-  function(newSignal, trainSubset) {
+  diffs <-  apply(trainSubset[ , 4:9], 1, 
+                  function(x) x - newSignal)
+  dists <-  apply(diffs, 2, function(x) sqrt(sum(x^2)) )
+  closest <-  order(dists)
+  weightDF <-  trainSubset[closest, 1:3 ]
+  weightDF$weight <-  1/closest
+  return(weightDF)
+}
+
+
+predXY1 <-  function(newSignals, newAngles, trainData, 
+                    numAngles = 1, k = 3){
+  closeXY <-  list(length = nrow(newSignals))
+
+  for (i in 1:nrow(newSignals)) {
+    trainSS <-  selectTrain1(newAngles[i], trainData, m = numAngles)
+    closeXY[[i]] <- findNN1(newSignal = as.numeric(newSignals[i, ]), trainSS)
+  }
+
+  estXY <- lapply(closeXY, 
+                 function(x) sapply(x[ , 2:3], 
+                                    function(x) mean(x[1:k])))
+  estXY <- do.call("rbind", estXY)
+  return(estXY)
+}
+
+
+v = 11 
+permuteLocs = sample(unique(offlineSummary$posXY))
+permuteLocs = matrix(permuteLocs, ncol = v, 
+                     nrow = floor(length(permuteLocs)/v))
+
+onlineFold = subset(offlineSummary, posXY %in% permuteLocs[ , 1])
+reshapeSS1 = function(data, varSignal = "signal", 
+                     keepVars = c("posXY", "posX","posY"),
+                     sampleAngle = FALSE, 
+                     refs = seq(0, 315, by = 45)) {
+  byLocation =
+    with(data, by(data, list(posXY), 
+                  function(x) {
+                    if (sampleAngle) {
+                      x = x[x$angle == sample(refs, size = 1), ]}
+                    ans = x[1, keepVars]
+                    avgSS = tapply(x[ , varSignal ], x$mac, mean)
+                    y = matrix(avgSS, nrow = 1, ncol = 6,
+                               dimnames = list(ans$posXY,
+                                               names(avgSS)))
+                    cbind(ans, y)
+                  }))
+
+  newDataSS = do.call("rbind", byLocation)
+  return(newDataSS)
+}
+
+
+offline = offline[ offline$mac != "00:0f:a3:39:dd:cd", ]
+
+keepVars = c("posXY", "posX","posY", "orientation", "angle")
+
+onlineCVSummary = reshapeSS1(offline, keepVars = keepVars, 
+                            sampleAngle = TRUE)
+
+onlineFold = subset(onlineCVSummary, 
+                    posXY %in% permuteLocs[ , 1])
+
+offlineFold = subset(offlineSummary,
+                     posXY %in% permuteLocs[ , -1])
+
+estFold = predXY1(newSignals = onlineFold[ , 6:11], 
+                 newAngles = onlineFold[ , 4], 
+                 offlineFold, numAngles = 1, k = 3)
+
+actualFold = onlineFold[ , c("posX", "posY")]
+
+NNeighbors = 20
+K = NNeighbors 
+err = numeric(K)
+
+for (j in 1:v) {
+  onlineFold = subset(onlineCVSummary, 
+                      posXY %in% permuteLocs[ , j])
+  offlineFold = subset(offlineSummary,
+                       posXY %in% permuteLocs[ , -j])
+  actualFold = onlineFold[ , c("posX", "posY")]
+  
+  for (k in 1:K) {
+    estFold = predXY1(newSignals = onlineFold[ , 6:11],
+                     newAngles = onlineFold[ , 4], 
+                     offlineFold, numAngles = 1, k = k)
+    err[k] = err[k] + calcError(estFold, actualFold)
+  }
+}
+
+errdf <- data.frame(router_a = err)
+plot(y = err, x = (1:K),  type = "l", lwd= 2,
+     ylim = c(800, 2100),
+     xlab = "Number of Neighbors",
+     ylab = "Sum of Square Errors",
+      main = "Error vs K, with Router A Data")
+
+rmseMin = min(err)
+kMin = which(err == rmseMin)[1]
+segments(x0 = 0, x1 = kMin, y0 = rmseMin, col = gray(0.4), 
+         lty = 2, lwd = 2)
+segments(x0 = kMin, x1 = kMin, y0 = 1100,  y1 = rmseMin, 
+         col = grey(0.4), lty = 2, lwd = 2)
+
+#mtext(kMin, side = 1, line = 1, at = kMin, col = grey(0.4))
+text(x = kMin - 2, y = rmseMin + 40, 
+     label = as.character(round(rmseMin)), col = grey(0.4))
+
+
+estXYkmin1 = predXY1(newSignals = onlineSummary[ , 6:11], 
+                 newAngles = onlineSummary[ , 4], 
+                 offlineSummary, numAngles = 1, k = kMin)
+actualXY = onlineSummary[ , c("posX", "posY")]
+err_cv1 <- calcError(estXYkmin1, actualXY)
+trainPoints = offlineSummary[ offlineSummary$angle == 0 & 
+                              offlineSummary$mac == "00:0f:a3:39:e1:c0" ,
+                        c("posX", "posY")]
+
+
+floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL){
+  
+    plot(0, 0, xlim = c(0, 35), ylim = c(-3, 15), type = "n",
+         xlab = "", ylab = "", axes = FALSE,
+         main = "Floor Map of Predictions",
+         sub = "■ = Access Point, ● = Actual, ✷ = Predicted")
+    box()
+    if ( !is.null(AP) ) points(AP, pch = 15)
+    if ( !is.null(trainPoints) )
+      points(trainPoints, pch = 19, col="grey", cex = 0.6)
+    
+    points(x = actualXY[, 1], y = actualXY[, 2], 
+           pch = 19, cex = 0.8 )
+    points(x = estXY[, 1], y = estXY[, 2], 
+           pch = 8, cex = 0.8 )
+    segments(x0 = estXY[, 1], y0 = estXY[, 2],
+             x1 = actualXY[, 1], y1 = actualXY[ , 2],
+             lwd = 2, col = "red")
+}
+
+
+actualXY = onlineSummary[ , c("posX", "posY")]
+```
+
+Looks like the best value for K was about * `r kMin`*, with an error of * `r rmseMin`*. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of * `r err_cv1 `*. We will see how this stacks up compared to the others. Let us now turn our attention to router B:
+
+
+### K Nearest Neighbours Excluding Router A
+
+Now we will diverge from the work of Nolan and Lang, and exclude router A. Again, we will first run a grid search of K, displaying the 11-fold cross-validated error below:
+
+```{r search2}
+offline <- readData("offline.final.trace.txt")
+# fix up the xypos
+offline$posXY <-  paste(offline$posX, offline$posY, sep = "-")
+byLocAngleAP = with(offline, 
+                    by(offline, list(posXY, angle, mac), 
+                       function(x) x))
+
+signalSummary = 
+  lapply(byLocAngleAP,            
+         function(oneLoc) {
+           ans = oneLoc[1, ]
+           ans$medSignal = median(oneLoc$signal)
+           ans$avgSignal = mean(oneLoc$signal)
+           ans$num = length(oneLoc$signal)
+           ans$sdSignal = sd(oneLoc$signal)
+           ans$iqrSignal = IQR(oneLoc$signal)
+           ans
+           })
+offlineSummary_original = do.call("rbind", signalSummary)     
+offlineSummary <- offlineSummary_original %>% filter(mac != router_a)
+
+online <-  readData("online.final.trace.txt", subMacs = unique(offlineSummary$mac))
+online$posXY <-  paste(online$posX, online$posY, sep = "-")
+
+keepVars = c("posXY", "posX","posY", "orientation", "angle")
+byLoc = with(online, 
+             by(online, list(posXY), 
+                function(x) {
+                  ans = x[1, keepVars]
+                  avgSS = tapply(x$signal, x$mac, mean)
+                  y = matrix(avgSS, nrow = 1, ncol = 6,
+                        dimnames = list(ans$posXY, names(avgSS)))
+                  cbind(ans, y)
+                }))
+
+onlineSummary = do.call("rbind", byLoc)
+
+
+v = 11 
+permuteLocs = sample(unique(offlineSummary$posXY))
+permuteLocs = matrix(permuteLocs, ncol = v, 
+                     nrow = floor(length(permuteLocs)/v))
+
+onlineFold = subset(offlineSummary, posXY %in% permuteLocs[ , 1])
+
+
+offline = offline[ offline$mac != router_a, ]
+
+keepVars = c("posXY", "posX","posY", "orientation", "angle")
+
+onlineCVSummary = reshapeSS1(offline, keepVars = keepVars, 
+                            sampleAngle = TRUE)
+
+onlineFold = subset(onlineCVSummary, 
+                    posXY %in% permuteLocs[ , 1])
+
+offlineFold = subset(offlineSummary,
+                     posXY %in% permuteLocs[ , -1])
+
+estFold = predXY1(newSignals = onlineFold[ , 6:11], 
+                 newAngles = onlineFold[ , 4], 
+                 offlineFold, numAngles = 1, k = 3)
+
+actualFold = onlineFold[ , c("posX", "posY")]
+
+NNeighbors = 20
+K = NNeighbors 
+err = numeric(K)
+
+for (j in 1:v) {
+  onlineFold = subset(onlineCVSummary, 
+                      posXY %in% permuteLocs[ , j])
+  offlineFold = subset(offlineSummary,
+                       posXY %in% permuteLocs[ , -j])
+  actualFold = onlineFold[ , c("posX", "posY")]
+  
+  for (k in 1:K) {
+    estFold = predXY1(newSignals = onlineFold[ , 6:11],
+                     newAngles = onlineFold[ , 4], 
+                     offlineFold, numAngles = 1, k = k)
+    err[k] = err[k] + calcError(estFold, actualFold)
+  }
+}
+
+errdf$router_b <- err
+plot(y = err, x = (1:K),  type = "l", lwd= 2,
+     ylim = c(800, 2100),
+     xlab = "Number of Neighbors",
+     ylab = "Sum of Square Errors",
+      main = "Error vs K, with Router B Data")
+
+rmseMin = min(err)
+kMin = which(err == rmseMin)[1]
+segments(x0 = 0, x1 = kMin, y0 = rmseMin, col = gray(0.4), 
+         lty = 2, lwd = 2)
+segments(x0 = kMin, x1 = kMin, y0 = 1100,  y1 = rmseMin, 
+         col = grey(0.4), lty = 2, lwd = 2)
+
+#mtext(kMin, side = 1, line = 1, at = kMin, col = grey(0.4))
+text(x = kMin - 2, y = rmseMin + 40, 
+     label = as.character(round(rmseMin)), col = grey(0.4))
+
+
+estXYkmin2 = predXY1(newSignals = onlineSummary[ , 6:11], 
+                 newAngles = onlineSummary[ , 4], 
+                 offlineSummary, numAngles = 1, k = kMin)
+
+
+actualXY = onlineSummary[ , c("posX", "posY")]
+err_cv2 <- calcError(estXYkmin2, actualXY)
+
+trainPoints = offlineSummary[ offlineSummary$angle == 0 & 
+                              offlineSummary$mac == "00:0f:a3:39:e1:c0" ,
+                        c("posX", "posY")]
+
+
+floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL){
+  
+    plot(0, 0, xlim = c(0, 35), ylim = c(-3, 15), type = "n",
+         xlab = "", ylab = "", axes = FALSE,
+         main = "Floor Map of Predictions",
+         sub = "■ = Access Point, ● = Actual, ✷ = Predicted")
+    box()
+    if ( !is.null(AP) ) points(AP, pch = 15)
+    if ( !is.null(trainPoints) )
+      points(trainPoints, pch = 19, col="grey", cex = 0.6)
+    
+    points(x = actualXY[, 1], y = actualXY[, 2], 
+           pch = 19, cex = 0.8 )
+    points(x = estXY[, 1], y = estXY[, 2], 
+           pch = 8, cex = 0.8 )
+    segments(x0 = estXY[, 1], y0 = estXY[, 2],
+             x1 = actualXY[, 1], y1 = actualXY[ , 2],
+             lwd = 2, col = "red")
+}
+
+actualXY = onlineSummary[ , c("posX", "posY")]
+```
+
+Looks like the best value for K was about * `r kMin`*, with an error of * `r rmseMin`*. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of * `r err_cv2`*. Lets compare the results to those of router B:
+
+```{r, fig.cap = "*Router B overall performed better than Router A*"}
+errdf$k <- 1:nrow(errdf)
+errdf %>% gather_("Router","RMSE", names(errdf)[-length(errdf)]) %>%
+  ggplot() + geom_line(aes(x = k, y = RMSE, color = Router)) + plt_theme +
+  ggtitle("RMSE Over K by Router Subset")
+```
+
+This represents a major blow to Nolan and Lang's case: the dataset using Router B (which they excluded) performed significantly better than the dataset using Router A in its stead. The table below puts this to numbers:
+
+```{r}
+data.frame(router = c("router a","router b"), `online rmse` = c(err_cv1, err_cv2))
+```
+
+In a practical setting, in its own right Router B is more informative than Router A! We will now expand our analysis to all of the data.
+
+
+### K Nearest Neighbours Using All Routers
+
+Now we will diverge from the work of Nolan and Lang, and exclude router A. Again, we will first run a grid search of K, displaying the 11-fold cross-validated error below:
+
+
+
+```{r search3}
+offline <- readData("offline.final.trace.txt")
+# fix up the xypos
+offline$posXY <-  paste(offline$posX, offline$posY, sep = "-")
+byLocAngleAP = with(offline, 
+                    by(offline, list(posXY, angle, mac), 
+                       function(x) x))
+
+signalSummary = 
+  lapply(byLocAngleAP,            
+         function(oneLoc) {
+           ans = oneLoc[1, ]
+           ans$medSignal = median(oneLoc$signal)
+           ans$avgSignal = mean(oneLoc$signal)
+           ans$num = length(oneLoc$signal)
+           ans$sdSignal = sd(oneLoc$signal)
+           ans$iqrSignal = IQR(oneLoc$signal)
+           ans
+           })
+offlineSummary = do.call("rbind", signalSummary)     
+
+online <-  readData("online.final.trace.txt", subMacs = unique(offlineSummary$mac))
+online$posXY <-  paste(online$posX, online$posY, sep = "-")
+
+keepVars = c("posXY", "posX","posY", "orientation", "angle")
+byLoc = with(online, 
+             by(online, list(posXY), 
+                function(x) {
+                  ans = x[1, keepVars]
+                  avgSS = tapply(x$signal, x$mac, mean)
+                  y = matrix(avgSS, nrow = 1, ncol = 7,
+                        dimnames = list(ans$posXY, names(avgSS)))
+                  cbind(ans, y)
+                }))
+
+onlineSummary = do.call("rbind", byLoc)
+calcError <- function(estXY, actualXY) sum( rowSums( (estXY - actualXY)^2) )
+
+reshapeSS2 <-  function(data, varSignal = "signal", 
+                        keepVars = c("posXY", "posX","posY")) {
+  byLocation <- with(data, by(data, list(posXY), 
+                              function(x) {
+                                ans <-  x[1, keepVars]
+                                avgSS <-  tapply(x[ , varSignal ], x$mac, mean)
+                                y <-  matrix(avgSS, nrow = 1, ncol = 7,
+                                             dimnames = list(ans$posXY,
+                                                             names(avgSS)))
+                                cbind(ans, y)
+                              }))
+
+  newDataSS <- do.call("rbind", byLocation)
+  return(newDataSS)
+}
+
+
+selectTrain2 <-  function(angleNewObs, signals = NULL, m = 1){
+  # m is the number of angles to keep between 1 and 5
+  refs <-  seq(0, by = 45, length  = 8)
+  nearestAngle <-  roundOrientation(angleNewObs)
+
+  if (m %% 2 == 1) 
+    angles <-  seq(-45  * (m - 1) /2, 45 * (m - 1) /2, length = m)
+  else {
+    m = m + 1
+    angles <-  seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
+    if (sign(angleNewObs - nearestAngle) > -1) 
+      angles <-  angles[ -1 ]
+    else 
+      angles <-  angles[ -m ]
+  }
+  # round angles
+  angles <-  angles + nearestAngle
+  angles[angles < 0] <-  angles[ angles < 0 ] + 360
+  angles[angles > 360] <-  angles[ angles > 360 ] - 360
+  angles <-  sort(angles) 
+
+  offlineSubset <-  signals[ signals$angle %in% angles, ]
+  reshapeSS2(offlineSubset, varSignal = "avgSignal")
+}
+
+
+findNN2 <-  function(newSignal, trainSubset) {
+  diffs <-  apply(trainSubset[ , 4:9], 1, 
+                  function(x) x - newSignal)
+  dists <-  apply(diffs, 2, function(x) sqrt(sum(x^2)) )
+  closest <-  order(dists)
+  weightDF <-  trainSubset[closest, 1:3 ]
+  weightDF$weight <-  1/closest
+  return(weightDF)
+}
+
+
+predXY2 <-  function(newSignals, newAngles, trainData, 
+                    numAngles = 1, k = 3){
+  closeXY <-  list(length = nrow(newSignals))
+
+  for (i in 1:nrow(newSignals)) {
+    trainSS <-  selectTrain2(newAngles[i], trainData, m = numAngles)
+    closeXY[[i]] <- findNN2(newSignal = as.numeric(newSignals[i, ]), trainSS)
+  }
+
+  estXY <- lapply(closeXY, 
+                 function(x) sapply(x[ , 2:3], 
+                                    function(x) mean(x[1:k])))
+  estXY <- do.call("rbind", estXY)
+  return(estXY)
+}
+
+
+v = 11 
+permuteLocs = sample(unique(offlineSummary$posXY))
+permuteLocs = matrix(permuteLocs, ncol = v, 
+                     nrow = floor(length(permuteLocs)/v))
+
+onlineFold = subset(offlineSummary, posXY %in% permuteLocs[ , 1])
+reshapeSS2 = function(data, varSignal = "signal", 
+                     keepVars = c("posXY", "posX","posY"),
+                     sampleAngle = FALSE, 
+                     refs = seq(0, 315, by = 45)) {
+  byLocation =
+    with(data, by(data, list(posXY), 
+                  function(x) {
+                    if (sampleAngle) {
+                      x = x[x$angle == sample(refs, size = 1), ]}
+                    ans = x[1, keepVars]
+                    avgSS = tapply(x[ , varSignal ], x$mac, mean)
+                    y = matrix(avgSS, nrow = 1, ncol = 7,
+                               dimnames = list(ans$posXY,
+                                               names(avgSS)))
+                    cbind(ans, y)
+                  }))
+
+  newDataSS = do.call("rbind", byLocation)
+  return(newDataSS)
+}
+
+
+keepVars = c("posXY", "posX","posY", "orientation", "angle")
+
+onlineCVSummary = reshapeSS2(offline, keepVars = keepVars, 
+                            sampleAngle = TRUE)
+
+onlineFold = subset(onlineCVSummary, 
+                    posXY %in% permuteLocs[ , 1])
+
+offlineFold = subset(offlineSummary,
+                     posXY %in% permuteLocs[ , -1])
+
+estFold = predXY2(newSignals = onlineFold[ , 6:12], 
+                 newAngles = onlineFold[ , 5], 
+                 offlineFold, numAngles = 1, k = 3)
+
+actualFold = onlineFold[ , c("posX", "posY")]
+
+NNeighbors = 20
+K = NNeighbors 
+err = numeric(K)
+
+for (j in 1:v) {
+  onlineFold = subset(onlineCVSummary, 
+                      posXY %in% permuteLocs[ , j])
+  offlineFold = subset(offlineSummary,
+                       posXY %in% permuteLocs[ , -j])
+  actualFold = onlineFold[ , c("posX", "posY")]
+  
+  for (k in 1:K) {
+    estFold = predXY2(newSignals = onlineFold[ , 6:11],
+                     newAngles = onlineFold[ , 4], 
+                     offlineFold, numAngles = 1, k = k)
+    err[k] = err[k] + calcError(estFold, actualFold)
+  }
+}
+
+errdf$both <- err
+plot(y = err, x = (1:K),  type = "l", lwd= 2,
+     ylim = c(800, 2100),
+     xlab = "Number of Neighbors",
+     ylab = "Sum of Square Errors",
+      main = "Error vs K, with all Data")
+
+rmseMin = min(err)
+kMin = which(err == rmseMin)[1]
+segments(x0 = 0, x1 = kMin, y0 = rmseMin, col = gray(0.4), 
+         lty = 2, lwd = 2)
+segments(x0 = kMin, x1 = kMin, y0 = 1100,  y1 = rmseMin, 
+         col = grey(0.4), lty = 2, lwd = 2)
+
+#mtext(kMin, side = 1, line = 1, at = kMin, col = grey(0.4))
+text(x = kMin - 2, y = rmseMin + 40, 
+     label = as.character(round(rmseMin)), col = grey(0.4))
+
+
+estXYkmin3 = predXY2(newSignals = onlineSummary[ , 6:12], 
+                 newAngles = onlineSummary[ , 5], 
+                 offlineSummary, numAngles = 1, k = kMin)
+actualXY = onlineSummary[ , c("posX", "posY")]
+err_cv3 <- calcError(estXYkmin3, actualXY)
+
+trainPoints = offlineSummary[ offlineSummary$angle == 0 & 
+                              offlineSummary$mac == "00:0f:a3:39:e1:c0" ,
+                        c("posX", "posY")]
+
+
+floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL){
+  
+    plot(0, 0, xlim = c(0, 35), ylim = c(-3, 15), type = "n",
+         xlab = "", ylab = "", axes = FALSE,
+         main = "Floor Map of Predictions",
+         sub = "■ = Access Point, ● = Actual, ✷ = Predicted")
+    box()
+    if ( !is.null(AP) ) points(AP, pch = 15)
+    if ( !is.null(trainPoints) )
+      points(trainPoints, pch = 19, col="grey", cex = 0.6)
+    
+    points(x = actualXY[, 1], y = actualXY[, 2], 
+           pch = 19, cex = 0.8 )
+    points(x = estXY[, 1], y = estXY[, 2], 
+           pch = 8, cex = 0.8 )
+    segments(x0 = estXY[, 1], y0 = estXY[, 2],
+             x1 = actualXY[, 1], y1 = actualXY[ , 2],
+             lwd = 2, col = "red")
+}
+
+
+actualXY = onlineSummary[ , c("posX", "posY")]
+```
+
+
+Looks like the best value for K was about * `r kMin`*, with an error of * `r rmseMin`*. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of * `r err_cv3`*. Lets compare to our previous results:
+
+```{r, fig.cap = "*Adding Router A into the mix makes the model perform notably worse*"}
+errdf %>% gather_("Router","RMSE", names(errdf)[-(length(errdf)-1)]) %>%
+  ggplot() + geom_line(aes(x = k, y = RMSE, color = Router)) + plt_theme +
+  ggtitle("RMSE Over K by Router Subset")
+```
+
+With this, we can say conclusively that Router B, excluded by Nolan and Lang, is a better choice for this RTLS system. We can again demonstrate this numerically with a table:
+
+
+```{r}
+
+data.frame(router = c("router a","router b", "both"), `online rmse` = c(err_cv1, err_cv2, err_cv3))
+```
+
+Lets see if we can bump our best results even lower by performing a weighted KNN analysis.
+
+### Weighted KNN Analysis
+
+To "weight" our K nearest neighbors algorithm, we have to make a simple adjustment to the
+
+
+
+```{r search4}
+offline <- readData("offline.final.trace.txt")
+# fix up the xypos
+offline$posXY <-  paste(offline$posX, offline$posY, sep = "-")
+byLocAngleAP = with(offline, 
+                    by(offline, list(posXY, angle, mac), 
+                       function(x) x))
+
+signalSummary = 
+  lapply(byLocAngleAP,            
+         function(oneLoc) {
+           ans = oneLoc[1, ]
+           ans$medSignal = median(oneLoc$signal)
+           ans$avgSignal = mean(oneLoc$signal)
+           ans$num = length(oneLoc$signal)
+           ans$sdSignal = sd(oneLoc$signal)
+           ans$iqrSignal = IQR(oneLoc$signal)
+           ans
+           })
+offlineSummary_original = do.call("rbind", signalSummary)     
+offlineSummary <- offlineSummary_original %>% filter(mac != router_a)
+
+online <-  readData("online.final.trace.txt", subMacs = unique(offlineSummary$mac))
+online$posXY <-  paste(online$posX, online$posY, sep = "-")
+
+keepVars = c("posXY", "posX","posY", "orientation", "angle")
+byLoc = with(online, 
+             by(online, list(posXY), 
+                function(x) {
+                  ans = x[1, keepVars]
+                  avgSS = tapply(x$signal, x$mac, mean)
+                  y = matrix(avgSS, nrow = 1, ncol = 6,
+                        dimnames = list(ans$posXY, names(avgSS)))
+                  cbind(ans, y)
+                }))
+
+onlineSummary = do.call("rbind", byLoc)
+calcError <- function(estXY, actualXY) sum( rowSums( (estXY - actualXY)^2) )
+
+reshapeSS1 <-  function(data, varSignal = "signal", 
+                        keepVars = c("posXY", "posX","posY")) {
+  byLocation <- with(data, by(data, list(posXY), 
+                              function(x) {
+                                ans <-  x[1, keepVars]
+                                avgSS <-  tapply(x[ , varSignal ], x$mac, mean)
+                                y <-  matrix(avgSS, nrow = 1, ncol = 6,
+                                             dimnames = list(ans$posXY,
+                                                             names(avgSS)))
+                                cbind(ans, y)
+                              }))
+
+  newDataSS <- do.call("rbind", byLocation)
+  return(newDataSS)
+}
+
+
+selectTrain1 <-  function(angleNewObs, signals = NULL, m = 1){
+  # m is the number of angles to keep between 1 and 5
+  refs <-  seq(0, by = 45, length  = 8)
+  nearestAngle <-  roundOrientation(angleNewObs)
+
+  if (m %% 2 == 1) 
+    angles <-  seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
+  else {
+    m = m + 1
+    angles <-  seq(-45 * (m - 1) /2, 45 * (m - 1) /2, length = m)
+    if (sign(angleNewObs - nearestAngle) > -1) 
+      angles <-  angles[ -1 ]
+    else 
+      angles <-  angles[ -m ]
+  }
+  # round angles
+  angles <-  angles + nearestAngle
+  angles[angles < 0] <-  angles[ angles < 0 ] + 360
+  angles[angles > 360] <-  angles[ angles > 360 ] - 360
+  angles <-  sort(angles) 
+
+  offlineSubset <-  signals[ signals$angle %in% angles, ]
+  reshapeSS1(offlineSubset, varSignal = "avgSignal")
+}
+
+
+findNN_weighted = function(newSignal, trainSubset) {
+  diffs = apply(trainSubset[ , 4:9], 1,
+                function(x) x - newSignal)
+  dists <- sqrt(colSums(diffs^2)) # why is the book using apply when R is vectorized?
+  weighted_dists <- (1/dists)/(sum(1/dists))
+  closest = order(dists)
+  return(list(trainSubset[closest, 1:3 ], (1/dists)[order(weighted_dists, decreasing = TRUE)]))
+}
+
+
+library(foreach)
+library(doParallel)
+cl <- makeCluster(parallel::detectCores() - 1)
+registerDoParallel(cl)
+predXY_weighted = function(newSignals, newAngles, trainData,
+  numAngles = 1, k = 3){
+  l <- nrow(newSignals)
+  res <- foreach(i = 1:nrow(newSignals)) %do% {
+   trainSS <- selectTrain1(newAngles[i], trainData, m = numAngles)
+   nn <-  findNN_weighted(newSignal = as.numeric(newSignals[i,]), trainSS)[[1]]
+   wdist <- findNN_weighted(newSignal = as.numeric(newSignals[i,]), trainSS)[[2]]
+   weighted_dist <- wdist[1:k]/sum(wdist[1:k])
+   lab <- as.matrix(nn[1:k,2:3] * weighted_dist)
+   return(lab)
+  }
+  estXY = lapply(res, colSums)
+  estXY = do.call("rbind", estXY)
+  return(estXY)
+}
+
+v = 11 
+permuteLocs = sample(unique(offlineSummary$posXY))
+permuteLocs = matrix(permuteLocs, ncol = v, 
+                     nrow = floor(length(permuteLocs)/v))
+
+onlineFold = subset(offlineSummary, posXY %in% permuteLocs[ , 1])
+reshapeSS1 = function(data, varSignal = "signal", 
+                     keepVars = c("posXY", "posX","posY"),
+                     sampleAngle = FALSE, 
+                     refs = seq(0, 315, by = 45)) {
+  byLocation =
+    with(data, by(data, list(posXY), 
+                  function(x) {
+                    if (sampleAngle) {
+                      x = x[x$angle == sample(refs, size = 1), ]}
+                    ans = x[1, keepVars]
+                    avgSS = tapply(x[ , varSignal ], x$mac, mean)
+                    y = matrix(avgSS, nrow = 1, ncol = 6,
+                               dimnames = list(ans$posXY,
+                                               names(avgSS)))
+                    cbind(ans, y)
+                  }))
+
+  newDataSS = do.call("rbind", byLocation)
+  return(newDataSS)
+}
+
+
+offline = offline[ offline$mac != "00:0f:a3:39:dd:cd", ]
+
+keepVars = c("posXY", "posX","posY", "orientation", "angle")
+
+onlineCVSummary = reshapeSS1(offline, keepVars = keepVars, 
+                            sampleAngle = TRUE)
+
+onlineFold = subset(onlineCVSummary, 
+                    posXY %in% permuteLocs[ , 1])
+
+offlineFold = subset(offlineSummary,
+                     posXY %in% permuteLocs[ , -1])
+
+estFold = predXY_weighted(newSignals = onlineFold[ , 6:11], 
+                 newAngles = onlineFold[ , 4], 
+                 offlineFold, numAngles = 1, k = 3)
+
+
+actualFold = onlineFold[ , c("posX", "posY")]
+
+NNeighbors = 20
+K = NNeighbors 
+err = numeric(K)
+
+for (j in 1:v) {
+  onlineFold = subset(onlineCVSummary, 
+                      posXY %in% permuteLocs[ , j])
+  offlineFold = subset(offlineSummary,
+                       posXY %in% permuteLocs[ , -j])
+  actualFold = onlineFold[ , c("posX", "posY")]
+  
+  for (k in 1:K) {
+    estFold = predXY_weighted(newSignals = onlineFold[ , 6:11],
+                     newAngles = onlineFold[ , 4], 
+                     offlineFold, numAngles = 1, k = k)
+    err[k] = err[k] + calcError(estFold, actualFold)
+  }
+}
+
+errdf$weighted <- err
+plot(y = err, x = (1:K),  type = "l", lwd= 2,
+     ylim = c(800, 8000),
+     xlab = "Number of Neighbors",
+     ylab = "Sum of Square Errors",
+      main = "Error vs K, with weighted Data")
+
+rmseMin = min(err)
+kMin = which(err == rmseMin)[1]
+segments(x0 = 0, x1 = kMin, y0 = rmseMin, col = gray(0.4), 
+         lty = 2, lwd = 2)
+segments(x0 = kMin, x1 = kMin, y0 = 1100,  y1 = rmseMin, 
+         col = grey(0.4), lty = 2, lwd = 2)
+
+#mtext(kMin, side = 1, line = 1, at = kMin, col = grey(0.4))
+text(x = kMin - 2, y = rmseMin + 40, 
+     label = as.character(round(rmseMin)), col = grey(0.4))
+
+
+estXYkmin4 = predXY_weighted(newSignals = onlineSummary[ , 6:11], 
+                 newAngles = onlineSummary[ , 4], 
+                 offlineSummary, numAngles = 1, k = kMin)
+actualXY = onlineSummary[ , c("posX", "posY")]
+err_cv4 <- calcError(estXYkmin4, actualXY)
+
+trainPoints = offlineSummary[ offlineSummary$angle == 0 & 
+                              offlineSummary$mac == "00:0f:a3:39:e1:c0" ,
+                        c("posX", "posY")]
+
+
+floorErrorMap = function(estXY, actualXY, trainPoints = NULL, AP = NULL){
+  
+    plot(0, 0, xlim = c(0, 35), ylim = c(-3, 15), type = "n",
+         xlab = "", ylab = "", axes = FALSE,
+         main = "Floor Map of Predictions",
+         sub = "■ = Access Point, ● = Actual, ✷ = Predicted")
+    box()
+    if ( !is.null(AP) ) points(AP, pch = 15)
+    if ( !is.null(trainPoints) )
+      points(trainPoints, pch = 19, col="grey", cex = 0.6)
+    
+    points(x = actualXY[, 1], y = actualXY[, 2], 
+           pch = 19, cex = 0.8 )
+    points(x = estXY[, 1], y = estXY[, 2], 
+           pch = 8, cex = 0.8 )
+    segments(x0 = estXY[, 1], y0 = estXY[, 2],
+             x1 = actualXY[, 1], y1 = actualXY[ , 2],
+             lwd = 2, col = "red")
+}
+actualXY = onlineSummary[ , c("posX", "posY")]
+```
+
+
+Looks like the best value for K was about * `r kMin`*, with an error of * `r rmseMin`*. We can use cross validated value of K to make a prediction on the online data, which has an RMSE of * `r err_cv4`*. Lets compare to our previous results:
+
+```{r, fig.cap = "*The offline training errors with the weighted KNN were rather large...*"}
+names(errdf)[-((length(errdf)-2))]
+errdf %>% gather_("Router","RMSE", names(errdf)[-(length(errdf)-2)]) %>%
+  ggplot() + geom_line(aes(x = k, y = RMSE, color = Router)) + plt_theme +
+  ggtitle("RMSE Over K by Router Subset")
+```
+
+Lets check out how we did on our online test set now, using the weighted knn:
+
+
+```{r}
+data.frame(router = c("router a","router b", "both", "weighted"), `online rmse` = c(err_cv1, err_cv2, err_cv3, err_cv4))
+```
+
+The weighted KNN performed rather poorly overall, and selected a small value of K. We do not believe it offers much of an improvement over the basic KNN, as it ended up with a K value of 1, which is essentially overfitting.
+
+# Conclusion
+
+Our study determined that the MAC address which Nolan and Lang ignored actually improved the predictive power of our model. We also determined that in this scenario, a weighted KNN does not work very well
+
+
+# Appendix
+
+```{r getlabels}
+labs = knitr::all_labels()
+labs = labs[!labs %in% c("setup", "toc", "getlabels", "allcode")]
+```
+
+```{r allcode, ref.label = labs, eval = FALSE, echo = TRUE}
+```

@@ -1,0 +1,59 @@
+# R is the best
+
+# python is cool too
+
+
+```{r}
+library(reticulate)
+```
+
+```{python}
+from sklearn.ensemble import RandomForestRegressor
+
+rf = RandomForestRegressor(100)
+
+```
+
+```{r}
+rf <- py$rf
+
+X = mtcars[,2:length(mtcars)]
+y = mtcars[,1]
+
+rf$fit(X,y)
+preds <- rf$predict(X)
+```
+
+```{python}
+preds = r.preds
+print(preds)
+
+```
+
+
+```{r}
+sklearn.ensemble <- reticulate::import("sklearn.ensemble")
+random <- sklearn.ensemble$RandomForestRegressor
+print(random)
+# <class 'sklearn.ensemble.forest.RandomForestRegressor'>
+# NULL
+rf <- random()
+print(rf)
+# RandomForestRegressor(bootstrap=True, criterion='mse', max_depth=None,
+#                       max_features='auto', max_leaf_nodes=None,
+#                       min_impurity_decrease=0.0, min_impurity_split=None,
+#                       min_samples_leaf=1, min_samples_split=2,
+#                       min_weight_fraction_leaf=0.0, n_estimators='warn',
+#                       n_jobs=None, oob_score=False, random_state=None,
+#                       verbose=0, warm_start=False)
+# NULL
+library(ggplot2)
+gp <- ggplot
+as <- aes
+gb <- geom_bar
+```
+
+```{python}
+r.gp(r.mtcars) + r.gb(r.as(mpg, cyl))
+
+```
