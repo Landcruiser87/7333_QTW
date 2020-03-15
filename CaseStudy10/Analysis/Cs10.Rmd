@@ -254,7 +254,7 @@ plot_goodness()
 
 As the amount of missing data grew, the goodness of fit went down (but not by a lot). However, at low missing rates, this did absolutely fine. That means for simple datasets with only a bit of missing data, its likely we can quickly just throw in a simple imputation method and get near the same results as if our data were all there. Lets double check this is the case with loss:
 
-```{python,  "**Figure  3**: Mean and Median imputation again performed almost the same. This supports our hypothsis"}
+```{python,  fig.cap = "**Figure  3**: Mean and Median imputation again performed almost the same. This supports our hypothsis"}
 plot_loss()
 ```
 
