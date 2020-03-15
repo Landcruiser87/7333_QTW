@@ -1,4 +1,11 @@
 {
 	"git.ignoreLimitWarning": true,
-	"python.pythonPath": "C:\\Users\\andyh\\Anaconda3\\envs\\miner\\python.exe"
+	"python.pythonPath": "C:\\Users\\andyh\\Anaconda3\\envs\\miner\\python.exe",
+	"editor.insertSpaces": false,
+    "editor.wrappingColumn": 0,
+    "editor.quickSuggestions": false,
+	"pandoc.htmlOptString": "-s -f gfm -t html5 --css=css/style.css",
+	"files.associations": {
+        "*.rmd": "markdown"
+    }
 }
