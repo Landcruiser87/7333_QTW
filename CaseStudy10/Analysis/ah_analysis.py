@@ -177,6 +177,37 @@ for x in perc_list:
 	impute_nation(bos_imp)
 	linear_madness(bos_imp, y_train, bos_imp_nan, x) 
 
+#%%
+# David found anther imputer in SKlearn called the Iterative Imputer.  
+# Its able to impute based on modeling features relationships with some of the base
+# SKlearn models!  Could be fun.  
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+from sklearn.linear_model import BayesianRidge
+
+# # def impute_everything(imputedata):
+# 	imp = IterativeImputer(BayesianRidge())
+# 	imp.fit_transform(imputedata)
+# 	return 
+
+perc_list = [10,20,30]
+cols_na = ['AGE','ZN']
+control = X_train.NOX > 0.40
+
+
+for x in perc_list:
+	np.random.seed(42)	
+	bos_imp = X_train.copy()
+
+	bos_imp.loc[bos_imp.loc[control].sample(frac=(x/100)).index, cols_na] = np.nan
+	bos_imp_nan = [sum(np.isnan(bos_imp.AGE)),sum(np.isnan(bos_imp.ZN))]
+	
+	# impute_everything(bos_imp)
+	imp = IterativeImputer(BayesianRidge())
+	imp.fit_transform(bos_imp)
+	linear_madness(bos_imp, y_train, bos_imp_nan, x) 
+
+
 
 
 #%%
