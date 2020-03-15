@@ -145,30 +145,13 @@ mnar_dict['baseline'] = results_dict['baseline']
 r2 = []
 mse = []
 for i in range(X.shape[-1]):
-    data = _mnae(X,i)
+    data = _mnar(X,i)
     data_imputed = SimpleImputer(strategy='constant', fill_value=-100)
     scores = get_scores(data_imputed, y)
     r2 += [scores['goodness_of_fit']]
     mse += [scores['mse']]
 mnar_dict['constant'] = {'goodness_of_fit': _stats_dict(r2), 'loss': _stats_dict(mse)}
 
-
-def make_plotter(f_type: str) -> Callable:
-    def plot_generic_stats(results: dict=mnar_dict)-> None:
-        ax = plt.subplot()
-        base = results_dict['baseline'][f_type]
-        ax.barh(base['avg'] )
-        keys = [k for k in results.keys() if k != 'baseline']
-        for k in keys:
-            tmp = results_to_series(results[k], f_type)
-            ax.plot(tmp['x'], tmp['y'], label=k.title())
-            ax.fill_between(tmp['x'], tmp['lower'], tmp['upper'], alpha=0.1, label=f"{k} error".title())
-        ax.legend()
-        ax.set_title(f"{f_type} vs Percentage of Missing Data, by Imputation Method".title().replace("_"," "))
-        ax.set_xlabel('Percentage of Missing Data')
-        ax.set_ylabel(f_type.title().replace("_"," "))
-        plt.show()
-    return plot_generic_stats
 
 
 ax = plt.subplot()
