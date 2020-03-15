@@ -33,6 +33,7 @@ As aspiring data scientists, the first question we must always ask when given a 
 ```{r, echo = FALSE}
 # allows us to run our stuff in python
 library(reticulate)
+use_condaenv("miner")
 # this set of functions allows us to autoincrement our figures
 counter <- function() {
   x <- 0
