@@ -294,6 +294,51 @@ It looks like the imputation method (between mean and median, with and without i
 
 ## Missing at random, with a control
 
+```{python}
+
+X_train, X_test, y_train, y_test = train_test_split(bos, bos_target, test_size=0.20, random_state = 42)
+
+#Define function for SKlearn Imputer
+def impute_nation(imputedata):
+	impute = SimpleImputer(missing_values=np.nan, strategy="mean", copy=False)
+	impute.fit(imputedata)
+	impute.transform(imputedata)
+	return
+
+def linear_madness(X, y, bos_imp_nan, perc): 
+	linreg = LinearRegression().fit(X,y)
+	y_pred = linreg.predict(X)
+	return_MSE = mean_squared_error(y,y_pred)
+	r2 = r2_score(y, y_pred)
+	
+	print("\nAfter imputing %i%% of the data" % perc)
+	print("With %i and %i values imputed from the AGE and ZN columns" % (bos_imp_nan[0], bos_imp_nan[1]))
+	print("After filtering the NOX column with values > 0.40")
+	print("The MSE is = %.2f" % return_MSE)
+	print("Goodness of fit (R_squared) is = %.2f" % r2)
+	print(pd.DataFrame(zip(X.columns, linreg.coef_), columns = ['features', 'LinRegCoefficients']))
+	print('==============================================')
+
+
+#For this section we choose AGE and ZN for our two columns selected.  
+#We'll control by saying anything in the NOX column over .40
+perc_list = [10,20,30]
+cols_na = ['AGE','ZN']
+control = X_train.NOX > 0.40
+
+
+for x in perc_list:
+	np.random.seed(42)	
+	bos_imp = X_train.copy()
+
+	bos_imp.loc[bos_imp.loc[control].sample(frac=(x/100)).index, cols_na] = np.nan
+	bos_imp_nan = [sum(np.isnan(bos_imp.AGE)),sum(np.isnan(bos_imp.ZN))]
+	
+	impute_nation(bos_imp)
+	linear_madness(bos_imp, y_train, bos_imp_nan, x) 
+
+
+```
 
 
 ## Data Missing Not at Random
