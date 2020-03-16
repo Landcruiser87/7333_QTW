@@ -318,7 +318,6 @@ def linear_madness(X, y, bos_imp_nan, perc):
 	print("After filtering the NOX column with values > 0.40")
 	print("The MSE is = %.2f" % return_MSE)
 	print("Goodness of fit (R_squared) is = %.2f" % r2)
-	print(pd.DataFrame(zip(X.columns, linreg.coef_), columns = ['features', 'LinRegCoefficients']))
 	print('==============================================')
 
 
