@@ -263,7 +263,7 @@ def make_plotter(f_type: str) -> Callable:
         for k in keys:
             tmp = results_to_series(results[k], f_type)
             ax.plot(tmp['x'], tmp['y'], label=k.title())
-            ax.fill_between(tmp['x'], tmp['lower'], tmp['upper'], alpha=0.1, label=f"{k} error".title())
+            ax.fill_between(tmp['x'], tmp['lower'], tmp['upper'], alpha=0.2, label=f"{k} error".title())
         ax.legend()
         ax.set_title(f"{f_type} vs Percentage of Missing Data, by Imputation Method".title().replace("_"," "))
         ax.set_xlabel('Percentage of Missing Data')
@@ -338,9 +338,9 @@ for x in perc_list:
 	impute_nation(bos_imp)
 	linear_madness(bos_imp, y_train, bos_imp_nan, x) 
 
-
 ```
-As you can see we still didn't achieve any real improvement in R² or MSE even while filtering the data to a point where it should effect the data more.  
+
+There was no real change with the  R² or MSE from the baseline, which had an  $R^2$ of `r I(py$results_dict$baseline$goodness_of_fit$avg)` and a loss of `r I(py$results_dict$baseline$loss$avg)`. This means just as in missing at random, our models are pretty robust to missing at random with a control.
 
 
 
@@ -408,13 +408,13 @@ for imp in impute_types:
 
 Finally, lets plot our results:
 
-```{python}
+```{python, fig.cap = "**Figure 4**: The model appears fairly robust to imputation scheme in this case, however unlike with missing at random, adding an 'imputed' feature seems to improve the results a bit. The constant imputation strategy was not fruitful in this case."}
 ax = plt.subplot()
 keys = list(mnar_dict.keys())
 avgs = [mnar_dict[imp]['loss']['avg'] for imp in mnar_dict.keys()]
 stds = [mnar_dict[imp]['loss']['std'] for imp in mnar_dict.keys()]
 for k in range(len(keys)):
-    _ = ax.barh(keys[k], avgs[k], label = keys[k], xerr = stds[k])
+    _ = ax.barh(keys[k], avgs[k], label = keys[k].title(), xerr = stds[k])
 _ = ax.set_title('Loss of missing not at random imputation'.title())
 _ = ax.set_xlabel('Loss')
 _ = ax.set_ylabel('Imputation Method')
@@ -424,13 +424,15 @@ _ = ax.legend()
 plt.show()
 ```
 
-```{python}
+It seems the "constant" imputation strategy did not work very well. However in this case, the indicators clearly helped a lot here. Lets see how we did with goodness of fit.
+
+```{python, fig.cap =  "**Figure 5**: We see nearly the same results as goodness of fit. Including the indicator variable seems to be the way to go with missing not at random."}
 ax = plt.subplot()
 keys = list(mnar_dict.keys())
 avgs = [mnar_dict[imp]['goodness_of_fit']['avg'] for imp in mnar_dict.keys()]
 stds = [mnar_dict[imp]['goodness_of_fit']['std'] for imp in mnar_dict.keys()]
 for k in range(len(keys)):
-    _ = ax.barh(keys[k], avgs[k], label = keys[k], xerr = stds[k])
+    _ = ax.barh(keys[k], avgs[k], label = keys[k].title(), xerr = stds[k])
 _ = ax.set_title('goodness of fit of missing not at random imputation'.title())
 _ = ax.set_xlabel('goodness of fit'.title())
 _ = ax.set_ylabel('Imputation Method')
@@ -439,3 +441,9 @@ _ = plt.yticks(rotation=45)
 _ = ax.legend()
 plt.show()
 ```
+
+This confirms our hypotheses. First, we see that constant imputation with a ridiculous value does not work, at least for linear regression (it might make sense for a tree based model), but adding the indicator feature for missing not at random definitely helps.
+
+# Conclusions
+
+There are several important takeaways from this study. First, in general, with missing at random variables, our models are fairly robust to imputation and missing data. As the percentage of missing data increases, our models tend to get a bit worse, but not significantly. If there is a large proportion of missing data, it may be time to consider more sophisticated methods, but in general with missing at random we are fine. If our data is Missing Not at Random (MNAR), then in general we can still use our simple imputation methods, but adding a new feature, which indicates if a variable was imputed or not, can be moderately helpful.
