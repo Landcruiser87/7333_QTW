@@ -135,6 +135,7 @@ $$
 
 ## MA models
 
+
 While AR models are focused on the relationship between a realization $X$ at time $t$ and at time $t-n$, MA models are focused on the noise portion of the equation. In general, MA models alone are not used for modeling real data, as they have some strange properties and are not quite as useful, but in conjunction with AR, integrated, and seasonal models you can build more powerful models of time series. An MA model is expressed just the same as an arima model, using polynomials:
 
 $$
